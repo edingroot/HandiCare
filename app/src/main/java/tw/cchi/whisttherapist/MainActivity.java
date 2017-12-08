@@ -70,25 +70,25 @@ public class MainActivity extends AppCompatActivity {
                         }
                         try {
                             Thread.sleep(1000);
-                            if (MainActivity.this.mDevAcup.getTheTargetDevice() != null) {
-                                if (MainActivity.this.mDevAcup.mUsbDevice.getInterfaceCount() > 0) {
-                                    MainActivity.this.mDevAcup.mUsbInterface = MainActivity.this.mDevAcup.mUsbDevice.getInterface(0);
-                                    MainActivity.this.mDevAcup.mEndpointRead = MainActivity.this.mDevAcup.mUsbInterface.getEndpoint(0);
-                                    MainActivity.this.mDevAcup.mEndpointWrite = MainActivity.this.mDevAcup.mUsbInterface.getEndpoint(1);
+                            if (mDevAcup.getTheTargetDevice() != null) {
+                                if (mDevAcup.mUsbDevice.getInterfaceCount() > 0) {
+                                    mDevAcup.mUsbInterface = mDevAcup.mUsbDevice.getInterface(0);
+                                    mDevAcup.mEndpointRead = mDevAcup.mUsbInterface.getEndpoint(0);
+                                    mDevAcup.mEndpointWrite = mDevAcup.mUsbInterface.getEndpoint(1);
                                 }
-                                MainActivity.this.globalVar.bPower = false;
-                                MainActivity.this.globalVar.nX = 0;
-                                MainActivity.this.globalVar.nY = 0;
-                                MainActivity.this.globalVar.nZ = 0;
-                                MainActivity.this.mDevAcup.commWithUsbDevice();
+                                globalVar.bPower = false;
+                                globalVar.nX = 0;
+                                globalVar.nY = 0;
+                                globalVar.nZ = 0;
+                                mDevAcup.commWithUsbDevice();
 
                                 if (AcupStorage.nDeviceType != 0) {
-                                    MainActivity.this.mDevAcup.commWithUsbDevice(11);
-                                    MainActivity.this.mDevAcup.commWithUsbDevice(12);
+                                    mDevAcup.commWithUsbDevice(11);
+                                    mDevAcup.commWithUsbDevice(12);
                                 }
                             }
                         } catch (InterruptedException e) {
-                            System.out.println("Thread was inturrupted");
+                            System.out.println("Thread was interrupted");
                             return;
                         }
                     }
@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
                 synchronized (this) {
                     device = intent.getParcelableExtra("device");
                     if (!intent.getBooleanExtra("permission", false)) {
-                        MainActivity.this.mDevAcup.mUsbManager.requestPermission(
+                        mDevAcup.mUsbManager.requestPermission(
                                 device,
                                 PendingIntent.getBroadcast(
                                         MainActivity.this,
@@ -117,11 +117,11 @@ public class MainActivity extends AppCompatActivity {
                     if (device != null) {
                         Log.d("1", "DEATTCHED-" + device);
                     }
-                    MainActivity.this.globalVar.bUsb = false;
-                    MainActivity.this.globalVar.bPower = false;
-                    MainActivity.this.globalVar.nZ = 0;
-                    MainActivity.this.globalVar.nY = 0;
-                    MainActivity.this.globalVar.nX = 0;
+                    globalVar.bUsb = false;
+                    globalVar.bPower = false;
+                    globalVar.nZ = 0;
+                    globalVar.nY = 0;
+                    globalVar.nX = 0;
                 }
 
             } else if ("android.intent.action.BATTERY_CHANGED".equals(action) && intent.getIntExtra("level", 0) < 30) {

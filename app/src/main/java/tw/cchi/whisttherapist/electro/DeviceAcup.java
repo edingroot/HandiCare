@@ -67,13 +67,14 @@ public class DeviceAcup {
             int nProductID = device.getProductId();
             int nDevType = 0;
             boolean bFound = false;
-            if ("57344".equals(device.getProductId() + "")) {
+            if (device.getProductId() == 57344) {
                 bFound = true;
             }
             if (nVenderID == 4163 && nProductID / 256 == 160) {
                 nDevType = nProductID % 256;
                 bFound = true;
-                continue;
+                // TODO: check if this is intentionally ignored ("continue")
+//                continue;
             }
             if (bFound) {
                 this.alg.setVersion(nDevType);

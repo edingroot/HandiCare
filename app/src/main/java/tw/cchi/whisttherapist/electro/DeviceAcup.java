@@ -11,6 +11,8 @@ import android.hardware.usb.UsbManager;
 
 import java.nio.ByteBuffer;
 
+import tw.cchi.whisttherapist.GlobalVariable;
+
 public class DeviceAcup {
     private static final String ACTION_USB_PERMISSION = "shengmao.elecacup.USB_PERMISSION";
     private static final int OPT_BATTERY_LOW = 1;

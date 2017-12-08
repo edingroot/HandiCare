@@ -18,7 +18,7 @@ public class DeviceAcup {
     private static final int OPT_BATTERY_LOW = 1;
     public static int[] nFreqLevel = new int[]{0, 94, 88, 82, 76, 70, 64, 58, 52, 46, 40, 34, 28, 21, 14, 7};
     private static final int[] nFreqLevel_15 = new int[]{0, 94, 88, 82, 76, 70, 64, 58, 52, 46, 40, 34, 28, 21, 14, 7};
-    private static final int[] nFreqLevel_5 = new int[]{0, 100, 80, 60, 40, 20};
+//    private static final int[] nFreqLevel_5 = new int[]{0, 100, 80, 60, 40, 20};
     byte[] Readbuf = new byte[32];
     byte[] Sendbuf = new byte[8];
     public AcupStorage alg = new AcupStorage();

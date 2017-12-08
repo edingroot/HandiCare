@@ -10,7 +10,12 @@ import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.SeekBar;
+import android.widget.TextView;
+import android.widget.ToggleButton;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import tw.cchi.whisttherapist.eshock.AcupStorage;
 import tw.cchi.whisttherapist.eshock.DeviceAcup;
 
@@ -21,10 +26,17 @@ public class MainActivity extends AppCompatActivity {
     public DeviceAcup mDevAcup;
     private GlobalVariable globalVar;
 
+    @BindView(R.id.seekStrength) SeekBar seekStrength;
+    @BindView(R.id.txtStrengthVal) TextView txtStrengthVal;
+    @BindView(R.id.seekFreq) SeekBar seekFreq;
+    @BindView(R.id.txtFreqVal) TextView txtFreqVal;
+    @BindView(R.id.togglePower) ToggleButton togglePower;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
         this.globalVar = (GlobalVariable) getApplicationContext();
         this.mDevAcup = new DeviceAcup(
@@ -48,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
             this.globalVar.bPower = false;
             this.mDevAcup.commWithUsbDevice();
         }
-//        bInit = false;
         unregisterReceiver(this.mUsbReceiver);
     }
 

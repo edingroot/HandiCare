@@ -1,4 +1,4 @@
-package tw.cchi.whisttherapist.electro;
+package tw.cchi.whisttherapist.eshock;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
@@ -6,7 +6,7 @@ import android.support.v4.view.MotionEventCompat;
 
 import java.util.Arrays;
 
-import tw.cchi.whisttherapist.electro.port.TransportMediator;
+import tw.cchi.whisttherapist.eshock.port.TransportMediator;
 
 public class AcupStorage {
     private static final char[] HEX_CHARS = "0123456789ABCDEF".toCharArray();
@@ -14,8 +14,8 @@ public class AcupStorage {
     public static int nDeviceType = 0;
     private static int nTagSerial = 0;
     private static int nVendorID = 1;
-    private static String sAccount = null;
-    private static String sCheckDate = null;
+//    private static String sAccount = null;
+//    private static String sCheckDate = null;
     private static String strDeviceSerial = "";
     public static String strFirmwareVersion = "1.0";
     public static String strVersion = "Demo";
@@ -115,10 +115,10 @@ public class AcupStorage {
         }
     }
 
-    public static void setAccount(Context c, String s) {
-        PreferenceManager.getDefaultSharedPreferences(c).edit().putString("account_number", s).commit();
-        sAccount = s;
-    }
+//    public static void setAccount(Context c, String s) {
+//        PreferenceManager.getDefaultSharedPreferences(c).edit().putString("account_number", s).commit();
+//        sAccount = s;
+//    }
 
     public String getIni(Context c, String sTag) {
         return PreferenceManager.getDefaultSharedPreferences(c).getString(sTag, "");
@@ -128,22 +128,22 @@ public class AcupStorage {
         PreferenceManager.getDefaultSharedPreferences(c).edit().putString(sTag, sValue).commit();
     }
 
-    public void setDeviceInfo(Context c, String sEnable, String sMall, String sPush, String sMallWeb) {
-        setIni(c, "enable", sEnable);
-        setIni(c, "mall", sMall);
-        setIni(c, "mall_web", sMallWeb);
-        setIni(c, "push", sPush);
-    }
+//    public void setDeviceInfo(Context c, String sEnable, String sMall, String sPush, String sMallWeb) {
+//        setIni(c, "enable", sEnable);
+//        setIni(c, "mall", sMall);
+//        setIni(c, "mall_web", sMallWeb);
+//        setIni(c, "push", sPush);
+//    }
 
-    public static void setCheckDate(Context c, String s) {
-        PreferenceManager.getDefaultSharedPreferences(c).edit().putString("check_date", s).commit();
-        sCheckDate = s;
-    }
+//    public static void setCheckDate(Context c, String s) {
+//        PreferenceManager.getDefaultSharedPreferences(c).edit().putString("check_date", s).commit();
+//        sCheckDate = s;
+//    }
 
-    public static String getCheckDate(Context c) {
-        sCheckDate = PreferenceManager.getDefaultSharedPreferences(c).getString("check_date", "");
-        return sCheckDate;
-    }
+//    public static String getCheckDate(Context c) {
+//        sCheckDate = PreferenceManager.getDefaultSharedPreferences(c).getString("check_date", "");
+//        return sCheckDate;
+//    }
 
     public String asHex(byte[] buf, int nLen, int nStart) {
         char[] chars = new char[(nLen * 2)];

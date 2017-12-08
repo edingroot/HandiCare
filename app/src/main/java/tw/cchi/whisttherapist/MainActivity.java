@@ -11,8 +11,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import tw.cchi.whisttherapist.electro.AcupStorage;
-import tw.cchi.whisttherapist.electro.DeviceAcup;
+import tw.cchi.whisttherapist.eshock.AcupStorage;
+import tw.cchi.whisttherapist.eshock.DeviceAcup;
 
 public class MainActivity extends AppCompatActivity {
     private static final String ACTION_USB_PERMISSION = "tw.cchi.USB_PERMISSION";

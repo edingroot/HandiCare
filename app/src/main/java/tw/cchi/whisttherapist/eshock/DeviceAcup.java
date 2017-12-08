@@ -1,4 +1,4 @@
-package tw.cchi.whisttherapist.electro;
+package tw.cchi.whisttherapist.eshock;
 
 import android.app.PendingIntent;
 import android.content.Context;

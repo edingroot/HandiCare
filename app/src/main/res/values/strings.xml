@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">WhistTherapist</string>
+    <string name="usb_not_found">Device not found, open USB setting?</string>
 </resources>

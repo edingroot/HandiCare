@@ -9,7 +9,7 @@ import java.util.Arrays;
 import tw.cchi.whisttherapist.eshock.port.TransportMediator;
 
 public class AcupStorage {
-    private static final char[] HEX_CHARS = "0123456789ABCDEF".toCharArray();
+//    private static final char[] HEX_CHARS = "0123456789ABCDEF".toCharArray();
     private static int nDeviceSerial = 0;
     public static int nDeviceType = 0;
     private static int nTagSerial = 0;
@@ -145,15 +145,15 @@ public class AcupStorage {
 //        return sCheckDate;
 //    }
 
-    public String asHex(byte[] buf, int nLen, int nStart) {
-        char[] chars = new char[(nLen * 2)];
-        for (int i = 0; i < nLen; i++) {
-            int n = (nStart + i) + 1;
-            chars[i * 2] = HEX_CHARS[(buf[n] & 240) >>> 4];
-            chars[(i * 2) + 1] = HEX_CHARS[buf[n] & 15];
-        }
-        return new String(chars);
-    }
+//    public String asHex(byte[] buf, int nLen, int nStart) {
+//        char[] chars = new char[(nLen * 2)];
+//        for (int i = 0; i < nLen; i++) {
+//            int n = (nStart + i) + 1;
+//            chars[i * 2] = HEX_CHARS[(buf[n] & 240) >>> 4];
+//            chars[(i * 2) + 1] = HEX_CHARS[buf[n] & 15];
+//        }
+//        return new String(chars);
+//    }
 
     public int ConvertByteInt(byte byVal) {
         if (byVal < (byte) 0) {

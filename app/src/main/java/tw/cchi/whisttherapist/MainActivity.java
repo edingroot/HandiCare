@@ -10,8 +10,10 @@ import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import butterknife.BindView;
@@ -44,12 +46,99 @@ public class MainActivity extends AppCompatActivity {
                 (UsbManager) getSystemService(Context.USB_SERVICE)
         );
 
+        // Register broadcast receiver events
         IntentFilter filterAttachedDetached = new IntentFilter();
         filterAttachedDetached.addAction(ACTION_USB_PERMISSION);
         filterAttachedDetached.addAction("android.hardware.usb.action.USB_DEVICE_DETACHED");
         filterAttachedDetached.addAction("android.hardware.usb.action.USB_DEVICE_ATTACHED");
         filterAttachedDetached.addAction("android.intent.action.BATTERY_CHANGED");
         registerReceiver(this.mUsbReceiver, filterAttachedDetached);
+
+        initComponents();
+    }
+
+    private void initComponents() {
+        togglePower.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (!mDevAcup.isConnected()) {
+                    Toast.makeText(MainActivity.this, getString(R.string.usb_not_found), Toast.LENGTH_SHORT).show();
+                }
+
+                if (isChecked) {
+                    mDevAcup.powerOn();
+                } else {
+                    mDevAcup.powerOff();
+                }
+                updateDeviceControls();
+            }
+        });
+
+        seekStrength.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int progressValue = 1;
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                progressValue = progress;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                if (globalVar.bPower) {
+                    progressValue = progressValue == 0 ? 1 : progressValue;
+                    mDevAcup.setStrength(progressValue);
+                } else {
+                    progressValue = 0;
+                }
+                updateDeviceControls();
+            }
+        });
+
+        seekFreq.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int progressValue = 1;
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                progressValue = progress;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                if (globalVar.bPower) {
+                    progressValue = progressValue == 0 ? 1 : progressValue;
+                    mDevAcup.setFrequency(progressValue);
+                } else {
+                    progressValue = 0;
+                }
+                updateDeviceControls();
+            }
+        });
+    }
+
+    private void updateDeviceControls() {
+        int strength, frequency;
+
+        if (globalVar.bPower) {
+            togglePower.setChecked(true);
+            strength = globalVar.nX;
+            frequency = globalVar.nY;
+        } else {
+            togglePower.setChecked(false);
+            strength = 0;
+            frequency = 0;
+        }
+        seekStrength.setProgress(strength);
+        seekFreq.setProgress(frequency);
+        txtStrengthVal.setText(String.valueOf(strength));
+        txtFreqVal.setText(String.valueOf(frequency));
     }
 
     @Override
@@ -128,11 +217,7 @@ public class MainActivity extends AppCompatActivity {
                     if (device != null) {
                         Log.d("1", "DEATTCHED-" + device);
                     }
-                    globalVar.bUsb = false;
-                    globalVar.bPower = false;
-                    globalVar.nZ = 0;
-                    globalVar.nY = 0;
-                    globalVar.nX = 0;
+                    mDevAcup.disconnect();
                 }
 
             } else if ("android.intent.action.BATTERY_CHANGED".equals(action) && intent.getIntExtra("level", 0) < 30) {

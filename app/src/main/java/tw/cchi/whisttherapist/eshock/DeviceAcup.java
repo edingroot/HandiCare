@@ -12,6 +12,7 @@ import android.hardware.usb.UsbManager;
 import java.nio.ByteBuffer;
 
 import tw.cchi.whisttherapist.GlobalVariable;
+import tw.cchi.whisttherapist.Util;
 
 public class DeviceAcup {
     private static final String ACTION_USB_PERMISSION = "shengmao.elecacup.USB_PERMISSION";
@@ -88,6 +89,44 @@ public class DeviceAcup {
             }
         }
         return null;
+    }
+
+    public void powerOn() {
+        globalVar.bPower = true;
+        // Reset strength and frequency
+        globalVar.nX = globalVar.nY = 1;
+    }
+
+    public void powerOff() {
+        globalVar.bPower = false;
+        globalVar.nX = globalVar.nY = globalVar.nZ = 0;
+        commWithUsbDevice();
+    }
+
+    public void setStrength(int strength) {
+        strength = Util.trimValue(strength, 1, 15);
+        globalVar.nX = strength & 15;
+        commWithUsbDevice();
+    }
+
+    public void setFrequency(int freq) {
+        freq = Util.trimValue(freq, 1, 15);
+        globalVar.nY = freq & 15;
+        commWithUsbDevice();
+    }
+
+    public void disconnect() {
+        globalVar.bUsb = false;
+        globalVar.bPower = false;
+        globalVar.nX = 0;
+        globalVar.nY = 0;
+        globalVar.nZ = 0;
+        mUsbDevice = null;
+        mConnection = null;
+    }
+
+    public boolean isConnected() {
+        return mConnection != null;
     }
 
     public void commWithUsbDevice() {
@@ -183,6 +222,7 @@ public class DeviceAcup {
                     if (this.mConnection.bulkTransfer(this.mEndpointWrite, this.Sendbuf, 8, 250) != 8) {
                         bFail = true;
                     }
+
                     this.Sendbuf[0] = (byte) 67;
                     this.Sendbuf[1] = (byte) 2;
                     this.Sendbuf[2] = (byte) 7;
@@ -198,7 +238,7 @@ public class DeviceAcup {
                     if (this.mConnection.bulkTransfer(this.mEndpointRead, this.Readbuf, 32, 3000) != 32) {
                         bFail = true;
                     }
-                    String strDisp = "";
+
                     switch (nCmd) {
                         case 11:
                             if (this.Readbuf[7] < (byte) 21) {
@@ -214,6 +254,7 @@ public class DeviceAcup {
                             this.alg.setTagInfo(this.Readbuf);
                             break;
                     }
+
                     nRetry--;
                     if (!bFail) {
                         return;

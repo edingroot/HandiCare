@@ -16,10 +16,12 @@ public class GlobalVariable extends Application {
 //    public int nVerMajor = 0;
 //    public int nVerMiner = 0;
 //    public int nVerNumber = 0;
+
     // nX, nY, nZ = 0 if power is off
-    public int nX = 1;
-    public int nY = 1;
+    public int nX = 1; // Strength: 1~15
+    public int nY = 1; // Frequency: 1~15
     public int nZ = 1;
+
 //    public String sDevEnable = "0";
 //    public String sDevMall = "0";
 //    public String sDevMallUrl = "";

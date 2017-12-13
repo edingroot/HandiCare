@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         togglePower.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mDevAcup.connect();
                 if (!mDevAcup.isConnected()) {
                     Toast.makeText(MainActivity.this, getString(R.string.usb_not_found), Toast.LENGTH_SHORT).show();
                 }
@@ -208,6 +209,7 @@ public class MainActivity extends AppCompatActivity {
                         );
                     } else if (device != null) {
                         Log.d("1", "ATTACHED-" + device);
+                        mDevAcup.connect();
                     }
                 }
 
@@ -218,6 +220,7 @@ public class MainActivity extends AppCompatActivity {
                         Log.d("1", "DEATTCHED-" + device);
                     }
                     mDevAcup.disconnect();
+                    updateDeviceControls();
                 }
 
             } else if ("android.intent.action.BATTERY_CHANGED".equals(action) && intent.getIntExtra("level", 0) < 30) {

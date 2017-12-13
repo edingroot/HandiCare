@@ -91,6 +91,10 @@ public class DeviceAcup {
         return null;
     }
 
+    public void connect() {
+        powerOff();
+    }
+
     public void powerOn() {
         globalVar.bPower = true;
         // Reset strength and frequency
@@ -99,7 +103,9 @@ public class DeviceAcup {
 
     public void powerOff() {
         globalVar.bPower = false;
-        globalVar.nX = globalVar.nY = globalVar.nZ = 0;
+        globalVar.nX = 0;
+        globalVar.nY = 0;
+        globalVar.nZ = 0;
         commWithUsbDevice();
     }
 

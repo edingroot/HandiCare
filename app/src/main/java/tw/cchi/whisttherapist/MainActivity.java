@@ -16,6 +16,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import org.honorato.multistatetogglebutton.MultiStateToggleButton;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import tw.cchi.whisttherapist.eshock.AcupStorage;
@@ -27,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
     private final BroadcastReceiver mUsbReceiver = new UsbBroadcastReceiver();
     public DeviceAcup mDevAcup;
     private GlobalVariable globalVar;
+
+    @BindView(R.id.multiToggleShockMode) MultiStateToggleButton multiToggleShockMode;
 
     @BindView(R.id.seekStrength) SeekBar seekStrength;
     @BindView(R.id.txtStrengthVal) TextView txtStrengthVal;
@@ -58,6 +62,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initComponents() {
+        multiToggleShockMode.setElements(Constants.SHOCK_MODE_TITLES);
+        multiToggleShockMode.setOnValueChangedListener(new org.honorato.multistatetogglebutton.ToggleButton.OnValueChangedListener() {
+            @Override
+            public void onValueChanged(int position) {
+                mDevAcup.setStrength(Constants.SHOCK_MODE_STRENGTHS[position]);
+                mDevAcup.setFrequency(Constants.SHOCK_MODE_FREQS[position]);
+            }
+        });
+
         togglePower.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

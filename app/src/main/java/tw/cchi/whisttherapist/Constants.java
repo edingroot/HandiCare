@@ -6,4 +6,6 @@ public class Constants {
     public static int[] SHOCK_MODE_STRENGTHS = new int[] {1, 4, 6};
     public static int[] SHOCK_MODE_FREQS = new int[] {2, 4, 6};
 
+    public static int SHOCK_POWER_COUNTDOWN_SECONDS = 5 * 60;
+
 }

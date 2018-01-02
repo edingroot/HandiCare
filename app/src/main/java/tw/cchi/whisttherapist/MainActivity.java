@@ -20,6 +20,7 @@ import org.honorato.multistatetogglebutton.MultiStateToggleButton;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cn.iwgang.countdownview.CountdownView;
 import tw.cchi.whisttherapist.eshock.AcupStorage;
 import tw.cchi.whisttherapist.eshock.DeviceAcup;
 
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     public DeviceAcup mDevAcup;
     private GlobalVariable globalVar;
 
+    @BindView(R.id.countdownShockPower) CountdownView countdownShockPower;
     @BindView(R.id.multiToggleShockMode) MultiStateToggleButton multiToggleShockMode;
 
     @BindView(R.id.seekStrength) SeekBar seekStrength;
@@ -81,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (isChecked) {
                     mDevAcup.powerOn();
+                    countdownShockPower.start(Constants.SHOCK_POWER_COUNTDOWN_SECONDS * 1000);
                 } else {
                     mDevAcup.powerOff();
                 }
@@ -136,6 +139,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        countdownShockPower.setOnCountdownEndListener(new CountdownView.OnCountdownEndListener() {
+            @Override
+            public void onEnd(CountdownView cv) {
+                mDevAcup.powerOff();
+                updateDeviceControls();
+            }
+        });
+
         updateDeviceControls();
     }
 
@@ -150,6 +161,8 @@ public class MainActivity extends AppCompatActivity {
         } else {
             togglePower.setChecked(false);
             setShockModeToggleState(false);
+            countdownShockPower.stop();
+            countdownShockPower.updateShow(0);
             strength = 0;
             frequency = 0;
         }

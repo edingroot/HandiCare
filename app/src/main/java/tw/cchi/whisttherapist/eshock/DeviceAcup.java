@@ -38,20 +38,18 @@ public class DeviceAcup {
         this.globalVar = gv;
         this.main = c;
         this.mUsbManager = um;
+
         if (getTheTargetDevice() != null) {
             if (this.mUsbDevice.getInterfaceCount() > 0) {
                 this.mUsbInterface = this.mUsbDevice.getInterface(0);
                 this.mEndpointRead = this.mUsbInterface.getEndpoint(0);
                 this.mEndpointWrite = this.mUsbInterface.getEndpoint(1);
             }
-            AcupStorage acupStorage;
+
             if (this.mUsbInterface == null || this.mUsbInterface.getEndpointCount() > 0) {
                 commWithUsbDevice();
-                acupStorage = this.alg;
-            } else {
-                commWithUsbDevice();
-                acupStorage = this.alg;
             }
+
             if (AcupStorage.nDeviceType != 0) {
                 commWithUsbDevice(11);
                 commWithUsbDevice(12);
@@ -63,6 +61,7 @@ public class DeviceAcup {
         if (this.mUsbManager == null) {
             return null;
         }
+
         for (UsbDevice device : this.mUsbManager.getDeviceList().values()) {
             int nVenderID = device.getVendorId();
             int nProductID = device.getProductId();
@@ -74,7 +73,7 @@ public class DeviceAcup {
             if (nVenderID == 4163 && nProductID / 256 == 160) {
                 nDevType = nProductID % 256;
                 bFound = true;
-                // TODO: check if this is intentionally ignored ("continue")
+                // TODO: check if this is ignored intentionally - ("continue;")
 //                continue;
             }
             if (bFound) {
@@ -91,8 +90,9 @@ public class DeviceAcup {
         return null;
     }
 
-    public void connect() {
+    public boolean connect() {
         powerOff();
+        return isConnected();
     }
 
     public void powerOn() {

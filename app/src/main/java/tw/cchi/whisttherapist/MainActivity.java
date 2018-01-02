@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
             public void onValueChanged(int position) {
                 mDevAcup.setStrength(Constants.SHOCK_MODE_STRENGTHS[position]);
                 mDevAcup.setFrequency(Constants.SHOCK_MODE_FREQS[position]);
+                updateDeviceControls();
             }
         });
 
@@ -134,6 +135,8 @@ public class MainActivity extends AppCompatActivity {
                 updateDeviceControls();
             }
         });
+
+        updateDeviceControls();
     }
 
     private void updateDeviceControls() {
@@ -141,10 +144,12 @@ public class MainActivity extends AppCompatActivity {
 
         if (globalVar.bPower) {
             togglePower.setChecked(true);
+            setShockModeToggleState(true);
             strength = globalVar.nX;
             frequency = globalVar.nY;
         } else {
             togglePower.setChecked(false);
+            setShockModeToggleState(false);
             strength = 0;
             frequency = 0;
         }
@@ -152,6 +157,17 @@ public class MainActivity extends AppCompatActivity {
         seekFreq.setProgress(frequency);
         txtStrengthVal.setText(String.valueOf(strength));
         txtFreqVal.setText(String.valueOf(frequency));
+    }
+
+    private void setShockModeToggleState(boolean enabled) {
+        if (enabled) {
+            multiToggleShockMode.setColorRes(R.color.colorPrimary, android.R.color.white);
+            multiToggleShockMode.setEnabled(true);
+        } else {
+            multiToggleShockMode.setStates(new boolean[Constants.SHOCK_MODE_TITLES.length]);
+            multiToggleShockMode.setColorRes(R.color.inactiveGrayDark, R.color.inactiveGray);
+            multiToggleShockMode.setEnabled(false);
+        }
     }
 
     @Override

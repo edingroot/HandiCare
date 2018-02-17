@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         togglePower.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (mDevAcup.connect())
+                if (!mDevAcup.connect())
                     Toast.makeText(MainActivity.this, getString(R.string.usb_not_found), Toast.LENGTH_SHORT).show();
 
                 if (isChecked) {

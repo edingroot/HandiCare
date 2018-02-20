@@ -1,12 +1,9 @@
-package tw.cchi.whisttherapist;
+package tw.cchi.whisttherapist.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-
-import tw.cchi.whisttherapist.activity.MenuActivity;
-import tw.cchi.whisttherapist.activity.ShockActivity;
 
 public class SplashActivity extends AppCompatActivity {
     final Handler handler = new Handler();

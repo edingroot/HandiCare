@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:drawable="@color/colorPrimary"/>
-    <item>
-        <bitmap
-            android:gravity="center"
-            android:src="@mipmap/ic_launcher"/>
-    </item>
+    <item android:drawable="@drawable/gradient_background"/>
+
+    <!--<item>-->
+        <!--<bitmap-->
+            <!--android:gravity="center"-->
+            <!--android:src="@drawable/logo_with_text"/>-->
+    <!--</item>-->
+    <item
+        android:width="140dp"
+        android:height="170dp"
+        android:drawable="@drawable/logo_with_text"
+        android:gravity="center" />
 
 </layer-list>

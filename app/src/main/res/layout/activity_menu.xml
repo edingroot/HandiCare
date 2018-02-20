@@ -71,7 +71,8 @@
             android:scaleType="fitCenter"
             app:layout_constraintBottom_toTopOf="@+id/btnShockMode"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/btn_vibration_mode"/>
+            app:srcCompat="@drawable/btn_vibration_mode"
+            android:onClick="onVibrationModeClick"/>
 
         <ImageButton
             android:id="@+id/btnShockMode"
@@ -83,7 +84,8 @@
             app:layout_constraintBottom_toTopOf="@+id/btnDetectionMode"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btnVibrationMode"
-            app:srcCompat="@drawable/btn_shock_mode"/>
+            app:srcCompat="@drawable/btn_shock_mode"
+            android:onClick="onShockModeClick"/>
 
         <ImageButton
             android:id="@+id/btnDetectionMode"
@@ -95,7 +97,8 @@
             android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btnShockMode"
-            app:srcCompat="@drawable/btn_detection_mode"/>
+            app:srcCompat="@drawable/btn_detection_mode"
+            android:onClick="onDetectionModeClick"/>
     </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>

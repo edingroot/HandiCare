@@ -1,4 +1,4 @@
-package tw.cchi.whisttherapist;
+package tw.cchi.whisttherapist.activity;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -21,10 +21,13 @@ import org.honorato.multistatetogglebutton.MultiStateToggleButton;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import cn.iwgang.countdownview.CountdownView;
+import tw.cchi.whisttherapist.Constants;
+import tw.cchi.whisttherapist.GlobalVariable;
+import tw.cchi.whisttherapist.R;
 import tw.cchi.whisttherapist.eshock.AcupStorage;
 import tw.cchi.whisttherapist.eshock.DeviceAcup;
 
-public class MainActivity extends AppCompatActivity {
+public class ShockActivity extends AppCompatActivity {
     private static final String ACTION_USB_PERMISSION = "tw.cchi.USB_PERMISSION";
 
     private final BroadcastReceiver mUsbReceiver = new UsbBroadcastReceiver();
@@ -43,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_shock);
         ButterKnife.bind(this);
 
         this.globalVar = (GlobalVariable) getApplicationContext();
@@ -78,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (!mDevAcup.connect())
-                    Toast.makeText(MainActivity.this, getString(R.string.usb_not_found), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ShockActivity.this, getString(R.string.usb_not_found), Toast.LENGTH_SHORT).show();
 
                 if (isChecked) {
                     boolean[] selectedStatus = new boolean[Constants.SHOCK_MODE_TITLES.length];
@@ -206,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
             UsbDevice device;
             String action = intent.getAction();
 
-            if (action.equals(MainActivity.ACTION_USB_PERMISSION)) {
+            if (action.equals(ShockActivity.ACTION_USB_PERMISSION)) {
                 synchronized (this) {
                     device = intent.getParcelableExtra("device");
                     if (intent.getBooleanExtra("permission", false)) {
@@ -246,9 +249,9 @@ public class MainActivity extends AppCompatActivity {
                         mDevAcup.mUsbManager.requestPermission(
                                 device,
                                 PendingIntent.getBroadcast(
-                                        MainActivity.this,
+                                        ShockActivity.this,
                                         0,
-                                        new Intent(MainActivity.ACTION_USB_PERMISSION), PendingIntent.FLAG_ONE_SHOT
+                                        new Intent(ShockActivity.ACTION_USB_PERMISSION), PendingIntent.FLAG_ONE_SHOT
                                 )
                         );
                     } else if (device != null) {

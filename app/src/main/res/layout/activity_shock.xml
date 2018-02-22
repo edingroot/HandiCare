@@ -10,6 +10,7 @@
     tools:context=".activity.ShockActivity">
 
     <RelativeLayout
+        android:id="@+id/relativeLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
@@ -33,74 +34,69 @@
 
     </RelativeLayout>
 
-    <RelativeLayout
-        android:id="@+id/relativeLayout"
-        android:layout_width="match_parent"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginBottom="24dp"
-        android:layout_marginTop="32dp"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/tableLayout"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.53999996">
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout">
 
-        <LinearLayout
-            android:id="@+id/layout1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:orientation="horizontal"
-            android:paddingBottom="32dp"
-            android:paddingTop="32dp">
+        <ImageView
+            android:id="@+id/imgLight"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/btn_light"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginEnd="12dp"
-                android:text="剩餘時間"
-                android:textSize="18sp"/>
+        <ImageView
+            android:id="@+id/imgNormal"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/btn_normal"
+            app:layout_constraintEnd_toStartOf="@+id/imgIntense"
+            app:layout_constraintStart_toEndOf="@+id/imgLight"/>
 
-            <cn.iwgang.countdownview.CountdownView
-                android:id="@+id/countdownShockPower"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                app:isHideTimeBackground="true"
-                app:isShowDay="false"
-                app:isShowHour="false"
-                app:isShowMillisecond="false"
-                app:isShowMinute="true"
-                app:isShowSecond="true"
-                app:isTimeTextBold="true"
-                app:suffixGravity="bottom"
-                app:suffixHour="時"
-                app:suffixMillisecond="毫秒"
-                app:suffixMinute="分"
-                app:suffixSecond="秒"
-                app:suffixTextColor="#000000"
-                app:suffixTextSize="14sp"
-                app:timeTextColor="#000000"
-                app:timeTextSize="30sp"/>
+        <ImageView
+            android:id="@+id/imgIntense"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/btn_intense"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 
-        </LinearLayout>
+    </android.support.constraint.ConstraintLayout>
 
-        <org.honorato.multistatetogglebutton.MultiStateToggleButton
-            android:id="@+id/multiToggleShockMode"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/layout1"
-            android:layout_centerInParent="true"
-            mstb:mstbPrimaryColor="@color/inactiveGrayDark"
-            mstb:mstbSecondaryColor="@color/inactiveGray"
-            mstb:values="@array/test_array"/>
-
-    </RelativeLayout>
+    <cn.iwgang.countdownview.CountdownView
+        android:id="@+id/countdownShockPower"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:isHideTimeBackground="true"
+        app:isShowDay="false"
+        app:isShowHour="false"
+        app:isShowMillisecond="false"
+        app:isShowMinute="true"
+        app:isShowSecond="true"
+        app:isTimeTextBold="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
+        app:suffixGravity="bottom"
+        app:suffixHour="時"
+        app:suffixMillisecond="毫秒"
+        app:suffixMinute="分"
+        app:suffixSecond="秒"
+        app:suffixTextColor="#000000"
+        app:suffixTextSize="14sp"
+        app:timeTextColor="#000000"
+        app:timeTextSize="30sp"/>
 
     <TableLayout
         android:id="@+id/tableLayout"
@@ -108,23 +104,15 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_marginBottom="8dp"
-        android:visibility="invisible"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/relativeLayout"
-        app:layout_constraintVertical_bias="1.0">
+        app:layout_constraintStart_toStartOf="parent">
 
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="強 度"
-                android:textSize="24sp"/>
 
             <SeekBar
                 android:id="@+id/seekStrength"
@@ -153,13 +141,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp">
 
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="頻 率"
-                android:textSize="24sp"/>
-
             <SeekBar
                 android:id="@+id/seekFreq"
                 style="@style/Widget.AppCompat.SeekBar.Discrete"
@@ -186,21 +167,6 @@
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp">
-
-            <ToggleButton
-                android:id="@+id/togglePower"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_span="3"
-                android:layout_weight="1"
-                android:checked="false"/>
-
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:layout_marginTop="14dp">
 
             <View
@@ -210,5 +176,16 @@
         </TableRow>
 
     </TableLayout>
+
+    <ImageView
+        android:id="@+id/imgStart"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/btn_start"
+        app:layout_constraintBottom_toTopOf="@+id/tableLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/countdownShockPower"/>
 
 </android.support.constraint.ConstraintLayout>

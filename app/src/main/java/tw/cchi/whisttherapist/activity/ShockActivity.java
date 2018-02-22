@@ -34,8 +34,7 @@ public class ShockActivity extends AppCompatActivity {
     public DeviceAcup mDevAcup;
     private GlobalVariable globalVar;
 
-    @BindView(R.id.countdownShockPower) CountdownView countdownShockPower;
-    @BindView(R.id.multiToggleShockMode) MultiStateToggleButton multiToggleShockMode;
+//    @BindView(R.id.countdownShockPower) CountdownView countdownShockPower;
 
     @BindView(R.id.seekStrength) SeekBar seekStrength;
     @BindView(R.id.txtStrengthVal) TextView txtStrengthVal;
@@ -67,15 +66,14 @@ public class ShockActivity extends AppCompatActivity {
     }
 
     private void initComponents() {
-        multiToggleShockMode.setElements(Constants.SHOCK_MODE_TITLES);
-        multiToggleShockMode.setOnValueChangedListener(new org.honorato.multistatetogglebutton.ToggleButton.OnValueChangedListener() {
-            @Override
-            public void onValueChanged(int position) {
-                mDevAcup.setStrength(Constants.SHOCK_MODE_STRENGTHS[position]);
-                mDevAcup.setFrequency(Constants.SHOCK_MODE_FREQS[position]);
-                updateDeviceControls();
-            }
-        });
+//        multiToggleShockMode.setOnValueChangedListener(new org.honorato.multistatetogglebutton.ToggleButton.OnValueChangedListener() {
+//            @Override
+//            public void onValueChanged(int position) {
+//                mDevAcup.setStrength(Constants.SHOCK_MODE_STRENGTHS[position]);
+//                mDevAcup.setFrequency(Constants.SHOCK_MODE_FREQS[position]);
+//                updateDeviceControls();
+//            }
+//        });
 
         togglePower.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -86,8 +84,8 @@ public class ShockActivity extends AppCompatActivity {
                 if (isChecked) {
                     boolean[] selectedStatus = new boolean[Constants.SHOCK_MODE_TITLES.length];
                     selectedStatus[0] = true;
-                    multiToggleShockMode.setStates(selectedStatus);
-                    countdownShockPower.start(Constants.SHOCK_POWER_COUNTDOWN_SECONDS * 1000);
+//                    multiToggleShockMode.setStates(selectedStatus);
+//                    countdownShockPower.start(Constants.SHOCK_POWER_COUNTDOWN_SECONDS * 1000);
                     mDevAcup.powerOn();
                 } else {
                     mDevAcup.powerOff();
@@ -145,13 +143,13 @@ public class ShockActivity extends AppCompatActivity {
             }
         });
 
-        countdownShockPower.setOnCountdownEndListener(new CountdownView.OnCountdownEndListener() {
-            @Override
-            public void onEnd(CountdownView cv) {
-                mDevAcup.powerOff();
-                updateDeviceControls();
-            }
-        });
+//        countdownShockPower.setOnCountdownEndListener(new CountdownView.OnCountdownEndListener() {
+//            @Override
+//            public void onEnd(CountdownView cv) {
+//                mDevAcup.powerOff();
+//                updateDeviceControls();
+//            }
+//        });
 
         updateDeviceControls();
     }
@@ -167,8 +165,8 @@ public class ShockActivity extends AppCompatActivity {
         } else {
             togglePower.setChecked(false);
             setShockModeToggleState(false);
-            countdownShockPower.stop();
-            countdownShockPower.updateShow(0);
+//            countdownShockPower.stop();
+//            countdownShockPower.updateShow(0);
             strength = 0;
             frequency = 0;
         }
@@ -180,12 +178,12 @@ public class ShockActivity extends AppCompatActivity {
 
     private void setShockModeToggleState(boolean enabled) {
         if (enabled) {
-            multiToggleShockMode.setColorRes(R.color.colorPrimary, android.R.color.white);
-            multiToggleShockMode.setEnabled(true);
+//            multiToggleShockMode.setColorRes(R.color.colorPrimary, android.R.color.white);
+//            multiToggleShockMode.setEnabled(true);
         } else {
-            multiToggleShockMode.setStates(new boolean[Constants.SHOCK_MODE_TITLES.length]);
-            multiToggleShockMode.setColorRes(R.color.inactiveGrayDark, R.color.inactiveGray);
-            multiToggleShockMode.setEnabled(false);
+//            multiToggleShockMode.setStates(new boolean[Constants.SHOCK_MODE_TITLES.length]);
+//            multiToggleShockMode.setColorRes(R.color.inactiveGrayDark, R.color.inactiveGray);
+//            multiToggleShockMode.setEnabled(false);
         }
     }
 

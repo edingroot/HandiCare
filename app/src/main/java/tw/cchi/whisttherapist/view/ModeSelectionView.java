@@ -13,7 +13,7 @@ import butterknife.ButterKnife;
 import tw.cchi.whisttherapist.R;
 
 public class ModeSelectionView extends ConstraintLayout {
-    private static final float BUTTON_ZOOM_SCALE = 1.3f;
+    private static final float BUTTON_ZOOM_SCALE = 1.5f;
     private static final int BUTTON_ZOOM_DURATION = 80;
 
     private OnSelectionChangeListener onSelectionChangeListener;
@@ -82,6 +82,8 @@ public class ModeSelectionView extends ConstraintLayout {
         scaleAnimation.setDuration(BUTTON_ZOOM_DURATION);
         scaleAnimation.setFillAfter(true);
         buttons[selectedIndex].startAnimation(scaleAnimation);
+
+        onSelectionChangeListener.onChange(selectedIndex);
     }
 
     public int getSelectedIndex() {

@@ -36,7 +36,7 @@
 
     <tw.cchi.whisttherapist.view.ModeSelectionView
         android:id="@+id/modeSelectionView"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="24dp"
         android:layout_marginStart="24dp"
@@ -49,7 +49,7 @@
         android:id="@+id/countdownShockPower"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
         app:isHideTimeBackground="true"
         app:isShowDay="false"
         app:isShowHour="false"

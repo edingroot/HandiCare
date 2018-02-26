@@ -29,6 +29,8 @@
         <activity android:name=".activity.ShockActivity"/>
         <activity android:name=".activity.MenuActivity">
         </activity>
+        <activity android:name=".activity.VibrationActivity">
+        </activity>
     </application>
 
 </manifest>

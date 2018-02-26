@@ -18,7 +18,7 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     public void onVibrationModeClick(View v) {
-
+        startActivity(new Intent(MenuActivity.this, VibrationActivity.class));
     }
 
     public void onShockModeClick(View v) {

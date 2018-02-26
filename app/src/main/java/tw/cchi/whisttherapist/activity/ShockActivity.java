@@ -26,6 +26,7 @@ import tw.cchi.whisttherapist.GlobalVariable;
 import tw.cchi.whisttherapist.R;
 import tw.cchi.whisttherapist.eshock.AcupStorage;
 import tw.cchi.whisttherapist.eshock.DeviceAcup;
+import tw.cchi.whisttherapist.view.ModeSelectionView;
 
 public class ShockActivity extends AppCompatActivity {
     private static final String ACTION_USB_PERMISSION = "tw.cchi.USB_PERMISSION";
@@ -35,7 +36,7 @@ public class ShockActivity extends AppCompatActivity {
     private GlobalVariable globalVar;
 
 //    @BindView(R.id.countdownShockPower) CountdownView countdownShockPower;
-
+    @BindView(R.id.modeSelectionView) ModeSelectionView modeSelectionView;
     @BindView(R.id.seekStrength) SeekBar seekStrength;
     @BindView(R.id.txtStrengthVal) TextView txtStrengthVal;
     @BindView(R.id.seekFreq) SeekBar seekFreq;
@@ -66,14 +67,14 @@ public class ShockActivity extends AppCompatActivity {
     }
 
     private void initComponents() {
-//        multiToggleShockMode.setOnValueChangedListener(new org.honorato.multistatetogglebutton.ToggleButton.OnValueChangedListener() {
-//            @Override
-//            public void onValueChanged(int position) {
-//                mDevAcup.setStrength(Constants.SHOCK_MODE_STRENGTHS[position]);
-//                mDevAcup.setFrequency(Constants.SHOCK_MODE_FREQS[position]);
-//                updateDeviceControls();
-//            }
-//        });
+        modeSelectionView.setOnSelectionChangeListener(new ModeSelectionView.OnSelectionChangeListener() {
+            @Override
+            public void onChange(int selectedIndex) {
+                mDevAcup.setStrength(Constants.SHOCK_MODE_STRENGTHS[selectedIndex]);
+                mDevAcup.setFrequency(Constants.SHOCK_MODE_FREQS[selectedIndex]);
+                updateDeviceControls();
+            }
+        });
 
         togglePower.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -82,9 +83,7 @@ public class ShockActivity extends AppCompatActivity {
                     Toast.makeText(ShockActivity.this, getString(R.string.usb_not_found), Toast.LENGTH_SHORT).show();
 
                 if (isChecked) {
-                    boolean[] selectedStatus = new boolean[Constants.SHOCK_MODE_TITLES.length];
-                    selectedStatus[0] = true;
-//                    multiToggleShockMode.setStates(selectedStatus);
+                    modeSelectionView.setSelectedIndex(0);
 //                    countdownShockPower.start(Constants.SHOCK_POWER_COUNTDOWN_SECONDS * 1000);
                     mDevAcup.powerOn();
                 } else {

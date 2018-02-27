@@ -49,7 +49,7 @@
         android:id="@+id/countdownShockPower"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="24dp"
         app:isHideTimeBackground="true"
         app:isShowDay="false"
         app:isShowHour="false"
@@ -70,12 +70,68 @@
         app:timeTextColor="#000000"
         app:timeTextSize="30sp"/>
 
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/tableLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/countdownShockPower">
+
+        <ToggleButton
+            android:id="@+id/togglePower"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/bg_toggle_power"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:textOff=""
+            android:textOn=""/>
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="190dp"
+            android:layout_height="190dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:scaleType="fitCenter"
+            mstb:srcCompat="@drawable/btn_start_bg"/>
+
+        <at.grabner.circleprogress.CircleProgressView
+            android:id="@+id/circleView"
+            android:layout_width="210dp"
+            android:layout_height="210dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            app:cpv_autoTextSize="true"
+            app:cpv_barColor="@color/colorPrimary"
+            app:cpv_barWidth="6dp"
+            app:cpv_innerContourSize="0dp"
+            app:cpv_maxValue="100"
+            app:cpv_outerContourSize="0dp"
+            app:cpv_rimColor="@color/colorPrimaryLight"
+            app:cpv_rimWidth="6dp"
+            app:cpv_seekMode="false"
+            app:cpv_showUnit="false"
+            app:cpv_spinColor="@color/colorPrimary"
+            app:cpv_text=""
+            app:cpv_textMode="Text"
+            app:cpv_value="10"/>
+
+    </RelativeLayout>
+
     <TableLayout
         android:id="@+id/tableLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="32dp"
         android:layout_marginEnd="24dp"
         android:layout_marginStart="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -136,48 +192,6 @@
 
         </TableRow>
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp">
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="30dp"/>
-
-        </TableRow>
-
     </TableLayout>
-
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/tableLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/countdownShockPower">
-
-        <ToggleButton
-            android:id="@+id/togglePower"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:textOn=""
-            android:textOff=""
-            android:focusable="false"
-            android:focusableInTouchMode="false"
-            android:background="@drawable/bg_toggle_power"/>
-
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="190dp"
-            android:layout_height="190dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:scaleType="fitCenter"
-            mstb:srcCompat="@drawable/btn_start_bg"/>
-
-    </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>

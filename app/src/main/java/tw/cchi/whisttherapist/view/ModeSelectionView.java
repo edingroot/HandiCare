@@ -112,7 +112,8 @@ public class ModeSelectionView extends ConstraintLayout {
         }
 
         // Fire event
-        onSelectionChangeListener.onChange(newIndex);
+        if (onSelectionChangeListener != null)
+            onSelectionChangeListener.onChange(newIndex);
         selectedIndex = newIndex;
     }
 

@@ -89,9 +89,11 @@ public class ShockActivity extends AppCompatActivity {
                 if (selectedIndex == -1)
                     return;
 
-                mDevAcup.setStrength(Constants.SHOCK_MODE_STRENGTHS[selectedIndex]);
-                mDevAcup.setFrequency(Constants.SHOCK_MODE_FREQS[selectedIndex]);
-                updateDeviceControls();
+                if (mDevAcup.isConnected()) {
+                    mDevAcup.setStrength(Constants.SHOCK_MODE_STRENGTHS[selectedIndex]);
+                    mDevAcup.setFrequency(Constants.SHOCK_MODE_FREQS[selectedIndex]);
+                    updateDeviceControls();
+                }
             }
         });
 

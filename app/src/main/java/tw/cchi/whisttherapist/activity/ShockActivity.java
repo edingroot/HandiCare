@@ -8,6 +8,8 @@ import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.CompoundButton;
@@ -16,11 +18,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import org.honorato.multistatetogglebutton.MultiStateToggleButton;
-
+import at.grabner.circleprogress.CircleProgressView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import cn.iwgang.countdownview.CountdownView;
 import tw.cchi.whisttherapist.Constants;
 import tw.cchi.whisttherapist.GlobalVariable;
 import tw.cchi.whisttherapist.R;
@@ -30,18 +30,24 @@ import tw.cchi.whisttherapist.view.ModeSelectionView;
 
 public class ShockActivity extends AppCompatActivity {
     private static final String ACTION_USB_PERMISSION = "tw.cchi.USB_PERMISSION";
+    private static final long TIMER_TICK_INTERVAL = 20; // ms
 
     private final BroadcastReceiver mUsbReceiver = new UsbBroadcastReceiver();
     public DeviceAcup mDevAcup;
     private GlobalVariable globalVar;
+    private Handler taskHandler;
+    private Runnable timerRunnable;
+    private float remainingSeconds = 0;
+    private int initialSeconds = 0;
+    private boolean timerRunning = false;
 
-//    @BindView(R.id.countdownShockPower) CountdownView countdownShockPower;
     @BindView(R.id.modeSelectionView) ModeSelectionView modeSelectionView;
+    @BindView(R.id.togglePower) ToggleButton togglePower;
+    @BindView(R.id.circleProgressView) CircleProgressView circleProgressView;
     @BindView(R.id.seekStrength) SeekBar seekStrength;
     @BindView(R.id.txtStrengthVal) TextView txtStrengthVal;
     @BindView(R.id.seekFreq) SeekBar seekFreq;
     @BindView(R.id.txtFreqVal) TextView txtFreqVal;
-    @BindView(R.id.togglePower) ToggleButton togglePower;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +69,8 @@ public class ShockActivity extends AppCompatActivity {
         filterAttachedDetached.addAction("android.intent.action.BATTERY_CHANGED");
         registerReceiver(this.mUsbReceiver, filterAttachedDetached);
 
+        taskHandler = new Handler(Looper.getMainLooper());
+
         initComponents();
     }
 
@@ -70,11 +78,30 @@ public class ShockActivity extends AppCompatActivity {
         modeSelectionView.setOnSelectionChangeListener(new ModeSelectionView.OnSelectionChangeListener() {
             @Override
             public void onChange(int selectedIndex) {
+                if (selectedIndex == -1)
+                    return;
+
                 mDevAcup.setStrength(Constants.SHOCK_MODE_STRENGTHS[selectedIndex]);
                 mDevAcup.setFrequency(Constants.SHOCK_MODE_FREQS[selectedIndex]);
                 updateDeviceControls();
             }
         });
+
+        timerRunnable = new Runnable() {
+            @Override
+            public void run() {
+                remainingSeconds -= (float) TIMER_TICK_INTERVAL / 1000;
+                if (remainingSeconds <= 0) {
+                    timerRunning = false;
+                    onPowerTimeEnd();
+                }
+
+                if (timerRunning) {
+                    circleProgressView.setValue(initialSeconds - remainingSeconds);
+                    taskHandler.postDelayed(timerRunnable, TIMER_TICK_INTERVAL);
+                }
+            }
+        };
 
         togglePower.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -83,11 +110,16 @@ public class ShockActivity extends AppCompatActivity {
                     Toast.makeText(ShockActivity.this, getString(R.string.usb_not_found), Toast.LENGTH_SHORT).show();
 
                 if (isChecked) {
-                    modeSelectionView.setSelectedIndex(0);
-//                    countdownShockPower.start(Constants.SHOCK_POWER_COUNTDOWN_SECONDS * 1000);
+                    // Turn on
+                    if (modeSelectionView.getSelectedIndex() == -1)
+                        modeSelectionView.setSelectedIndex(0);
                     mDevAcup.powerOn();
+                    // TODO: calculate the amount of seconds
+                    startPowerTimer(20);
                 } else {
+                    // Turn off
                     mDevAcup.powerOff();
+                    stopPowerTimer();
                 }
 
                 updateDeviceControls();
@@ -142,14 +174,29 @@ public class ShockActivity extends AppCompatActivity {
             }
         });
 
-//        countdownShockPower.setOnCountdownEndListener(new CountdownView.OnCountdownEndListener() {
-//            @Override
-//            public void onEnd(CountdownView cv) {
-//                mDevAcup.powerOff();
-//                updateDeviceControls();
-//            }
-//        });
+        updateDeviceControls();
+    }
 
+    private void startPowerTimer(int seconds) {
+        timerRunning = true;
+        initialSeconds = seconds;
+        remainingSeconds = seconds;
+        circleProgressView.setMaxValue(initialSeconds);
+        circleProgressView.setValue(0);
+        taskHandler.postDelayed(timerRunnable, TIMER_TICK_INTERVAL);
+        System.out.println("postDelayed");
+    }
+
+    private void stopPowerTimer() {
+        timerRunning = false;
+        initialSeconds = 0;
+        remainingSeconds = 0;
+        circleProgressView.setValue(0);
+        taskHandler.removeCallbacks(timerRunnable);
+    }
+
+    private void onPowerTimeEnd() {
+        mDevAcup.powerOff();
         updateDeviceControls();
     }
 
@@ -164,10 +211,10 @@ public class ShockActivity extends AppCompatActivity {
         } else {
             togglePower.setChecked(false);
             setShockModeToggleState(false);
-//            countdownShockPower.stop();
-//            countdownShockPower.updateShow(0);
+            stopPowerTimer();
             strength = 0;
             frequency = 0;
+            modeSelectionView.setSelectedIndex(-1);
         }
         seekStrength.setProgress(strength);
         seekFreq.setProgress(frequency);

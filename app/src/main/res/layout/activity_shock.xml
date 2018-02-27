@@ -104,7 +104,7 @@
             app:srcCompat="@drawable/btn_shockstart_bg"/>
 
         <at.grabner.circleprogress.CircleProgressView
-            android:id="@+id/circleView"
+            android:id="@+id/circleProgressView"
             android:layout_width="210dp"
             android:layout_height="210dp"
             android:layout_centerHorizontal="true"
@@ -121,7 +121,7 @@
             app:cpv_showUnit="false"
             app:cpv_text=""
             app:cpv_textMode="Text"
-            app:cpv_value="10"/>
+            app:cpv_value="0"/>
 
     </RelativeLayout>
 

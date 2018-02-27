@@ -63,6 +63,10 @@ public class ModeSelectionView extends ConstraintLayout {
         imgIntense.setOnClickListener(onButtonClickListener);
     }
 
+    /**
+     *
+     * @param newIndex index = 0, 1, 2; set to -1 to deselect all
+     */
     public void setSelectedIndex(int newIndex) {
         // Zoom out animation for the previous selected button
         if (selectedIndex != -1) {
@@ -73,17 +77,20 @@ public class ModeSelectionView extends ConstraintLayout {
             scaleAnimation.setFillAfter(true);
             buttons[selectedIndex].startAnimation(scaleAnimation);
         }
-        selectedIndex = newIndex;
 
         // Zoom in animation for the new selected button
-        ScaleAnimation scaleAnimation = new ScaleAnimation(
-                1f, BUTTON_ZOOM_SCALE, 1f, BUTTON_ZOOM_SCALE, ScaleAnimation.RELATIVE_TO_SELF,
-                0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
-        scaleAnimation.setDuration(BUTTON_ZOOM_DURATION);
-        scaleAnimation.setFillAfter(true);
-        buttons[selectedIndex].startAnimation(scaleAnimation);
+        if (newIndex != -1) {
+            ScaleAnimation scaleAnimation = new ScaleAnimation(
+                    1f, BUTTON_ZOOM_SCALE, 1f, BUTTON_ZOOM_SCALE, ScaleAnimation.RELATIVE_TO_SELF,
+                    0.5f, ScaleAnimation.RELATIVE_TO_SELF, 0.5f);
+            scaleAnimation.setDuration(BUTTON_ZOOM_DURATION);
+            scaleAnimation.setFillAfter(true);
+            buttons[newIndex].startAnimation(scaleAnimation);
+        }
 
-        onSelectionChangeListener.onChange(selectedIndex);
+        // Fire event
+        onSelectionChangeListener.onChange(newIndex);
+        selectedIndex = newIndex;
     }
 
     public int getSelectedIndex() {

@@ -62,7 +62,8 @@
             android:layout_width="30sp"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:theme="@style/TimerNumberPicker"/>
+            android:theme="@style/TimerNumberPicker"
+            android:descendantFocusability="blocksDescendants"/>
 
         <TextView
             android:id="@+id/text1"
@@ -81,7 +82,8 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toEndOf="@id/text1"
-            android:theme="@style/TimerNumberPicker"/>
+            android:theme="@style/TimerNumberPicker"
+            android:descendantFocusability="blocksDescendants"/>
 
     </RelativeLayout>
 

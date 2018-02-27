@@ -13,6 +13,7 @@ import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.CompoundButton;
+import android.widget.NumberPicker;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,15 +36,19 @@ public class ShockActivity extends AppCompatActivity {
     private final BroadcastReceiver mUsbReceiver = new UsbBroadcastReceiver();
     public DeviceAcup mDevAcup;
     private GlobalVariable globalVar;
-    private Handler taskHandler;
+    private Handler taskHandler = new Handler(Looper.getMainLooper());
     private Runnable timerRunnable;
     private float remainingSeconds = 0;
     private int initialSeconds = 0;
     private boolean timerRunning = false;
 
     @BindView(R.id.modeSelectionView) ModeSelectionView modeSelectionView;
+    @BindView(R.id.minutesPicker) NumberPicker minutesPicker;
+    @BindView(R.id.secondsPicker) NumberPicker secondsPicker;
+
     @BindView(R.id.togglePower) ToggleButton togglePower;
     @BindView(R.id.circleProgressView) CircleProgressView circleProgressView;
+
     @BindView(R.id.seekStrength) SeekBar seekStrength;
     @BindView(R.id.txtStrengthVal) TextView txtStrengthVal;
     @BindView(R.id.seekFreq) SeekBar seekFreq;
@@ -69,12 +74,15 @@ public class ShockActivity extends AppCompatActivity {
         filterAttachedDetached.addAction("android.intent.action.BATTERY_CHANGED");
         registerReceiver(this.mUsbReceiver, filterAttachedDetached);
 
-        taskHandler = new Handler(Looper.getMainLooper());
-
         initComponents();
     }
 
     private void initComponents() {
+        minutesPicker.setMinValue(0);
+        minutesPicker.setMaxValue(10);
+        secondsPicker.setMinValue(1);
+        secondsPicker.setMaxValue(59);
+
         modeSelectionView.setOnSelectionChangeListener(new ModeSelectionView.OnSelectionChangeListener() {
             @Override
             public void onChange(int selectedIndex) {
@@ -114,8 +122,9 @@ public class ShockActivity extends AppCompatActivity {
                     if (modeSelectionView.getSelectedIndex() == -1)
                         modeSelectionView.setSelectedIndex(0);
                     mDevAcup.powerOn();
-                    // TODO: calculate the amount of seconds
-                    startPowerTimer(20);
+
+                    int seconds = minutesPicker.getValue() * 60 + secondsPicker.getValue();
+                    startPowerTimer(seconds);
                 } else {
                     // Turn off
                     mDevAcup.powerOff();
@@ -205,12 +214,10 @@ public class ShockActivity extends AppCompatActivity {
 
         if (globalVar.bPower) {
             togglePower.setChecked(true);
-            setShockModeToggleState(true);
             strength = globalVar.nX;
             frequency = globalVar.nY;
         } else {
             togglePower.setChecked(false);
-            setShockModeToggleState(false);
             stopPowerTimer();
             strength = 0;
             frequency = 0;
@@ -220,17 +227,6 @@ public class ShockActivity extends AppCompatActivity {
         seekFreq.setProgress(frequency);
         txtStrengthVal.setText(String.valueOf(strength));
         txtFreqVal.setText(String.valueOf(frequency));
-    }
-
-    private void setShockModeToggleState(boolean enabled) {
-        if (enabled) {
-//            multiToggleShockMode.setColorRes(R.color.colorPrimary, android.R.color.white);
-//            multiToggleShockMode.setEnabled(true);
-        } else {
-//            multiToggleShockMode.setStates(new boolean[Constants.SHOCK_MODE_TITLES.length]);
-//            multiToggleShockMode.setColorRes(R.color.inactiveGrayDark, R.color.inactiveGray);
-//            multiToggleShockMode.setEnabled(false);
-        }
     }
 
     @Override

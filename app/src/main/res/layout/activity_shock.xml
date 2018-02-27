@@ -45,32 +45,49 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/relativeLayout"/>
 
-    <cn.iwgang.countdownview.CountdownView
-        android:id="@+id/countdownShockPower"
+    <RelativeLayout
+        android:id="@+id/relativeLayout3"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        app:isHideTimeBackground="true"
-        app:isShowDay="false"
-        app:isShowHour="false"
-        app:isShowMillisecond="false"
-        app:isShowMinute="true"
-        app:isShowSecond="true"
-        app:isTimeTextBold="true"
+        android:layout_height="71dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/relativeLayout2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/modeSelectionView"
-        app:suffixGravity="bottom"
-        app:suffixHour="時"
-        app:suffixMillisecond="毫秒"
-        app:suffixMinute="分"
-        app:suffixSecond="秒"
-        app:suffixTextColor="#000000"
-        app:suffixTextSize="14sp"
-        app:timeTextColor="#000000"
-        app:timeTextSize="30sp"/>
+        app:layout_constraintTop_toBottomOf="@+id/modeSelectionView">
+
+        <NumberPicker
+            android:id="@+id/minutesPicker"
+            android:layout_width="30sp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:theme="@style/TimerNumberPicker"/>
+
+        <TextView
+            android:id="@+id/text1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="12dp"
+            android:layout_marginStart="12dp"
+            android:layout_toEndOf="@id/minutesPicker"
+            android:text=":"
+            android:textSize="22sp"/>
+
+        <NumberPicker
+            android:id="@+id/secondsPicker"
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/text1"
+            android:theme="@style/TimerNumberPicker"/>
+
+    </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/relativeLayout2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
@@ -78,7 +95,7 @@
         app:layout_constraintBottom_toTopOf="@+id/tableLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/countdownShockPower">
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout3">
 
         <ToggleButton
             android:id="@+id/togglePower"

@@ -21,6 +21,9 @@ public class ModeSelectionView extends ConstraintLayout {
     private int selectedIndex = -1;
     private ImageView[] buttons;
 
+    @BindView(R.id.btnModeLeft) ImageView btnModeLeft;
+    @BindView(R.id.btnModeRight) ImageView btnModeRight;
+
     @BindView(R.id.imgLight) ImageView imgLight;
     @BindView(R.id.imgNormal) ImageView imgNormal;
     @BindView(R.id.imgIntense) ImageView imgIntense;
@@ -61,6 +64,26 @@ public class ModeSelectionView extends ConstraintLayout {
         imgLight.setOnClickListener(onButtonClickListener);
         imgNormal.setOnClickListener(onButtonClickListener);
         imgIntense.setOnClickListener(onButtonClickListener);
+
+        btnModeLeft.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (selectedIndex == -1)
+                    setSelectedIndex(0);
+                else if (selectedIndex > 0)
+                    setSelectedIndex(selectedIndex - 1);
+            }
+        });
+
+        btnModeRight.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (selectedIndex == -1)
+                    setSelectedIndex(buttons.length - 1);
+                else if (selectedIndex < buttons.length - 1)
+                    setSelectedIndex(selectedIndex + 1);
+            }
+        });
     }
 
     /**

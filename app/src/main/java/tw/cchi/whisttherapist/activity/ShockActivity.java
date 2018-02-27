@@ -80,7 +80,7 @@ public class ShockActivity extends AppCompatActivity {
     private void initComponents() {
         minutesPicker.setMinValue(0);
         minutesPicker.setMaxValue(10);
-        secondsPicker.setMinValue(1);
+        secondsPicker.setMinValue(0);
         secondsPicker.setMaxValue(59);
 
         modeSelectionView.setOnSelectionChangeListener(new ModeSelectionView.OnSelectionChangeListener() {
@@ -119,12 +119,14 @@ public class ShockActivity extends AppCompatActivity {
 
                 if (isChecked) {
                     // Turn on
+                    int seconds = minutesPicker.getValue() * 60 + secondsPicker.getValue();
+                    if (seconds == 0)
+                        return;
+
+                    startPowerTimer(seconds);
                     if (modeSelectionView.getSelectedIndex() == -1)
                         modeSelectionView.setSelectedIndex(0);
                     mDevAcup.powerOn();
-
-                    int seconds = minutesPicker.getValue() * 60 + secondsPicker.getValue();
-                    startPowerTimer(seconds);
                 } else {
                     // Turn off
                     mDevAcup.powerOff();
@@ -193,7 +195,6 @@ public class ShockActivity extends AppCompatActivity {
         circleProgressView.setMaxValue(initialSeconds);
         circleProgressView.setValue(0);
         taskHandler.postDelayed(timerRunnable, TIMER_TICK_INTERVAL);
-        System.out.println("postDelayed");
     }
 
     private void stopPowerTimer() {

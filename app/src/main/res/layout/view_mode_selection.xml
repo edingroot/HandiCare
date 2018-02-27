@@ -1,34 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ImageView
-        android:id="@+id/imgLight"
-        android:layout_width="90dp"
-        android:layout_height="90dp"
+        android:id="@+id/btnModeLeft"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
         android:layout_alignParentStart="true"
-        android:scaleType="fitCenter"
-        android:src="@drawable/btn_light"/>
+        android:layout_centerVertical="true"
+        app:srcCompat="@drawable/ic_left_arrow"/>
 
     <ImageView
-        android:id="@+id/imgNormal"
-        android:layout_width="90dp"
-        android:layout_height="90dp"
-        android:layout_marginEnd="6dp"
-        android:layout_marginStart="6dp"
-        android:layout_toEndOf="@id/imgLight"
-        android:scaleType="fitCenter"
-        android:src="@drawable/btn_normal"/>
+        android:id="@+id/btnModeRight"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        app:srcCompat="@drawable/ic_right_arrow"/>
 
-    <ImageView
-        android:id="@+id/imgIntense"
-        android:layout_width="90dp"
-        android:layout_height="90dp"
-        android:layout_toEndOf="@id/imgNormal"
-        android:scaleType="fitCenter"
-        android:src="@drawable/btn_intense"/>
+    <RelativeLayout
+        android:id="@+id/layoutModes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="24dp">
+
+        <ImageView
+            android:id="@+id/imgLight"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:layout_alignParentStart="true"
+            android:scaleType="fitCenter"
+            android:src="@drawable/btn_light"/>
+
+        <ImageView
+            android:id="@+id/imgNormal"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginEnd="6dp"
+            android:layout_marginStart="6dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/btn_normal"/>
+
+        <ImageView
+            android:id="@+id/imgIntense"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:layout_alignParentEnd="true"
+            android:scaleType="fitCenter"
+            android:src="@drawable/btn_intense"/>
+
+    </RelativeLayout>
 
 </RelativeLayout>

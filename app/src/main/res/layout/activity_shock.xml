@@ -101,7 +101,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:scaleType="fitCenter"
-            mstb:srcCompat="@drawable/btn_start_bg"/>
+            app:srcCompat="@drawable/btn_shockstart_bg"/>
 
         <at.grabner.circleprogress.CircleProgressView
             android:id="@+id/circleView"
@@ -119,7 +119,6 @@
             app:cpv_rimWidth="6dp"
             app:cpv_seekMode="false"
             app:cpv_showUnit="false"
-            app:cpv_spinColor="@color/colorPrimary"
             app:cpv_text=""
             app:cpv_textMode="Text"
             app:cpv_value="10"/>

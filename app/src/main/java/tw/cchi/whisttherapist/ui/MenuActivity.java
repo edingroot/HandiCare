@@ -1,4 +1,4 @@
-package tw.cchi.whisttherapist.activity;
+package tw.cchi.whisttherapist.ui;
 
 import android.content.Intent;
 import android.os.Bundle;

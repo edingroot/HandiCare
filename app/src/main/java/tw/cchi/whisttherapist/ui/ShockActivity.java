@@ -1,4 +1,4 @@
-package tw.cchi.whisttherapist.activity;
+package tw.cchi.whisttherapist.ui;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -10,7 +10,6 @@ import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.CompoundButton;
 import android.widget.NumberPicker;
@@ -19,23 +18,27 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import javax.inject.Inject;
+
 import at.grabner.circleprogress.CircleProgressView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import tw.cchi.whisttherapist.Constants;
-import tw.cchi.whisttherapist.GlobalVariable;
+import tw.cchi.whisttherapist.MvpApp;
 import tw.cchi.whisttherapist.R;
+import tw.cchi.whisttherapist.base.BaseActivity;
+import tw.cchi.whisttherapist.component.ModeSelectionView;
 import tw.cchi.whisttherapist.eshock.AcupStorage;
 import tw.cchi.whisttherapist.eshock.DeviceAcup;
-import tw.cchi.whisttherapist.view.ModeSelectionView;
 
-public class ShockActivity extends AppCompatActivity {
+public class ShockActivity extends BaseActivity {
     private static final String ACTION_USB_PERMISSION = "tw.cchi.USB_PERMISSION";
     private static final long TIMER_TICK_INTERVAL = 20; // ms
 
-    private final BroadcastReceiver mUsbReceiver = new UsbBroadcastReceiver();
+    @Inject public MvpApp application;
     public DeviceAcup mDevAcup;
-    private GlobalVariable globalVar;
+
+    private final BroadcastReceiver mUsbReceiver = new UsbBroadcastReceiver();
     private Handler taskHandler = new Handler(Looper.getMainLooper());
     private Runnable timerRunnable;
     private float remainingSeconds = 0;
@@ -58,11 +61,11 @@ public class ShockActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shock);
+        getActivityComponent().inject(this);
         ButterKnife.bind(this);
 
-        this.globalVar = (GlobalVariable) getApplicationContext();
         this.mDevAcup = new DeviceAcup(
-                this.globalVar, this,
+                this.application.globalVar, this,
                 (UsbManager) getSystemService(Context.USB_SERVICE)
         );
 
@@ -153,7 +156,7 @@ public class ShockActivity extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                if (globalVar.bPower) {
+                if (application.globalVar.bPower) {
                     progressValue = progressValue == 0 ? 1 : progressValue;
                     mDevAcup.setStrength(progressValue);
                 } else {
@@ -177,7 +180,7 @@ public class ShockActivity extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                if (globalVar.bPower) {
+                if (application.globalVar.bPower) {
                     progressValue = progressValue == 0 ? 1 : progressValue;
                     mDevAcup.setFrequency(progressValue);
                 } else {
@@ -215,10 +218,10 @@ public class ShockActivity extends AppCompatActivity {
     private void updateDeviceControls() {
         int strength, frequency;
 
-        if (globalVar.bPower) {
+        if (application.globalVar.bPower) {
             togglePower.setChecked(true);
-            strength = globalVar.nX;
-            frequency = globalVar.nY;
+            strength = application.globalVar.nX;
+            frequency = application.globalVar.nY;
         } else {
             togglePower.setChecked(false);
             stopPowerTimer();
@@ -236,11 +239,16 @@ public class ShockActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        if (this.globalVar.bPower) {
-            this.globalVar.bPower = false;
+        if (application.globalVar.bPower) {
+            application.globalVar.bPower = false;
             this.mDevAcup.commWithUsbDevice();
         }
         unregisterReceiver(this.mUsbReceiver);
+    }
+
+    @Override
+    protected void setUp() {
+
     }
 
 
@@ -259,18 +267,20 @@ public class ShockActivity extends AppCompatActivity {
                         if (device != null) {
                             Log.d("1", "PERMISSION-" + device);
                         }
+
                         try {
                             Thread.sleep(1000);
+
                             if (mDevAcup.getTheTargetDevice() != null) {
                                 if (mDevAcup.mUsbDevice.getInterfaceCount() > 0) {
                                     mDevAcup.mUsbInterface = mDevAcup.mUsbDevice.getInterface(0);
                                     mDevAcup.mEndpointRead = mDevAcup.mUsbInterface.getEndpoint(0);
                                     mDevAcup.mEndpointWrite = mDevAcup.mUsbInterface.getEndpoint(1);
                                 }
-                                globalVar.bPower = false;
-                                globalVar.nX = 0;
-                                globalVar.nY = 0;
-                                globalVar.nZ = 0;
+                                application.globalVar.bPower = false;
+                                application.globalVar.nX = 0;
+                                application.globalVar.nY = 0;
+                                application.globalVar.nZ = 0;
                                 mDevAcup.commWithUsbDevice();
 
                                 if (AcupStorage.nDeviceType != 0) {
@@ -288,6 +298,7 @@ public class ShockActivity extends AppCompatActivity {
             } else if (action.equals("android.hardware.usb.action.USB_DEVICE_ATTACHED")) {
                 synchronized (this) {
                     device = intent.getParcelableExtra("device");
+
                     if (!intent.getBooleanExtra("permission", false)) {
                         mDevAcup.mUsbManager.requestPermission(
                                 device,

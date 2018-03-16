@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Hand iCare</string>
     <string name="usb_not_found">Device not found, open USB setting?</string>
+    <string name="error_occurred">Error occurred.</string>
 </resources>

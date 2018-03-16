@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gradient_background"
-    tools:context=".activity.ShockActivity">
+    tools:context=".ui.ShockActivity">
 
     <RelativeLayout
         android:id="@+id/relativeLayout"
@@ -34,7 +34,7 @@
 
     </RelativeLayout>
 
-    <tw.cchi.whisttherapist.view.ModeSelectionView
+    <tw.cchi.whisttherapist.component.ModeSelectionView
         android:id="@+id/modeSelectionView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

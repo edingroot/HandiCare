@@ -1,4 +1,4 @@
-package tw.cchi.whisttherapist.view;
+package tw.cchi.whisttherapist.component;
 
 import android.content.Context;
 import android.support.annotation.Nullable;

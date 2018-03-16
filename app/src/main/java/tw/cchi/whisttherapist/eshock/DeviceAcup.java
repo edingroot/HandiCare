@@ -11,8 +11,8 @@ import android.hardware.usb.UsbManager;
 
 import java.nio.ByteBuffer;
 
-import tw.cchi.whisttherapist.GlobalVariable;
-import tw.cchi.whisttherapist.Util;
+import tw.cchi.whisttherapist.MvpApp;
+import tw.cchi.whisttherapist.utils.CommonUtils;
 
 public class DeviceAcup {
     private static final String ACTION_USB_PERMISSION = "shengmao.elecacup.USB_PERMISSION";
@@ -25,7 +25,7 @@ public class DeviceAcup {
     public AcupStorage alg = new AcupStorage();
     private ByteBuffer buffer;
     private byte byProductCode = (byte) 0;
-    private GlobalVariable globalVar;
+    private MvpApp.GlobalVariables globalVar;
     public UsbDeviceConnection mConnection;
     public UsbEndpoint mEndpointRead;
     public UsbEndpoint mEndpointWrite;
@@ -34,7 +34,7 @@ public class DeviceAcup {
     public UsbManager mUsbManager = null;
     private Context main;
 
-    public DeviceAcup(GlobalVariable gv, Context c, UsbManager um) {
+    public DeviceAcup(MvpApp.GlobalVariables gv, Context c, UsbManager um) {
         this.globalVar = gv;
         this.main = c;
         this.mUsbManager = um;
@@ -110,13 +110,13 @@ public class DeviceAcup {
     }
 
     public void setStrength(int strength) {
-        strength = Util.trimValue(strength, 1, 15);
+        strength = CommonUtils.trimValue(strength, 1, 15);
         globalVar.nX = strength & 15;
         commWithUsbDevice();
     }
 
     public void setFrequency(int freq) {
-        freq = Util.trimValue(freq, 1, 15);
+        freq = CommonUtils.trimValue(freq, 1, 15);
         globalVar.nY = freq & 15;
         commWithUsbDevice();
     }

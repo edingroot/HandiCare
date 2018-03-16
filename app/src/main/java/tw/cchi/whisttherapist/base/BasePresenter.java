@@ -2,6 +2,8 @@
 
 package tw.cchi.whisttherapist.base;
 
+import android.content.Context;
+
 import javax.inject.Inject;
 
 import io.reactivex.disposables.CompositeDisposable;
@@ -23,7 +25,7 @@ public class BasePresenter<V extends MvpView> implements MvpPresenter<V> {
 
     @Override
     public void onAttach(V mvpView) {
-        mMvpView = mvpView;
+        this.mMvpView = mvpView;
     }
 
     @Override

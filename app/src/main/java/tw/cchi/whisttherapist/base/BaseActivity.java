@@ -24,7 +24,6 @@ import tw.cchi.whisttherapist.R;
 import tw.cchi.whisttherapist.di.component.ActivityComponent;
 import tw.cchi.whisttherapist.di.component.DaggerActivityComponent;
 import tw.cchi.whisttherapist.di.module.ActivityModule;
-import tw.cchi.whisttherapist.eshock.DeviceAcup;
 import tw.cchi.whisttherapist.utils.CommonUtils;
 
 public abstract class BaseActivity extends AppCompatActivity implements MvpView {

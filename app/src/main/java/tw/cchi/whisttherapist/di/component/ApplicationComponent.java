@@ -8,6 +8,7 @@ import javax.inject.Singleton;
 
 import dagger.Component;
 import tw.cchi.whisttherapist.MvpApp;
+import tw.cchi.whisttherapist.di.ApplicationContext;
 import tw.cchi.whisttherapist.di.module.ApplicationModule;
 
 @Singleton

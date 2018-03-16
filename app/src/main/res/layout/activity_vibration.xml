@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gradient_background"
-    tools:context=".ui.ShockActivity">
+    tools:context=".ui.shock.ShockActivity">
 
     <RelativeLayout
         android:id="@+id/relativeLayout"

@@ -15,7 +15,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import tw.cchi.whisttherapist.MvpApp;
-import tw.cchi.whisttherapist.di.PerActivity;
 import tw.cchi.whisttherapist.utils.CommonUtils;
 
 @Singleton

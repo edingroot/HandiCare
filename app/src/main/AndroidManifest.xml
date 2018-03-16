@@ -26,7 +26,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".ui.ShockActivity"/>
+        <activity android:name=".ui.shock.ShockActivity"/>
         <activity android:name=".ui.MenuActivity">
         </activity>
         <activity android:name=".ui.VibrationActivity">

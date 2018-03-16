@@ -7,6 +7,7 @@ import android.view.View;
 
 import butterknife.ButterKnife;
 import tw.cchi.whisttherapist.R;
+import tw.cchi.whisttherapist.ui.shock.ShockActivity;
 
 public class MenuActivity extends AppCompatActivity {
 

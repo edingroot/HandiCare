@@ -1,6 +1,5 @@
 package tw.cchi.whisttherapist.di.module;
 
-import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 
 import dagger.Module;
@@ -8,8 +7,9 @@ import dagger.Provides;
 import io.reactivex.disposables.CompositeDisposable;
 import tw.cchi.whisttherapist.base.BaseActivity;
 import tw.cchi.whisttherapist.eshock.DeviceAcup;
-import tw.cchi.whisttherapist.ui.ShockPresenter;
-import tw.cchi.whisttherapist.ui.ShockView;
+import tw.cchi.whisttherapist.ui.shock.ShockMvpPresenter;
+import tw.cchi.whisttherapist.ui.shock.ShockMvpView;
+import tw.cchi.whisttherapist.ui.shock.ShockPresenter;
 
 @Module
 public class ActivityModule {
@@ -18,11 +18,6 @@ public class ActivityModule {
 
     public ActivityModule(BaseActivity activity) {
         this.mActivity = activity;
-    }
-
-    @Provides
-    Context provideContext() {
-        return mActivity;
     }
 
     @Provides
@@ -41,7 +36,7 @@ public class ActivityModule {
     }
 
     @Provides
-    ShockPresenter<ShockView> provideShockPresenter(ShockPresenter<ShockView> presenter) {
+    ShockMvpPresenter<ShockMvpView> provideShockPresenter(ShockPresenter<ShockMvpView> presenter) {
         return presenter;
     }
 }

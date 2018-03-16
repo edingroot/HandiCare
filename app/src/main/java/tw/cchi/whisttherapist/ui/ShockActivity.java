@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
-import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -35,10 +34,10 @@ public class ShockActivity extends BaseActivity {
     private static final String ACTION_USB_PERMISSION = "tw.cchi.USB_PERMISSION";
     private static final long TIMER_TICK_INTERVAL = 20; // ms
 
-    @Inject public MvpApp application;
-    public DeviceAcup mDevAcup;
+    @Inject private MvpApp application;
+    @Inject private DeviceAcup mDevAcup;
+    @Inject private BroadcastReceiver mUsbReceiver;
 
-    private final BroadcastReceiver mUsbReceiver = new UsbBroadcastReceiver();
     private Handler taskHandler = new Handler(Looper.getMainLooper());
     private Runnable timerRunnable;
     private float remainingSeconds = 0;
@@ -63,11 +62,6 @@ public class ShockActivity extends BaseActivity {
         setContentView(R.layout.activity_shock);
         getActivityComponent().inject(this);
         ButterKnife.bind(this);
-
-        this.mDevAcup = new DeviceAcup(
-                this.application.globalVar, this,
-                (UsbManager) getSystemService(Context.USB_SERVICE)
-        );
 
         // Register broadcast receiver events
         IntentFilter filterAttachedDetached = new IntentFilter();
@@ -253,6 +247,7 @@ public class ShockActivity extends BaseActivity {
 
 
     class UsbBroadcastReceiver extends BroadcastReceiver {
+        @Inject
         public UsbBroadcastReceiver() {
         }
 

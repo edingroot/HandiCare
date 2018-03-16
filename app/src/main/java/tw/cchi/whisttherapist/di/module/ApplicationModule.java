@@ -2,6 +2,7 @@ package tw.cchi.whisttherapist.di.module;
 
 import android.app.Application;
 import android.content.Context;
+import android.hardware.usb.UsbManager;
 
 import dagger.Module;
 import dagger.Provides;
@@ -29,6 +30,16 @@ public class ApplicationModule {
     @Provides
     MvpApp provideMvcApp() {
         return mvpApp;
+    }
+
+    @Provides
+    MvpApp.GlobalVariables provideGlobalVariables() {
+        return mvpApp.globalVar;
+    }
+
+    @Provides
+    UsbManager provideUsbManager() {
+        return (UsbManager) provideApplication().getSystemService(Context.USB_SERVICE);
     }
 
 }

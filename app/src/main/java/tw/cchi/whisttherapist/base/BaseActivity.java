@@ -16,21 +16,25 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import javax.inject.Inject;
+
 import butterknife.Unbinder;
 import tw.cchi.whisttherapist.MvpApp;
 import tw.cchi.whisttherapist.R;
 import tw.cchi.whisttherapist.di.component.ActivityComponent;
 import tw.cchi.whisttherapist.di.component.DaggerActivityComponent;
 import tw.cchi.whisttherapist.di.module.ActivityModule;
+import tw.cchi.whisttherapist.eshock.DeviceAcup;
 import tw.cchi.whisttherapist.utils.CommonUtils;
 
 public abstract class BaseActivity extends AppCompatActivity implements MvpView {
 
-    private ProgressDialog mProgressDialog;
+    @Inject public MvpApp application;
 
     private ActivityComponent mActivityComponent;
-
     private Unbinder mUnBinder;
+
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,7 +43,6 @@ public abstract class BaseActivity extends AppCompatActivity implements MvpView 
                 .activityModule(new ActivityModule(this))
                 .applicationComponent(((MvpApp) getApplication()).getComponent())
                 .build();
-
     }
 
     public ActivityComponent getActivityComponent() {
@@ -73,11 +76,11 @@ public abstract class BaseActivity extends AppCompatActivity implements MvpView 
     }
 
     private void showSnackBar(String message) {
-        Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content),
-                message, Snackbar.LENGTH_SHORT);
+        Snackbar snackbar = Snackbar.make(
+                findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT);
         View sbView = snackbar.getView();
-        TextView textView = (TextView) sbView
-                .findViewById(android.support.design.R.id.snackbar_text);
+        TextView textView = sbView.findViewById(android.support.design.R.id.snackbar_text);
+
         textView.setTextColor(ContextCompat.getColor(this, android.R.color.white));
         snackbar.show();
     }
@@ -125,7 +128,6 @@ public abstract class BaseActivity extends AppCompatActivity implements MvpView 
 
     @Override
     protected void onDestroy() {
-
         if (mUnBinder != null) {
             mUnBinder.unbind();
         }

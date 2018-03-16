@@ -1,9 +1,13 @@
 package tw.cchi.whisttherapist;
 
 import android.app.Application;
+
+import javax.inject.Inject;
+
 import tw.cchi.whisttherapist.di.component.ApplicationComponent;
 import tw.cchi.whisttherapist.di.component.DaggerApplicationComponent;
 import tw.cchi.whisttherapist.di.module.ApplicationModule;
+import tw.cchi.whisttherapist.eshock.DeviceAcup;
 
 
 public class MvpApp extends Application {
@@ -16,6 +20,7 @@ public class MvpApp extends Application {
     }
 
     public GlobalVariables globalVar = new GlobalVariables();
+    @Inject public DeviceAcup mDevAcup;
 
     private ApplicationComponent mApplicationComponent;
 
@@ -25,7 +30,6 @@ public class MvpApp extends Application {
 
         mApplicationComponent = DaggerApplicationComponent.builder()
                 .applicationModule(new ApplicationModule(this)).build();
-
         mApplicationComponent.inject(this);
     }
 

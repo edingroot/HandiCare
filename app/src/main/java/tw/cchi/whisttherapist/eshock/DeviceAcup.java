@@ -11,9 +11,14 @@ import android.hardware.usb.UsbManager;
 
 import java.nio.ByteBuffer;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import tw.cchi.whisttherapist.MvpApp;
+import tw.cchi.whisttherapist.di.PerActivity;
 import tw.cchi.whisttherapist.utils.CommonUtils;
 
+@Singleton
 public class DeviceAcup {
     private static final String ACTION_USB_PERMISSION = "shengmao.elecacup.USB_PERMISSION";
     private static final int OPT_BATTERY_LOW = 1;
@@ -34,6 +39,7 @@ public class DeviceAcup {
     public UsbManager mUsbManager = null;
     private Context main;
 
+    @Inject
     public DeviceAcup(MvpApp.GlobalVariables gv, Context c, UsbManager um) {
         this.globalVar = gv;
         this.main = c;

@@ -6,15 +6,17 @@ import android.support.v7.app.AppCompatActivity;
 import dagger.Module;
 import dagger.Provides;
 import io.reactivex.disposables.CompositeDisposable;
+import tw.cchi.whisttherapist.base.BaseActivity;
+import tw.cchi.whisttherapist.eshock.DeviceAcup;
 import tw.cchi.whisttherapist.ui.ShockPresenter;
 import tw.cchi.whisttherapist.ui.ShockView;
 
 @Module
 public class ActivityModule {
 
-    private AppCompatActivity mActivity;
+    private BaseActivity mActivity;
 
-    public ActivityModule(AppCompatActivity activity) {
+    public ActivityModule(BaseActivity activity) {
         this.mActivity = activity;
     }
 
@@ -31,6 +33,11 @@ public class ActivityModule {
     @Provides
     CompositeDisposable provideCompositeDisposable() {
         return new CompositeDisposable();
+    }
+
+    @Provides
+    DeviceAcup provideDeviceAcup() {
+        return mActivity.application.mDevAcup;
     }
 
     @Provides

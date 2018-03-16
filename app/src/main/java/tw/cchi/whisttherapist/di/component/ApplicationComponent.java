@@ -2,6 +2,7 @@ package tw.cchi.whisttherapist.di.component;
 
 import android.app.Application;
 import android.content.Context;
+import android.hardware.usb.UsbManager;
 
 import javax.inject.Singleton;
 
@@ -20,5 +21,9 @@ public interface ApplicationComponent {
     Application application();
 
     MvpApp mvpApp();
+
+    MvpApp.GlobalVariables globalVariables();
+
+    UsbManager UsbManager();
 
 }

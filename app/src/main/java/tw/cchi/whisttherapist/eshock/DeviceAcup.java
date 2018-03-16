@@ -136,6 +136,9 @@ public class DeviceAcup {
     }
 
     public void commWithUsbDevice() {
+        if (this.mUsbDevice == null)
+            return;
+
         this.mConnection = this.mUsbManager.openDevice(this.mUsbDevice);
         if (this.mConnection != null) {
             this.globalVar.bUsb = true;

@@ -8,7 +8,7 @@ import javax.inject.Singleton;
 
 import dagger.Component;
 import tw.cchi.whisttherapist.MvpApp;
-import tw.cchi.whisttherapist.di.ApplicationContext;
+import tw.cchi.whisttherapist.di.PresenterHolder;
 import tw.cchi.whisttherapist.di.module.ApplicationModule;
 
 @Singleton
@@ -17,6 +17,7 @@ public interface ApplicationComponent {
 
     void inject(MvpApp app);
 
+    // ----- Methods below are used by Dagger implementation of ActivityComponent ----- //
     Context context();
 
     Application application();
@@ -25,6 +26,8 @@ public interface ApplicationComponent {
 
     MvpApp.GlobalVariables globalVariables();
 
-    UsbManager UsbManager();
+    UsbManager usbManager();
+
+    PresenterHolder presenterHolder();
 
 }

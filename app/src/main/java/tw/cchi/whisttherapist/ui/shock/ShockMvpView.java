@@ -1,6 +1,6 @@
 package tw.cchi.whisttherapist.ui.shock;
 
-import tw.cchi.whisttherapist.base.MvpView;
+import tw.cchi.whisttherapist.ui.base.MvpView;
 
 public interface ShockMvpView extends MvpView {
 

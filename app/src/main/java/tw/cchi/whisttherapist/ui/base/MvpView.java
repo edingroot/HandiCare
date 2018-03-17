@@ -1,4 +1,4 @@
-package tw.cchi.whisttherapist.base;
+package tw.cchi.whisttherapist.ui.base;
 
 import android.support.annotation.StringRes;
 

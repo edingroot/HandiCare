@@ -4,17 +4,22 @@ import android.app.Application;
 import android.content.Context;
 import android.hardware.usb.UsbManager;
 
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 import tw.cchi.whisttherapist.MvpApp;
+import tw.cchi.whisttherapist.di.PresenterHolder;
 
 @Module
 public class ApplicationModule {
 
     private final MvpApp mvpApp;
+    private final PresenterHolder presenterHolder;
 
     public ApplicationModule(MvpApp mvpApp) {
         this.mvpApp = mvpApp;
+        this.presenterHolder = new PresenterHolder();
     }
 
     @Provides
@@ -40,6 +45,12 @@ public class ApplicationModule {
     @Provides
     UsbManager provideUsbManager() {
         return (UsbManager) provideApplication().getSystemService(Context.USB_SERVICE);
+    }
+
+    @Provides
+    @Singleton
+    PresenterHolder providePresenterHolder() {
+        return presenterHolder;
     }
 
 }

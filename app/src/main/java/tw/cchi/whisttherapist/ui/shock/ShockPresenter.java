@@ -1,14 +1,9 @@
 package tw.cchi.whisttherapist.ui.shock;
 
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
-import android.hardware.usb.UsbDevice;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import javax.inject.Inject;
 
@@ -16,19 +11,21 @@ import io.reactivex.disposables.CompositeDisposable;
 import tw.cchi.whisttherapist.Constants;
 import tw.cchi.whisttherapist.MvpApp;
 import tw.cchi.whisttherapist.R;
-import tw.cchi.whisttherapist.base.BasePresenter;
-import tw.cchi.whisttherapist.eshock.AcupStorage;
+import tw.cchi.whisttherapist.di.ActivityContext;
 import tw.cchi.whisttherapist.eshock.DeviceAcup;
+import tw.cchi.whisttherapist.receiver.UsbBroadcastReceiver;
+import tw.cchi.whisttherapist.ui.base.BasePresenter;
+
+import static tw.cchi.whisttherapist.Constants.ACTION_USB_PERMISSION;
 
 public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> implements ShockMvpPresenter<V> {
-    private static final String ACTION_USB_PERMISSION = "tw.cchi.USB_PERMISSION";
     private static final long TIMER_TICK_INTERVAL = 20; // ms
 
     @Inject MvpApp.GlobalVariables globalVar;
     @Inject DeviceAcup mDevAcup;
-    @Inject Context context;
+    @Inject UsbBroadcastReceiver mUsbReceiver;
+    @Inject @ActivityContext Context context;
 
-    private BroadcastReceiver mUsbReceiver = new UsbBroadcastReceiver();
     private Handler taskHandler = new Handler(Looper.getMainLooper());
     private Runnable timerRunnable;
     private float remainingSeconds = 0;
@@ -149,7 +146,7 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
         updateViewDeviceControls();
     }
     
-    private void updateViewDeviceControls() {
+    public void updateViewDeviceControls() {
         boolean powerOn = globalVar.bPower;
         
         if (!powerOn)
@@ -169,83 +166,4 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
         context.unregisterReceiver(this.mUsbReceiver);
     }
 
-
-    class UsbBroadcastReceiver extends BroadcastReceiver {
-        public UsbBroadcastReceiver() {
-        }
-
-        public void onReceive(Context context, Intent intent) {
-            UsbDevice device;
-            String action = intent.getAction();
-            if (action == null) return;
-
-            if (action.equals(ACTION_USB_PERMISSION)) {
-                synchronized (this) {
-                    device = intent.getParcelableExtra("device");
-                    if (intent.getBooleanExtra("permission", false)) {
-                        if (device != null) {
-                            Log.d("1", "PERMISSION-" + device);
-                        }
-
-                        try {
-                            Thread.sleep(1000);
-
-                            if (mDevAcup.getTheTargetDevice() != null) {
-                                if (mDevAcup.mUsbDevice.getInterfaceCount() > 0) {
-                                    mDevAcup.mUsbInterface = mDevAcup.mUsbDevice.getInterface(0);
-                                    mDevAcup.mEndpointRead = mDevAcup.mUsbInterface.getEndpoint(0);
-                                    mDevAcup.mEndpointWrite = mDevAcup.mUsbInterface.getEndpoint(1);
-                                }
-                                globalVar.bPower = false;
-                                globalVar.nX = 0;
-                                globalVar.nY = 0;
-                                globalVar.nZ = 0;
-                                mDevAcup.commWithUsbDevice();
-
-                                if (AcupStorage.nDeviceType != 0) {
-                                    mDevAcup.commWithUsbDevice(11);
-                                    mDevAcup.commWithUsbDevice(12);
-                                }
-                            }
-                        } catch (InterruptedException e) {
-                            System.out.println("Thread was interrupted");
-                            return;
-                        }
-                    }
-                }
-
-            } else if (action.equals("android.hardware.usb.action.USB_DEVICE_ATTACHED")) {
-                synchronized (this) {
-                    device = intent.getParcelableExtra("device");
-
-                    if (!intent.getBooleanExtra("permission", false)) {
-                        mDevAcup.mUsbManager.requestPermission(
-                                device,
-                                PendingIntent.getBroadcast(
-                                        context,
-                                        0,
-                                        new Intent(ACTION_USB_PERMISSION), PendingIntent.FLAG_ONE_SHOT
-                                )
-                        );
-                    } else if (device != null) {
-                        Log.d("1", "ATTACHED-" + device);
-                        mDevAcup.connect();
-                    }
-                }
-
-            } else if (action.equals("android.hardware.usb.action.USB_DEVICE_DETACHED")) {
-                synchronized (this) {
-                    device = intent.getParcelableExtra("device");
-                    if (device != null) {
-                        Log.d("1", "DEATTCHED-" + device);
-                    }
-                    mDevAcup.disconnect();
-                    updateViewDeviceControls();
-                }
-
-            } else if ("android.intent.action.BATTERY_CHANGED".equals(action) && intent.getIntExtra("level", 0) < 30) {
-                // TODO
-            }
-        }
-    }
 }

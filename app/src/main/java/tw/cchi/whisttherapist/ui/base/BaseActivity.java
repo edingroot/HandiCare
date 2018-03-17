@@ -1,4 +1,4 @@
-package tw.cchi.whisttherapist.base;
+package tw.cchi.whisttherapist.ui.base;
 
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
@@ -132,6 +132,4 @@ public abstract class BaseActivity extends AppCompatActivity implements MvpView 
         }
         super.onDestroy();
     }
-
-    protected abstract void setUp();
 }

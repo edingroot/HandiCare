@@ -1,8 +1,6 @@
 // Ref: https://github.com/MindorksOpenSource/android-mvp-architecture
 
-package tw.cchi.whisttherapist.base;
-
-import android.content.Context;
+package tw.cchi.whisttherapist.ui.base;
 
 import javax.inject.Inject;
 
@@ -34,6 +32,7 @@ public class BasePresenter<V extends MvpView> implements MvpPresenter<V> {
         mMvpView = null;
     }
 
+    @Override
     public boolean isViewAttached() {
         return mMvpView != null;
     }

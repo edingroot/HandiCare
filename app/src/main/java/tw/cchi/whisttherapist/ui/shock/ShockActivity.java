@@ -16,8 +16,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.functions.Consumer;
 import tw.cchi.whisttherapist.R;
-import tw.cchi.whisttherapist.base.BaseActivity;
 import tw.cchi.whisttherapist.component.ModeSelectionView;
+import tw.cchi.whisttherapist.ui.base.BaseActivity;
 
 public class ShockActivity extends BaseActivity implements ShockMvpView {
 
@@ -128,10 +128,6 @@ public class ShockActivity extends BaseActivity implements ShockMvpView {
     protected void onDestroy() {
         mPresenter.onDetach();
         super.onDestroy();
-    }
-
-    @Override
-    protected void setUp() {
     }
 
 }

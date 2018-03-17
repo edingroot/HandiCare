@@ -1,4 +1,4 @@
-package tw.cchi.whisttherapist.base;
+package tw.cchi.whisttherapist.ui.base;
 
 /**
  * Every presenter in the app must either implement this interface or extend BasePresenter
@@ -9,5 +9,7 @@ public interface MvpPresenter<V extends MvpView> {
     void onAttach(V mvpView);
 
     void onDetach();
+
+    boolean isViewAttached();
 
 }

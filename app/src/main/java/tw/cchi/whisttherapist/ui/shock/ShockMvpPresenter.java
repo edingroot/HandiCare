@@ -1,6 +1,6 @@
 package tw.cchi.whisttherapist.ui.shock;
 
-import tw.cchi.whisttherapist.base.MvpPresenter;
+import tw.cchi.whisttherapist.ui.base.MvpPresenter;
 
 public interface ShockMvpPresenter<V extends ShockMvpView> extends MvpPresenter<V> {
 
@@ -13,5 +13,7 @@ public interface ShockMvpPresenter<V extends ShockMvpView> extends MvpPresenter<
     void onCustomStrengthChanged(int progressValue);
 
     void onCustomFrequencyChanged(int progressValue);
+
+    void updateViewDeviceControls();
 
 }

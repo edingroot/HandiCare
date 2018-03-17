@@ -74,7 +74,8 @@ public abstract class BaseActivity extends AppCompatActivity implements MvpView 
         }
     }
 
-    private void showSnackBar(String message) {
+    @Override
+    public void showSnackBar(String message) {
         Snackbar snackbar = Snackbar.make(
                 findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT);
         View sbView = snackbar.getView();
@@ -85,21 +86,12 @@ public abstract class BaseActivity extends AppCompatActivity implements MvpView 
     }
 
     @Override
-    public void onError(String message) {
-        if (message != null) {
-            showSnackBar(message);
-        } else {
-            showSnackBar(getString(R.string.error_occurred));
-        }
+    public void showSnackBar(@StringRes int resId) {
+        showSnackBar(getString(resId));
     }
 
     @Override
-    public void onError(@StringRes int resId) {
-        onError(getString(resId));
-    }
-
-    @Override
-    public void showMessage(String message) {
+    public void showToast(String message) {
         if (message != null) {
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
         } else {
@@ -108,8 +100,8 @@ public abstract class BaseActivity extends AppCompatActivity implements MvpView 
     }
 
     @Override
-    public void showMessage(@StringRes int resId) {
-        showMessage(getString(resId));
+    public void showToast(@StringRes int resId) {
+        showToast(getString(resId));
     }
 
     public void hideKeyboard() {

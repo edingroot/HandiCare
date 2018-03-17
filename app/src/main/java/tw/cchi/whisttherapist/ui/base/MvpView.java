@@ -13,13 +13,13 @@ public interface MvpView {
 
     void hideLoading();
 
-    void onError(@StringRes int resId);
+    void showSnackBar(String message);
 
-    void onError(String message);
+    void showSnackBar(@StringRes int resId);
 
-    void showMessage(String message);
+    void showToast(String message);
 
-    void showMessage(@StringRes int resId);
+    void showToast(@StringRes int resId);
 
     void hideKeyboard();
 

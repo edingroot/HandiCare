@@ -65,7 +65,7 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
     @Override
     public void powerOn() {
         if (!mDevAcup.connect())
-            getMvpView().showMessage(R.string.usb_not_found);
+            getMvpView().showSnackBar(R.string.usb_not_found);
 
         // Turn on
         int duration = getMvpView().getDurationSetting();
@@ -82,7 +82,7 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
     @Override
     public void powerOff() {
         if (!mDevAcup.connect())
-            getMvpView().showMessage(R.string.usb_not_found);
+            getMvpView().showSnackBar(R.string.usb_not_found);
         
         mDevAcup.powerOff();
         stopPowerTimer();
@@ -137,7 +137,10 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
         initialSeconds = 0;
         remainingSeconds = 0;
         getMvpView().setProgress(0, initialSeconds);
-        powerTimer.dispose();
+
+        // Stop timer
+        if (powerTimer != null)
+            powerTimer.dispose();
     }
 
     private void onPowerTimeEnd() {

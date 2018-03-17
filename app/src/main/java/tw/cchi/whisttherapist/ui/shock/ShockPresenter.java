@@ -2,12 +2,17 @@ package tw.cchi.whisttherapist.ui.shock;
 
 import android.content.Context;
 import android.content.IntentFilter;
-import android.os.Handler;
-import android.os.Looper;
+
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import tw.cchi.whisttherapist.Constants;
 import tw.cchi.whisttherapist.MvpApp;
 import tw.cchi.whisttherapist.R;
@@ -26,11 +31,9 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
     @Inject UsbBroadcastReceiver mUsbReceiver;
     @Inject @ActivityContext Context context;
 
-    private Handler taskHandler = new Handler(Looper.getMainLooper());
-    private Runnable timerRunnable;
-    private float remainingSeconds = 0;
+    private Disposable powerTimer;
     private int initialSeconds = 0;
-    private boolean timerRunning = false;
+    private float remainingSeconds = 0;
 
     @Inject
     public ShockPresenter(CompositeDisposable compositeDisposable) {
@@ -48,22 +51,6 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
         filterAttachedDetached.addAction("android.hardware.usb.action.USB_DEVICE_ATTACHED");
         filterAttachedDetached.addAction("android.intent.action.BATTERY_CHANGED");
         context.registerReceiver(mUsbReceiver, filterAttachedDetached);
-
-        timerRunnable = new Runnable() {
-            @Override
-            public void run() {
-                remainingSeconds -= (float) TIMER_TICK_INTERVAL / 1000;
-                if (remainingSeconds <= 0) {
-                    timerRunning = false;
-                    onPowerTimeEnd();
-                }
-
-                if (timerRunning) {
-                    getMvpView().setProgress(initialSeconds - remainingSeconds, initialSeconds);
-                    taskHandler.postDelayed(timerRunnable, TIMER_TICK_INTERVAL);
-                }
-            }
-        };
     }
 
     @Override
@@ -107,10 +94,10 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
     public void onCustomStrengthChanged(int progressValue) {
         if (globalVar.bPower) {
             progressValue = progressValue == 0 ? 1 : progressValue;
-            mDevAcup.setStrength(progressValue);
         } else {
             progressValue = 0;
         }
+        mDevAcup.setStrength(progressValue);
         updateViewDeviceControls();
     }
 
@@ -118,27 +105,39 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
     public void onCustomFrequencyChanged(int progressValue) {
         if (globalVar.bPower) {
             progressValue = progressValue == 0 ? 1 : progressValue;
-            mDevAcup.setStrength(progressValue);
         } else {
             progressValue = 0;
         }
+        mDevAcup.setFrequency(progressValue);
         updateViewDeviceControls();
     }
 
     private void startPowerTimer(int seconds) {
-        timerRunning = true;
         initialSeconds = seconds;
         remainingSeconds = seconds;
         getMvpView().setProgress(0, initialSeconds);
-        taskHandler.postDelayed(timerRunnable, TIMER_TICK_INTERVAL);
+
+        powerTimer = Observable.interval(TIMER_TICK_INTERVAL, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Long>() {
+                    @Override
+                    public void accept(Long aLong) throws Exception {
+                        remainingSeconds -= (float) TIMER_TICK_INTERVAL / 1000;
+                        if (remainingSeconds <= 0) {
+                            onPowerTimeEnd();
+                        }
+
+                        getMvpView().setProgress(initialSeconds - remainingSeconds, initialSeconds);
+                    }
+                });
     }
 
     private void stopPowerTimer() {
-        timerRunning = false;
         initialSeconds = 0;
         remainingSeconds = 0;
         getMvpView().setProgress(0, initialSeconds);
-        taskHandler.removeCallbacks(timerRunnable);
+        powerTimer.dispose();
     }
 
     private void onPowerTimeEnd() {

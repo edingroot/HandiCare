@@ -9,6 +9,7 @@ import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -17,6 +18,7 @@ import tw.cchi.whisttherapist.Constants;
 import tw.cchi.whisttherapist.MvpApp;
 import tw.cchi.whisttherapist.R;
 import tw.cchi.whisttherapist.di.ActivityContext;
+import tw.cchi.whisttherapist.di.PresenterHolder;
 import tw.cchi.whisttherapist.eshock.DeviceAcup;
 import tw.cchi.whisttherapist.receiver.UsbBroadcastReceiver;
 import tw.cchi.whisttherapist.ui.base.BasePresenter;
@@ -36,8 +38,9 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
     private float remainingSeconds = 0;
 
     @Inject
-    public ShockPresenter(CompositeDisposable compositeDisposable) {
+    public ShockPresenter(CompositeDisposable compositeDisposable, @NonNull PresenterHolder presenterHolder) {
         super(compositeDisposable);
+        presenterHolder.setShockMvpPresenter(this);
     }
 
     @Override

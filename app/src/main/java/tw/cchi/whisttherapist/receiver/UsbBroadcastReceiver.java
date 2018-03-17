@@ -13,6 +13,7 @@ import tw.cchi.whisttherapist.MvpApp;
 import tw.cchi.whisttherapist.di.PresenterHolder;
 import tw.cchi.whisttherapist.eshock.AcupStorage;
 import tw.cchi.whisttherapist.eshock.DeviceAcup;
+import tw.cchi.whisttherapist.ui.shock.ShockMvpPresenter;
 
 import static tw.cchi.whisttherapist.Constants.ACTION_USB_PERMISSION;
 
@@ -94,9 +95,10 @@ public class UsbBroadcastReceiver extends BroadcastReceiver {
                 }
                 mDevAcup.disconnect();
 
-//                if (mPresenter.isViewAttached()) {
-//                    mPresenter.updateViewDeviceControls();
-//                }
+                ShockMvpPresenter shockMvpPresenter = presenterHolder.getShockMvpPresenter();
+                if (shockMvpPresenter != null && shockMvpPresenter.isViewAttached()) {
+                    shockMvpPresenter.updateViewDeviceControls();
+                }
             }
 
         } else if ("android.intent.action.BATTERY_CHANGED".equals(action) && intent.getIntExtra("level", 0) < 30) {

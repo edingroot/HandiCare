@@ -33,7 +33,7 @@ public class ApplicationModule {
     }
 
     @Provides
-    MvpApp provideMvcApp() {
+    MvpApp provideMvpApp() {
         return mvpApp;
     }
 

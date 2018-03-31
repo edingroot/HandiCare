@@ -3,7 +3,7 @@ package tw.cchi.whisttherapist.di.component;
 import dagger.Component;
 import tw.cchi.whisttherapist.di.PerActivity;
 import tw.cchi.whisttherapist.di.module.ActivityModule;
-import tw.cchi.whisttherapist.ui.MenuActivity;
+import tw.cchi.whisttherapist.ui.menu.MenuActivity;
 import tw.cchi.whisttherapist.ui.shock.ShockActivity;
 import tw.cchi.whisttherapist.ui.SplashActivity;
 import tw.cchi.whisttherapist.ui.VibrationActivity;

@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 
+import tw.cchi.whisttherapist.ui.menu.MenuActivity;
+
 public class SplashActivity extends AppCompatActivity {
     final Handler handler = new Handler();
 

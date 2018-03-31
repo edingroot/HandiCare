@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gradient_background"
-    tools:context=".ui.MenuActivity">
+    tools:context=".ui.menu.MenuActivity">
 
     <ImageView
         android:id="@+id/imageView"
@@ -47,6 +47,14 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/view3"/>
 
+        <ImageView
+            android:id="@+id/btnPreferences"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@android:drawable/ic_menu_preferences"/>
+
     </android.support.constraint.ConstraintLayout>
 
     <android.support.constraint.ConstraintLayout
@@ -71,8 +79,7 @@
             android:scaleType="fitCenter"
             app:layout_constraintBottom_toTopOf="@+id/btnShockMode"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/btn_vibration_mode"
-            android:onClick="onVibrationModeClick"/>
+            app:srcCompat="@drawable/btn_vibration_mode"/>
 
         <ImageButton
             android:id="@+id/btnShockMode"
@@ -84,8 +91,7 @@
             app:layout_constraintBottom_toTopOf="@+id/btnDetectionMode"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btnVibrationMode"
-            app:srcCompat="@drawable/btn_shock_mode"
-            android:onClick="onShockModeClick"/>
+            app:srcCompat="@drawable/btn_shock_mode"/>
 
         <ImageButton
             android:id="@+id/btnDetectionMode"
@@ -97,8 +103,7 @@
             android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btnShockMode"
-            app:srcCompat="@drawable/btn_detection_mode"
-            android:onClick="onDetectionModeClick"/>
+            app:srcCompat="@drawable/btn_detection_mode"/>
     </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>

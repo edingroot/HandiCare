@@ -9,6 +9,9 @@ import io.reactivex.disposables.CompositeDisposable;
 import tw.cchi.whisttherapist.di.ActivityContext;
 import tw.cchi.whisttherapist.eshock.DeviceAcup;
 import tw.cchi.whisttherapist.ui.base.BaseActivity;
+import tw.cchi.whisttherapist.ui.menu.MenuMvpPresenter;
+import tw.cchi.whisttherapist.ui.menu.MenuMvpView;
+import tw.cchi.whisttherapist.ui.menu.MenuPresenter;
 import tw.cchi.whisttherapist.ui.shock.ShockMvpPresenter;
 import tw.cchi.whisttherapist.ui.shock.ShockMvpView;
 import tw.cchi.whisttherapist.ui.shock.ShockPresenter;
@@ -41,6 +44,11 @@ public class ActivityModule {
     @Provides
     DeviceAcup provideDeviceAcup() {
         return mActivity.application.mDevAcup;
+    }
+
+    @Provides
+    MenuMvpPresenter<MenuMvpView> provideMenuPresenter(MenuPresenter<MenuMvpView> presenter) {
+        return presenter;
     }
 
     @Provides

@@ -27,9 +27,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.shock.ShockActivity"/>
-        <activity android:name=".ui.MenuActivity">
+        <activity android:name=".ui.menu.MenuActivity">
         </activity>
         <activity android:name=".ui.VibrationActivity">
+        </activity>
+        <activity android:name=".ui.preferences.PreferencesActivity">
         </activity>
     </application>
 

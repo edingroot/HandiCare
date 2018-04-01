@@ -15,6 +15,7 @@ public class MenuPresenter<V extends MenuMvpView> extends BasePresenter<V> imple
 
     @Inject AppCompatActivity activity;
 
+    @Inject
     public MenuPresenter(CompositeDisposable compositeDisposable) {
         super(compositeDisposable);
     }

@@ -18,7 +18,10 @@ public class MenuActivity extends BaseActivity implements MenuMvpView {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
-        ButterKnife.bind(this);
+
+        getActivityComponent().inject(this);
+        setUnBinder(ButterKnife.bind(this));
+        presenter.onAttach(this);
     }
 
     @OnClick(R.id.btnVibrationMode)
@@ -41,4 +44,9 @@ public class MenuActivity extends BaseActivity implements MenuMvpView {
         presenter.launchPreferences();
     }
 
+    @Override
+    protected void onDestroy() {
+        presenter.onDetach();
+        super.onDestroy();
+    }
 }

@@ -12,7 +12,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import tw.cchi.handicare.Constants;
 import tw.cchi.handicare.MvpApp;
@@ -86,10 +85,10 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
     public void powerOff() {
         if (!mDevAcup.connect())
             getMvpView().showSnackBar(R.string.usb_not_found);
-        
+
         mDevAcup.powerOff();
         stopPowerTimer();
-        
+
         updateViewDeviceControls();
     }
 
@@ -121,19 +120,16 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
         getMvpView().setProgress(0, initialSeconds);
 
         powerTimer = Observable.interval(TIMER_TICK_INTERVAL, TimeUnit.MILLISECONDS)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<Long>() {
-                    @Override
-                    public void accept(Long aLong) throws Exception {
-                        remainingSeconds -= (float) TIMER_TICK_INTERVAL / 1000;
-                        if (remainingSeconds <= 0) {
-                            onPowerTimeEnd();
-                        }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(aLong -> {
+                remainingSeconds -= (float) TIMER_TICK_INTERVAL / 1000;
+                if (remainingSeconds <= 0) {
+                    onPowerTimeEnd();
+                }
 
-                        getMvpView().setProgress(initialSeconds - remainingSeconds, initialSeconds);
-                    }
-                });
+                getMvpView().setProgress(initialSeconds - remainingSeconds, initialSeconds);
+            });
     }
 
     private void stopPowerTimer() {
@@ -150,20 +146,20 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
         mDevAcup.powerOff();
         updateViewDeviceControls();
     }
-    
+
     public void updateViewDeviceControls() {
         boolean powerOn = globalVar.bPower;
-        
+
         if (!powerOn)
             stopPowerTimer();
-        
+
         getMvpView().updateDeviceControls(powerOn, globalVar.nX, globalVar.nY);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        
+
         if (globalVar.bPower) {
             globalVar.bPower = false;
             mDevAcup.commWithUsbDevice();

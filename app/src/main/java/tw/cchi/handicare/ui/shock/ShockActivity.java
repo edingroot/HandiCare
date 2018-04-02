@@ -54,37 +54,21 @@ public class ShockActivity extends BaseActivity implements ShockMvpView {
         secondsPicker.setMaxValue(59);
         updateDeviceControls(false, 0, 0);
 
-        modeSelectionView.setOnSelectionChangeListener(new ModeSelectionView.OnSelectionChangeListener() {
-            @Override
-            public void onChange(int selectedIndex) {
-                if (selectedIndex != -1)
-                    mPresenter.onModeSelectionChanged(selectedIndex);
-            }
+        modeSelectionView.setOnSelectionChangeListener(selectedIndex -> {
+            if (selectedIndex != -1)
+                mPresenter.onModeSelectionChanged(selectedIndex);
         });
 
-        RxCompoundButton.checkedChanges(togglePower).subscribe(new Consumer<Boolean>() {
-            @Override
-            public void accept(Boolean isChecked) throws Exception {
-                if (isChecked)
-                    mPresenter.powerOn();
-                else
-                    mPresenter.powerOff();
-            }
+        RxCompoundButton.checkedChanges(togglePower).subscribe(isChecked -> {
+            if (isChecked)
+                mPresenter.powerOn();
+            else
+                mPresenter.powerOff();
         });
 
-        RxSeekBar.userChanges(seekStrength).subscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer value) throws Exception {
-                mPresenter.onCustomStrengthChanged(value);
-            }
-        });
+        RxSeekBar.userChanges(seekStrength).subscribe(value -> mPresenter.onCustomStrengthChanged(value));
 
-        RxSeekBar.userChanges(seekFreq).subscribe(new Consumer<Integer>() {
-            @Override
-            public void accept(Integer value) throws Exception {
-                mPresenter.onCustomFrequencyChanged(value);
-            }
-        });
+        RxSeekBar.userChanges(seekFreq).subscribe(value -> mPresenter.onCustomFrequencyChanged(value));
     }
 
     @Override

@@ -1,15 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- shadow -->
     <item
         android:left="-180dp"
         android:right="-180dp"
-        android:top="-200dp">
-
+        android:top="-220dp">
         <shape android:shape="oval">
-            <solid android:color="#ffffff"/>
+            <solid android:color="#0a232323"/>
             <size
                 android:width="871dp"
                 android:height="220dp"/>
         </shape>
+    </item>
+
+    <item
+        android:left="-180dp"
+        android:right="-180dp"
+        android:top="-220dp"
+        android:bottom="2dp">
+
+        <shape android:shape="oval">
+            <gradient
+                android:angle="90"
+                android:endColor="#00ffffff"
+                android:centerColor="#93f1f1"
+                android:startColor="#d5e7e7"
+                android:type="linear" />
+
+            <size
+                android:width="871dp"
+                android:height="220dp"/>
+        </shape>
+
     </item>
 </layer-list>

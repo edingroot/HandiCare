@@ -33,7 +33,7 @@
 
     </RelativeLayout>
 
-    <tw.cchi.whisttherapist.component.ModeSelectionView
+    <tw.cchi.handicare.component.ModeSelectionView
         android:id="@+id/modeSelectionView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

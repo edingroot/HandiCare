@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import io.reactivex.disposables.CompositeDisposable;
 import tw.cchi.handicare.ui.VibrationActivity;
 import tw.cchi.handicare.ui.base.BasePresenter;
+import tw.cchi.handicare.ui.detection.shock.DetectionActivity;
 import tw.cchi.handicare.ui.preferences.PreferencesActivity;
 import tw.cchi.handicare.ui.shock.ShockActivity;
 
@@ -32,6 +33,7 @@ public class MenuPresenter<V extends MenuMvpView> extends BasePresenter<V> imple
 
     @Override
     public void launchDetectionMode() {
+        activity.startActivity(new Intent(activity, DetectionActivity.class));
     }
 
     @Override

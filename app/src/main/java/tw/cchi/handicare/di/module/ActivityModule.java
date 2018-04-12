@@ -9,6 +9,9 @@ import io.reactivex.disposables.CompositeDisposable;
 import tw.cchi.handicare.di.ActivityContext;
 import tw.cchi.handicare.eshock.DeviceAcup;
 import tw.cchi.handicare.ui.base.BaseActivity;
+import tw.cchi.handicare.ui.detection.shock.DetectionMvpPresenter;
+import tw.cchi.handicare.ui.detection.shock.DetectionMvpView;
+import tw.cchi.handicare.ui.detection.shock.DetectionPresenter;
 import tw.cchi.handicare.ui.menu.MenuMvpPresenter;
 import tw.cchi.handicare.ui.menu.MenuMvpView;
 import tw.cchi.handicare.ui.menu.MenuPresenter;
@@ -53,6 +56,11 @@ public class ActivityModule {
 
     @Provides
     ShockMvpPresenter<ShockMvpView> provideShockPresenter(ShockPresenter<ShockMvpView> presenter) {
+        return presenter;
+    }
+
+    @Provides
+    DetectionMvpPresenter<DetectionMvpView> provideDetectionPresenter(DetectionPresenter<DetectionMvpView> presenter) {
         return presenter;
     }
 }

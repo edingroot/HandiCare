@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.shock.ShockActivity">
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="220dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="-168dp"
+            android:background="@drawable/title_circle"/>
+
+        <ImageView
+            android:layout_width="80sp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:src="@drawable/text_detection_mode"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout">
+
+        <ToggleButton
+            android:id="@+id/togglePower"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/bg_toggle_power"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:textOff=""
+            android:textOn=""/>
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="190dp"
+            android:layout_height="190dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:scaleType="fitCenter"
+            app:srcCompat="@drawable/btn_shockstart_bg"/>
+
+        <at.grabner.circleprogress.CircleProgressView
+            android:id="@+id/circleProgressView"
+            android:layout_width="210dp"
+            android:layout_height="210dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            app:cpv_autoTextSize="true"
+            app:cpv_barColor="@color/colorPrimary"
+            app:cpv_barWidth="6dp"
+            app:cpv_innerContourSize="0dp"
+            app:cpv_maxValue="100"
+            app:cpv_outerContourSize="0dp"
+            app:cpv_rimColor="@color/colorPrimaryLight"
+            app:cpv_rimWidth="6dp"
+            app:cpv_seekMode="false"
+            app:cpv_showUnit="false"
+            app:cpv_text=""
+            app:cpv_textMode="Text"
+            app:cpv_value="0"/>
+
+    </RelativeLayout>
+
+</android.support.constraint.ConstraintLayout>

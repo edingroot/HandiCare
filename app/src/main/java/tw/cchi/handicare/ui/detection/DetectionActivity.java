@@ -1,4 +1,4 @@
-package tw.cchi.handicare.ui.detection.shock;
+package tw.cchi.handicare.ui.detection;
 
 import android.os.Bundle;
 import android.widget.ToggleButton;
@@ -9,6 +9,7 @@ import at.grabner.circleprogress.CircleProgressView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import tw.cchi.handicare.R;
+import tw.cchi.handicare.component.MultiChartView;
 import tw.cchi.handicare.ui.base.BaseActivity;
 
 public class DetectionActivity extends BaseActivity implements DetectionMvpView {
@@ -17,6 +18,7 @@ public class DetectionActivity extends BaseActivity implements DetectionMvpView 
 
     @BindView(R.id.togglePower) ToggleButton togglePower;
     @BindView(R.id.circleProgressView) CircleProgressView circleProgressView;
+    @BindView(R.id.emgChartView) MultiChartView emgChartView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

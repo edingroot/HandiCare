@@ -1,4 +1,4 @@
-package tw.cchi.handicare.ui.detection.shock;
+package tw.cchi.handicare.ui.detection;
 
 import android.content.Context;
 

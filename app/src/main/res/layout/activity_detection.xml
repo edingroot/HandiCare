@@ -41,7 +41,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/relativeLayout">
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout"
+        app:layout_constraintVertical_bias="0.32">
 
         <ToggleButton
             android:id="@+id/togglePower"
@@ -87,5 +88,14 @@
             app:cpv_value="0"/>
 
     </RelativeLayout>
+
+    <tw.cchi.handicare.component.MultiChartView
+        android:id="@+id/emgChartView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_below="@id/circleProgressView"
+        android:layout_marginTop="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout2"/>
 
 </android.support.constraint.ConstraintLayout>

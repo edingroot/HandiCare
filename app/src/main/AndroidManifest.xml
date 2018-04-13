@@ -33,7 +33,7 @@
         </activity>
         <activity android:name=".ui.preferences.PreferencesActivity">
         </activity>
-        <activity android:name=".ui.detection.shock.DetectionActivity"/>
+        <activity android:name=".ui.detection.DetectionActivity"/>
     </application>
 
 </manifest>

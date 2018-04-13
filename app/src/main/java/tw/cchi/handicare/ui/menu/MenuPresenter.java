@@ -8,7 +8,7 @@ import javax.inject.Inject;
 import io.reactivex.disposables.CompositeDisposable;
 import tw.cchi.handicare.ui.VibrationActivity;
 import tw.cchi.handicare.ui.base.BasePresenter;
-import tw.cchi.handicare.ui.detection.shock.DetectionActivity;
+import tw.cchi.handicare.ui.detection.DetectionActivity;
 import tw.cchi.handicare.ui.preferences.PreferencesActivity;
 import tw.cchi.handicare.ui.shock.ShockActivity;
 

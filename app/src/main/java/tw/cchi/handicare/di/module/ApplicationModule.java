@@ -8,7 +8,9 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import tw.cchi.handicare.Constants;
 import tw.cchi.handicare.MvpApp;
+import tw.cchi.handicare.di.PreferenceInfo;
 import tw.cchi.handicare.di.PresenterHolder;
 
 @Module
@@ -35,6 +37,12 @@ public class ApplicationModule {
     @Provides
     MvpApp provideMvpApp() {
         return mvpApp;
+    }
+
+    @Provides
+    @PreferenceInfo
+    String providePreferenceName() {
+        return Constants.PREF_NAME;
     }
 
     @Provides

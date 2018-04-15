@@ -2,7 +2,15 @@
 <manifest package="tw.cchi.handicare"
           xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- Declare this required feature bluetooth_le if you want to make the app available to BLE-capable
+        devices only.  If you want to make your app available to devices that don't support BLE,
+        you should omit this in the manifest.  Instead, determine BLE capability by using
+        PackageManager.hasSystemFeature(FEATURE_BLUETOOTH_LE) -->
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
     <uses-feature android:name="android.hardware.usb.host"/>
+
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
 
     <!-- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> -->
     <!-- <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" /> -->
@@ -10,6 +18,7 @@
     <!-- <uses-permission android:name="android.permission.READ_PHONE_STATE" /> -->
     <!-- <uses-permission android:name="android.permission.INTERNET" /> -->
     <!-- <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> -->
+
     <application
         android:name=".MvpApp"
         android:allowBackup="true"
@@ -34,6 +43,8 @@
         <activity android:name=".ui.preferences.PreferencesActivity">
         </activity>
         <activity android:name=".ui.detection.DetectionActivity"/>
+
+        <service android:name=".service.ble.BLEService" android:enabled="true"/>
     </application>
 
 </manifest>

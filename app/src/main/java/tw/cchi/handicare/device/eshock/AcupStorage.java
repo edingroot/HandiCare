@@ -1,4 +1,4 @@
-package tw.cchi.handicare.eshock;
+package tw.cchi.handicare.device.eshock;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
@@ -6,7 +6,7 @@ import android.support.v4.view.MotionEventCompat;
 
 import java.util.Arrays;
 
-import tw.cchi.handicare.eshock.port.TransportMediator;
+import tw.cchi.handicare.device.eshock.port.TransportMediator;
 
 public class AcupStorage {
 //    private static final char[] HEX_CHARS = "0123456789ABCDEF".toCharArray();

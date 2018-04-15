@@ -7,7 +7,7 @@ import dagger.Module;
 import dagger.Provides;
 import io.reactivex.disposables.CompositeDisposable;
 import tw.cchi.handicare.di.ActivityContext;
-import tw.cchi.handicare.eshock.DeviceAcup;
+import tw.cchi.handicare.device.eshock.DeviceAcup;
 import tw.cchi.handicare.ui.base.BaseActivity;
 import tw.cchi.handicare.ui.detection.DetectionMvpPresenter;
 import tw.cchi.handicare.ui.detection.DetectionMvpView;

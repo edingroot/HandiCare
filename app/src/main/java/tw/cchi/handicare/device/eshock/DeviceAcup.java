@@ -1,4 +1,4 @@
-package tw.cchi.handicare.eshock;
+package tw.cchi.handicare.device.eshock;
 
 import android.app.PendingIntent;
 import android.content.Context;

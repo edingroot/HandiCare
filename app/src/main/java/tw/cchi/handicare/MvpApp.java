@@ -7,7 +7,7 @@ import javax.inject.Inject;
 import tw.cchi.handicare.di.component.ApplicationComponent;
 import tw.cchi.handicare.di.component.DaggerApplicationComponent;
 import tw.cchi.handicare.di.module.ApplicationModule;
-import tw.cchi.handicare.eshock.DeviceAcup;
+import tw.cchi.handicare.device.eshock.DeviceAcup;
 
 
 public class MvpApp extends Application {

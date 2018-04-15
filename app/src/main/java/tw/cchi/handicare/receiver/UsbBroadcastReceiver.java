@@ -11,8 +11,8 @@ import javax.inject.Inject;
 
 import tw.cchi.handicare.MvpApp;
 import tw.cchi.handicare.di.PresenterHolder;
-import tw.cchi.handicare.eshock.AcupStorage;
-import tw.cchi.handicare.eshock.DeviceAcup;
+import tw.cchi.handicare.device.eshock.AcupStorage;
+import tw.cchi.handicare.device.eshock.DeviceAcup;
 import tw.cchi.handicare.ui.shock.ShockMvpPresenter;
 
 import static tw.cchi.handicare.Constants.ACTION_USB_PERMISSION;

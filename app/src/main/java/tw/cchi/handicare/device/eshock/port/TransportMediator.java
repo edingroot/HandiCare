@@ -1,4 +1,4 @@
-package tw.cchi.handicare.eshock.port;
+package tw.cchi.handicare.device.eshock.port;
 
 public class TransportMediator {
     public static final int KEYCODE_MEDIA_PLAY = 126;

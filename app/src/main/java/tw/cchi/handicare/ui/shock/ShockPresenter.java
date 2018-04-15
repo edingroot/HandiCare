@@ -18,7 +18,7 @@ import tw.cchi.handicare.MvpApp;
 import tw.cchi.handicare.R;
 import tw.cchi.handicare.di.ActivityContext;
 import tw.cchi.handicare.di.PresenterHolder;
-import tw.cchi.handicare.eshock.DeviceAcup;
+import tw.cchi.handicare.device.eshock.DeviceAcup;
 import tw.cchi.handicare.receiver.UsbBroadcastReceiver;
 import tw.cchi.handicare.ui.base.BasePresenter;
 

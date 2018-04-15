@@ -8,6 +8,8 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanResult;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -18,6 +20,7 @@ import android.content.pm.PackageManager;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
@@ -61,6 +64,7 @@ public class BlunoLibraryService extends Service {
     private String mPassword = "AT+PASSWOR=DFRobot\r\n";
     private String mBaudrateBuffer = "AT+CURRUART=" + mBaudrate + "\r\n";
     private BluetoothAdapter mBluetoothAdapter;
+    private ScanCallback mLeScanCallback;
     private boolean mScanning = false;
 
     private String mDeviceName;
@@ -198,12 +202,26 @@ public class BlunoLibraryService extends Service {
 
     public void scanLeDevice(LeDeviceListAdapter mLeDeviceListAdapter) {
         // Device scan callback
-        BluetoothAdapter.LeScanCallback mLeScanCallback = (device, rssi, scanRecord) -> {
-            ((Activity) mainContext).runOnUiThread(() -> {
+        mLeScanCallback = new ScanCallback() {
+            @Override
+            public void onScanResult(int callbackType, ScanResult result) {
+                super.onScanResult(callbackType, result);
                 // System.out.println("mLeScanCallback onLeScan run ");
-                mLeDeviceListAdapter.addDevice(device);
-                mLeDeviceListAdapter.notifyDataSetChanged();
-            });
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    mLeDeviceListAdapter.addDevice(result.getDevice());
+                    mLeDeviceListAdapter.notifyDataSetChanged();
+                });
+            }
+
+            @Override
+            public void onBatchScanResults(List<ScanResult> results) {
+                super.onBatchScanResults(results);
+            }
+
+            @Override
+            public void onScanFailed(int errorCode) {
+                super.onScanFailed(errorCode);
+            }
         };
 
         // Stop scanning after a pre-defined scan period
@@ -216,14 +234,15 @@ public class BlunoLibraryService extends Service {
 
         if (!mScanning) {
             mScanning = true;
-            mBluetoothAdapter.startLeScan(mLeScanCallback);
+            // mBluetoothAdapter.startLeScan(mLeScanCallback);
+            mBluetoothAdapter.getBluetoothLeScanner().startScan(mLeScanCallback);
         }
     }
 
     public void stopScanningLeDevice() {
         if (mScanning) {
             mScanning = false;
-            mBluetoothAdapter.stopLeScan((bluetoothDevice, i, bytes) -> {});
+            mBluetoothAdapter.getBluetoothLeScanner().stopScan(mLeScanCallback);
         }
     }
 
@@ -338,7 +357,6 @@ public class BlunoLibraryService extends Service {
 //			mBLEService.close();
         }
         mSCharacteristic = null;
-
     }
 
     public void onStopProcess() {
@@ -375,8 +393,8 @@ public class BlunoLibraryService extends Service {
             System.out.println("mServiceConnection onServiceConnected");
             mBLEService = ((BLEService.LocalBinder) service).getService();
             if (!mBLEService.initialize()) {
-                Log.e(TAG, "Unable to initialize Bluetooth");
-                ((Activity) mainContext).finish();
+                Log.e(TAG, getString(R.string.error_bluetooth_unable_init));
+                Toast.makeText(mainContext, getString(R.string.error_bluetooth_unable_init), Toast.LENGTH_SHORT).show();
             }
         }
 

@@ -1,6 +1,7 @@
 package tw.cchi.handicare.ui.preferences;
 
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 
 import javax.inject.Inject;
 
@@ -10,6 +11,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import tw.cchi.handicare.MvpApp;
 import tw.cchi.handicare.device.BlunoLibraryService;
+import tw.cchi.handicare.di.ActivityContext;
 import tw.cchi.handicare.helper.pref.PreferencesHelper;
 import tw.cchi.handicare.ui.base.BasePresenter;
 import tw.cchi.handicare.ui.preferences.adapter.LeDeviceListAdapter;
@@ -18,6 +20,7 @@ public class PreferencesPresenter<V extends PreferencesMvpView> extends BasePres
     implements PreferencesMvpPresenter<V>, BlunoLibraryService.BleEventListener {
 
     @Inject MvpApp mvpApp;
+    @Inject @ActivityContext Context context;
     @Inject PreferencesHelper preferencesHelper;
     @Inject LeDeviceListAdapter mLeDeviceListAdapter;
 
@@ -46,6 +49,7 @@ public class PreferencesPresenter<V extends PreferencesMvpView> extends BasePres
     public void onPauseProcess() {
         if (blunoLibraryService != null)
             blunoLibraryService.onPauseProcess();
+        mLeDeviceListAdapter.clear();
     }
 
     @Override
@@ -60,7 +64,7 @@ public class PreferencesPresenter<V extends PreferencesMvpView> extends BasePres
     public void launchScanDeviceDialog() {
         getBlunoLibraryServiceObservable().subscribe(blunoLibraryService -> {
             blunoLibraryService.attachEventListener(this);
-            if (!blunoLibOnResumeCalled)
+//            if (!blunoLibOnResumeCalled)
                 blunoLibraryService.onResumeProcess();
             
             switch (blunoLibraryService.getConnectionState()) {

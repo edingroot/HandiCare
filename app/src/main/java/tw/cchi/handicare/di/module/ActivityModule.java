@@ -15,6 +15,9 @@ import tw.cchi.handicare.ui.detection.DetectionPresenter;
 import tw.cchi.handicare.ui.menu.MenuMvpPresenter;
 import tw.cchi.handicare.ui.menu.MenuMvpView;
 import tw.cchi.handicare.ui.menu.MenuPresenter;
+import tw.cchi.handicare.ui.preferences.PreferencesMvpPresenter;
+import tw.cchi.handicare.ui.preferences.PreferencesMvpView;
+import tw.cchi.handicare.ui.preferences.PreferencesPresenter;
 import tw.cchi.handicare.ui.shock.ShockMvpPresenter;
 import tw.cchi.handicare.ui.shock.ShockMvpView;
 import tw.cchi.handicare.ui.shock.ShockPresenter;
@@ -51,6 +54,11 @@ public class ActivityModule {
 
     @Provides
     MenuMvpPresenter<MenuMvpView> provideMenuPresenter(MenuPresenter<MenuMvpView> presenter) {
+        return presenter;
+    }
+
+    @Provides
+    PreferencesMvpPresenter<PreferencesMvpView> providePreferencesPresenter(PreferencesPresenter<PreferencesMvpView> presenter) {
         return presenter;
     }
 

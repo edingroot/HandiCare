@@ -11,6 +11,7 @@ import tw.cchi.handicare.MvpApp;
 import tw.cchi.handicare.di.ApplicationContext;
 import tw.cchi.handicare.di.PresenterHolder;
 import tw.cchi.handicare.di.module.ApplicationModule;
+import tw.cchi.handicare.helper.pref.PreferencesHelper;
 
 @Singleton
 @Component(modules = ApplicationModule.class)
@@ -25,6 +26,8 @@ public interface ApplicationComponent {
     Application application();
 
     MvpApp mvpApp();
+
+    PreferencesHelper preferenceHelper();
 
     MvpApp.GlobalVariables globalVariables();
 

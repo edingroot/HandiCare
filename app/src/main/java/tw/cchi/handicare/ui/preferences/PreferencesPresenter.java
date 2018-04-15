@@ -11,6 +11,7 @@ public class PreferencesPresenter<V extends PreferencesMvpView> extends BasePres
 
     @Inject AppCompatActivity activity;
 
+    @Inject
     public PreferencesPresenter(CompositeDisposable compositeDisposable) {
         super(compositeDisposable);
     }

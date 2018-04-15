@@ -5,6 +5,7 @@ import tw.cchi.handicare.di.PerActivity;
 import tw.cchi.handicare.di.module.ActivityModule;
 import tw.cchi.handicare.ui.detection.DetectionActivity;
 import tw.cchi.handicare.ui.menu.MenuActivity;
+import tw.cchi.handicare.ui.preferences.PreferencesActivity;
 import tw.cchi.handicare.ui.shock.ShockActivity;
 import tw.cchi.handicare.ui.SplashActivity;
 import tw.cchi.handicare.ui.VibrationActivity;
@@ -13,11 +14,13 @@ import tw.cchi.handicare.ui.VibrationActivity;
 @Component(dependencies = ApplicationComponent.class, modules = ActivityModule.class)
 public interface ActivityComponent {
 
+    void inject(SplashActivity activity);
+
     void inject(MenuActivity activity);
 
-    void inject(ShockActivity activity);
+    void inject(PreferencesActivity activity);
 
-    void inject(SplashActivity activity);
+    void inject(ShockActivity activity);
 
     void inject(VibrationActivity activity);
 

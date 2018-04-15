@@ -13,6 +13,8 @@ import tw.cchi.handicare.MvpApp;
 import tw.cchi.handicare.di.ApplicationContext;
 import tw.cchi.handicare.di.PreferenceInfo;
 import tw.cchi.handicare.di.PresenterHolder;
+import tw.cchi.handicare.helper.pref.AppPreferencesHelper;
+import tw.cchi.handicare.helper.pref.PreferencesHelper;
 
 @Module
 public class ApplicationModule {
@@ -39,6 +41,12 @@ public class ApplicationModule {
     @Provides
     MvpApp provideMvpApp() {
         return mvpApp;
+    }
+
+    @Provides
+    @Singleton
+    PreferencesHelper providePreferencesHelper(AppPreferencesHelper appPreferencesHelper) {
+        return appPreferencesHelper;
     }
 
     @Provides

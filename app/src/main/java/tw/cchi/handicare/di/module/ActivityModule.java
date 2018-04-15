@@ -1,5 +1,6 @@
 package tw.cchi.handicare.di.module;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 
@@ -32,7 +33,12 @@ public class ActivityModule {
     }
 
     @Provides
-    AppCompatActivity provideActivity() {
+    AppCompatActivity provideAppCompatActivity() {
+        return mActivity;
+    }
+
+    @Provides
+    Activity provideActivity() {
         return mActivity;
     }
 

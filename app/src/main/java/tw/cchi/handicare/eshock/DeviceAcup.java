@@ -15,6 +15,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import tw.cchi.handicare.MvpApp;
+import tw.cchi.handicare.di.ApplicationContext;
 import tw.cchi.handicare.utils.CommonUtils;
 
 @Singleton
@@ -39,7 +40,7 @@ public class DeviceAcup {
     private Context main;
 
     @Inject
-    public DeviceAcup(MvpApp.GlobalVariables gv, Context c, UsbManager um) {
+    public DeviceAcup(MvpApp.GlobalVariables gv, @ApplicationContext Context c, UsbManager um) {
         this.globalVar = gv;
         this.main = c;
         this.mUsbManager = um;

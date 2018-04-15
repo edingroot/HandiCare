@@ -10,6 +10,7 @@ import dagger.Module;
 import dagger.Provides;
 import tw.cchi.handicare.Constants;
 import tw.cchi.handicare.MvpApp;
+import tw.cchi.handicare.di.ApplicationContext;
 import tw.cchi.handicare.di.PreferenceInfo;
 import tw.cchi.handicare.di.PresenterHolder;
 
@@ -25,6 +26,7 @@ public class ApplicationModule {
     }
 
     @Provides
+    @ApplicationContext
     Context provideContext() {
         return mvpApp;
     }

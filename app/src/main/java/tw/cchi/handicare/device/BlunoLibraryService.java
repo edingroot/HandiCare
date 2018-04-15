@@ -2,6 +2,7 @@ package tw.cchi.handicare.device;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattCharacteristic;
@@ -14,8 +15,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -24,11 +27,16 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import tw.cchi.handicare.MvpApp;
+import tw.cchi.handicare.R;
+import tw.cchi.handicare.di.ApplicationContext;
+import tw.cchi.handicare.di.component.DaggerServiceComponent;
+import tw.cchi.handicare.di.component.ServiceComponent;
 import tw.cchi.handicare.service.ble.BLEService;
 import tw.cchi.handicare.ui.preferences.adapter.LeDeviceListAdapter;
 
-public class BlunoLibrary {
-    private final static String TAG = BlunoLibrary.class.getSimpleName();
+public class BlunoLibraryService extends Service {
+    private final static String TAG = BlunoLibraryService.class.getSimpleName();
 
     public enum DeviceConnectionState {isNull, isScanning, isToScan, isConnecting, isConnected, isDisconnecting}
     public static final int REQUEST_ENABLE_BT = 1;
@@ -41,11 +49,13 @@ public class BlunoLibrary {
     private DeviceConnectionState mDeviceConnectionState = DeviceConnectionState.isNull;
     private ArrayList<ArrayList<BluetoothGattCharacteristic>> mGattCharacteristics = new ArrayList<>();
 
+    @Inject @ApplicationContext Context mainContext;
+    private IBinder mBinder;
     private BLEService mBLEService;
-    private Context mainContext;
     private boolean connected = false;
 
     private BleEventListener eventListener;
+    private BleEventListener serviceEventListener;
 
     private int mBaudrate = 115200;
     private String mPassword = "AT+PASSWOR=DFRobot\r\n";
@@ -57,9 +67,46 @@ public class BlunoLibrary {
     private String mDeviceAddress;
     private Handler mHandler = new Handler();
 
-    public BlunoLibrary(Context mainContext, BleEventListener eventListener) {
-        this.mainContext = mainContext;
+    public BlunoLibraryService() {
+        this.mBinder = new ServiceBinder();
+        this.eventListener = serviceEventListener = new BleEventListener() {
+            @Override
+            public void onConnectionStateChange(DeviceConnectionState deviceConnectionState) {
+                Log.i(TAG, "[Service] onConnectionStateChange: " + deviceConnectionState);
+            }
+
+            @Override
+            public void onSerialReceived(String theString) {
+                Log.i(TAG, "[Service] onSerialReceived: " + theString);
+            }
+        };
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        ServiceComponent component = DaggerServiceComponent.builder()
+            .applicationComponent(((MvpApp) getApplication()).getComponent())
+            .build();
+        component.inject(this);
+
+        if (!initiate()) {
+            Toast.makeText(this, R.string.error_bluetooth_not_supported, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return mBinder;
+    }
+
+    public void attachEventListener(BleEventListener eventListener) {
         this.eventListener = eventListener;
+    }
+
+    public void detachEventListener() {
+        this.eventListener = serviceEventListener;
     }
 
     public static IntentFilter makeGattUpdateIntentFilter() {
@@ -114,7 +161,7 @@ public class BlunoLibrary {
         stopScanningLeDevice();
 
         if (device.getName() == null || device.getAddress() == null) {
-            mDeviceConnectionState = BlunoLibrary.DeviceConnectionState.isToScan;
+            mDeviceConnectionState = BlunoLibraryService.DeviceConnectionState.isToScan;
             eventListener.onConnectionStateChange(mDeviceConnectionState);
         } else {
             System.out.println("onListItemClick " + device.getName());
@@ -125,12 +172,12 @@ public class BlunoLibrary {
 
             if (mBLEService.connect(mDeviceAddress)) {
                 Log.d(TAG, "Connect request success");
-                mDeviceConnectionState = BlunoLibrary.DeviceConnectionState.isConnecting;
+                mDeviceConnectionState = BlunoLibraryService.DeviceConnectionState.isConnecting;
                 eventListener.onConnectionStateChange(mDeviceConnectionState);
                 mHandler.postDelayed(mConnectingOverTimeRunnable, 10000);
             } else {
                 Log.d(TAG, "Connect request fail");
-                mDeviceConnectionState = BlunoLibrary.DeviceConnectionState.isToScan;
+                mDeviceConnectionState = BlunoLibraryService.DeviceConnectionState.isToScan;
                 eventListener.onConnectionStateChange(mDeviceConnectionState);
             }
         }
@@ -231,7 +278,7 @@ public class BlunoLibrary {
     // -------------------- For Device Scanning Dialog --------------------
 
     public void onScanningDialogCancel() {
-        mDeviceConnectionState = BlunoLibrary.DeviceConnectionState.isToScan;
+        mDeviceConnectionState = BlunoLibraryService.DeviceConnectionState.isToScan;
         eventListener.onConnectionStateChange(mDeviceConnectionState);
         stopScanningLeDevice();
     }
@@ -239,13 +286,13 @@ public class BlunoLibrary {
     public void onScanningDialogOpen(LeDeviceListAdapter mLeDeviceListAdapter) {
         switch (getConnectionState()) {
             case isNull:
-                mDeviceConnectionState = BlunoLibrary.DeviceConnectionState.isScanning;
+                mDeviceConnectionState = BlunoLibraryService.DeviceConnectionState.isScanning;
                 eventListener.onConnectionStateChange(mDeviceConnectionState);
                 scanLeDevice(mLeDeviceListAdapter);
                 break;
 
             case isToScan:
-                mDeviceConnectionState = BlunoLibrary.DeviceConnectionState.isScanning;
+                mDeviceConnectionState = BlunoLibraryService.DeviceConnectionState.isScanning;
                 eventListener.onConnectionStateChange(mDeviceConnectionState);
                 scanLeDevice(mLeDeviceListAdapter);
                 break;
@@ -254,7 +301,7 @@ public class BlunoLibrary {
                 disconnect();
                 mHandler.postDelayed(mDisonnectingOverTimeRunnable, 10000);
                 // mBLEService.close();
-                mDeviceConnectionState = BlunoLibrary.DeviceConnectionState.isDisconnecting;
+                mDeviceConnectionState = BlunoLibraryService.DeviceConnectionState.isDisconnecting;
                 eventListener.onConnectionStateChange(mDeviceConnectionState);
                 break;
         }
@@ -310,8 +357,18 @@ public class BlunoLibrary {
         mBLEService = null;
     }
 
+    // ------------------------------------------------------------
 
-    // Code to manage Service lifecycle
+    @Override
+    public void onDestroy() {
+        stopScanningLeDevice();
+        onStopProcess();
+        onDestroyProcess();
+        disconnect();
+        super.onDestroy();
+    }
+
+    // -------------------- Code to manage Service lifecycle --------------------
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {
@@ -417,6 +474,12 @@ public class BlunoLibrary {
         void onConnectionStateChange(DeviceConnectionState deviceConnectionState);
         
         void onSerialReceived(String theString);
+    }
+
+    public class ServiceBinder extends Binder {
+        public BlunoLibraryService getService() {
+            return BlunoLibraryService.this;
+        }
     }
     
 }

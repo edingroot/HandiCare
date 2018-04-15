@@ -75,7 +75,7 @@ public class BLEService extends Service {
     public boolean initialize() {
         // For API level 18 and above, get a reference to BluetoothAdapter through
         // BluetoothManager.
-        System.out.println("BLEService initialize" + mBluetoothManager);
+        System.out.println("BLEService initialize " + mBluetoothManager);
         if (mBluetoothManager == null) {
             mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
             if (mBluetoothManager == null) {

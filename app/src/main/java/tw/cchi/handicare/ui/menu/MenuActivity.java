@@ -1,15 +1,20 @@
 package tw.cchi.handicare.ui.menu;
 
+import android.Manifest;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.View;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import permissions.dispatcher.NeedsPermission;
+import permissions.dispatcher.RuntimePermissions;
 import tw.cchi.handicare.R;
 import tw.cchi.handicare.ui.base.BaseActivity;
 
+@RuntimePermissions
 public class MenuActivity extends BaseActivity implements MenuMvpView {
 
     @Inject MenuMvpPresenter<MenuMvpView> presenter;
@@ -22,6 +27,15 @@ public class MenuActivity extends BaseActivity implements MenuMvpView {
         getActivityComponent().inject(this);
         setUnBinder(ButterKnife.bind(this));
         presenter.onAttach(this);
+
+        MenuActivityPermissionsDispatcher.callStartServicesWithPermissionCheck(this);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        // NOTE: delegate the permission handling to generated method
+        MenuActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 
     @OnClick(R.id.btnVibrationMode)
@@ -42,6 +56,11 @@ public class MenuActivity extends BaseActivity implements MenuMvpView {
     @OnClick(R.id.btnPreferences)
     public void onPreferencesClick(View v) {
         presenter.launchPreferences();
+    }
+
+    @NeedsPermission({Manifest.permission.ACCESS_COARSE_LOCATION})
+    void callStartServices() {
+        presenter.startServices();
     }
 
     @Override

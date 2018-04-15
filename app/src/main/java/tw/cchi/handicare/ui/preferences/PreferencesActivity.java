@@ -2,6 +2,7 @@ package tw.cchi.handicare.ui.preferences;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.TextView;
 
 import javax.inject.Inject;
@@ -10,28 +11,18 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import tw.cchi.handicare.R;
-import tw.cchi.handicare.device.BlunoLibrary;
-import tw.cchi.handicare.helper.pref.PreferencesHelper;
 import tw.cchi.handicare.ui.base.BaseActivity;
 import tw.cchi.handicare.ui.preferences.adapter.LeDeviceListAdapter;
 
-import static tw.cchi.handicare.device.BlunoLibrary.DeviceConnectionState.isConnected;
-import static tw.cchi.handicare.device.BlunoLibrary.DeviceConnectionState.isConnecting;
-import static tw.cchi.handicare.device.BlunoLibrary.DeviceConnectionState.isDisconnecting;
-import static tw.cchi.handicare.device.BlunoLibrary.DeviceConnectionState.isScanning;
-import static tw.cchi.handicare.device.BlunoLibrary.DeviceConnectionState.isToScan;
-
 public class PreferencesActivity extends BaseActivity
-    implements PreferencesMvpView, BlunoLibrary.BleEventListener {
+    implements PreferencesMvpView {
 
     @Inject PreferencesMvpPresenter<PreferencesMvpView> presenter;
-    @Inject PreferencesHelper preferencesHelper;
 
-    @Inject LeDeviceListAdapter mLeDeviceListAdapter = null;
-    private BlunoLibrary blunoLibrary;
     private AlertDialog mScanDeviceDialog;
 
     @BindView(R.id.txtBluetoothAddr) TextView txtBluetoothAddr;
+    @BindView(R.id.btnChangeBtDevice) Button btnChangeBtDevice;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,47 +33,50 @@ public class PreferencesActivity extends BaseActivity
         setUnBinder(ButterKnife.bind(this));
         presenter.onAttach(this);
 
-        fillPrefValues();
+        presenter.loadPrefValues();
     }
 
-    private void fillPrefValues() {
-        String btDeviceAddr = preferencesHelper.getBTDeviceAddress();
-        if (btDeviceAddr != null) {
-            txtBluetoothAddr.setText(btDeviceAddr);
-        }
+    @Override
+    protected void onPostResume() {
+        presenter.onResumeProcess();
+        super.onPostResume();
+    }
+
+    @Override
+    protected void onPause() {
+        presenter.onPauseProcess();
+        super.onPause();
     }
 
     @OnClick(R.id.btnChangeBtDevice)
     void onChangeBtClick() {
-
+        presenter.launchScanDeviceDialog();
     }
 
     @Override
-    public void onConnectionStateChange(BlunoLibrary.DeviceConnectionState deviceConnectionState) {
-//        switch (deviceConnectionState) {
-//            case isConnected:
-//                buttonScan.setText("Connected");
-//                break;
-//            case isConnecting:
-//                buttonScan.setText("Connecting");
-//                break;
-//            case isToScan:
-//                buttonScan.setText("Scan");
-//                break;
-//            case isScanning:
-//                buttonScan.setText("Scanning");
-//                break;
-//            case isDisconnecting:
-//                buttonScan.setText("isDisconnecting");
-//                break;
-//            default:
-//                break;
-//        }
+    public void setBluetoothAddr(String addr) {
+        txtBluetoothAddr.setText(addr);
     }
 
     @Override
-    public void onSerialReceived(String theString) {
+    public void setScanButtonText(String text) {
+        btnChangeBtDevice.setText(text);
+    }
 
+    @Override
+    public void showScanDeviceDialog(LeDeviceListAdapter mLeDeviceListAdapter) {
+        if (mScanDeviceDialog == null) {
+            // Initializes and show the scan Device Dialog
+            mScanDeviceDialog = new AlertDialog.Builder(this).setTitle("BLE Device Scan...")
+                .setAdapter(mLeDeviceListAdapter, (dialog, which) -> {
+                    presenter.onBtDeviceDialogSelect(mLeDeviceListAdapter.getDevice(which));
+                }).setOnCancelListener(dialog -> {
+                    presenter.onBtDeviceDialogCancel();
+                    dialog.dismiss();
+                }).create();
+        }
+
+        mScanDeviceDialog.show();
     }
 
     @Override
@@ -90,5 +84,4 @@ public class PreferencesActivity extends BaseActivity
         presenter.onDetach();
         super.onDestroy();
     }
-
 }

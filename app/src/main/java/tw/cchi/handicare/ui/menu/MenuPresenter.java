@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import javax.inject.Inject;
 
 import io.reactivex.disposables.CompositeDisposable;
+import tw.cchi.handicare.device.BlunoLibraryService;
 import tw.cchi.handicare.ui.VibrationActivity;
 import tw.cchi.handicare.ui.base.BasePresenter;
 import tw.cchi.handicare.ui.detection.DetectionActivity;
@@ -19,6 +20,11 @@ public class MenuPresenter<V extends MenuMvpView> extends BasePresenter<V> imple
     @Inject
     public MenuPresenter(CompositeDisposable compositeDisposable) {
         super(compositeDisposable);
+    }
+
+    @Override
+    public void startServices() {
+        activity.startService(new Intent(activity, BlunoLibraryService.class));
     }
 
     @Override

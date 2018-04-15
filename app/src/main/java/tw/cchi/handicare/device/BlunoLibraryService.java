@@ -196,8 +196,30 @@ public class BlunoLibraryService extends Service {
         return connected;
     }
 
+    public boolean isBluetoothEnabled() {
+        return mBluetoothAdapter.isEnabled();
+    }
+
     public DeviceConnectionState getConnectionState() {
         return mDeviceConnectionState;
+    }
+
+    /**
+     * Ensures Bluetooth is enabled on the device.
+     * If Bluetooth is not currently enabled, fire an intent to display a dialog
+     * asking the user to grant permission to enable it.
+     */
+    public boolean checkAskEnableBluetooth(Activity activity) {
+        // Ensures Bluetooth is enabled on the device.
+        // If Bluetooth is not currently enabled, fire an intent to display a dialog
+        // asking the user to grant permission to enable it.
+        if (!isBluetoothEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            activity.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public void scanLeDevice(LeDeviceListAdapter mLeDeviceListAdapter) {
@@ -328,17 +350,9 @@ public class BlunoLibraryService extends Service {
 
     // -------------------- Activity Events --------------------
 
-    public void onResumeProcess() {
+    public void onResumeProcess(Activity activity) {
         System.out.println("BlUNOActivity onResume");
-
-        // Ensures Bluetooth is enabled on the device.
-        // If Bluetooth is not currently enabled, fire an intent to display a dialog
-        // asking the user to grant permission to enable it.
-        if (!mBluetoothAdapter.isEnabled()) {
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            ((Activity) mainContext).startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-        }
-
+        checkAskEnableBluetooth(activity);
         mainContext.registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
     }
 

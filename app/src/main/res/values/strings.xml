@@ -3,6 +3,7 @@
     <string name="usb_not_found">Device not found, open USB setting?</string>
     <string name="error_occurred">Error occurred.</string>
 
+    <string name="error_bluetooth_not_enabled">Bluetooth not enabled.</string>
     <string name="error_bluetooth_not_supported">Bluetooth not supported.</string>
     <string name="error_bluetooth_unable_init">Unable to initialize Bluetooth.</string>
     <string name="unknown_device">Unknown device</string>

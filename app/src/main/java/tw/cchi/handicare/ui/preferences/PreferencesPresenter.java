@@ -1,7 +1,8 @@
 package tw.cchi.handicare.ui.preferences;
 
 import android.bluetooth.BluetoothDevice;
-import android.content.Context;
+import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import javax.inject.Inject;
 
@@ -10,8 +11,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import tw.cchi.handicare.MvpApp;
+import tw.cchi.handicare.R;
 import tw.cchi.handicare.device.BlunoLibraryService;
-import tw.cchi.handicare.di.ActivityContext;
 import tw.cchi.handicare.helper.pref.PreferencesHelper;
 import tw.cchi.handicare.ui.base.BasePresenter;
 import tw.cchi.handicare.ui.preferences.adapter.LeDeviceListAdapter;
@@ -20,7 +21,7 @@ public class PreferencesPresenter<V extends PreferencesMvpView> extends BasePres
     implements PreferencesMvpPresenter<V>, BlunoLibraryService.BleEventListener {
 
     @Inject MvpApp mvpApp;
-    @Inject @ActivityContext Context context;
+    @Inject AppCompatActivity activity;
     @Inject PreferencesHelper preferencesHelper;
     @Inject LeDeviceListAdapter mLeDeviceListAdapter;
 
@@ -40,8 +41,10 @@ public class PreferencesPresenter<V extends PreferencesMvpView> extends BasePres
     @Override
     public void onResumeProcess() {
         if (blunoLibraryService != null) {
-            blunoLibraryService.onResumeProcess();
+            blunoLibraryService.onResumeProcess(activity);
             blunoLibOnResumeCalled = true;
+        } else {
+            blunoLibOnResumeCalled = false;
         }
     }
 
@@ -64,9 +67,15 @@ public class PreferencesPresenter<V extends PreferencesMvpView> extends BasePres
     public void launchScanDeviceDialog() {
         getBlunoLibraryServiceObservable().subscribe(blunoLibraryService -> {
             blunoLibraryService.attachEventListener(this);
-//            if (!blunoLibOnResumeCalled)
-                blunoLibraryService.onResumeProcess();
-            
+
+            if (!blunoLibOnResumeCalled)
+                blunoLibraryService.onResumeProcess(activity);
+
+            if (!blunoLibraryService.checkAskEnableBluetooth(activity)) {
+                Toast.makeText(activity, activity.getString(R.string.error_bluetooth_not_enabled), Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             switch (blunoLibraryService.getConnectionState()) {
                 case isNull:
                 case isToScan:

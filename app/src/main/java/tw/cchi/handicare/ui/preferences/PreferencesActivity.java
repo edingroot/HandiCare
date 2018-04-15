@@ -45,7 +45,8 @@ public class PreferencesActivity extends BaseActivity
     @Override
     protected void onPause() {
         presenter.onPauseProcess();
-        mScanDeviceDialog.dismiss();
+        if (mScanDeviceDialog != null)
+            mScanDeviceDialog.dismiss();
         super.onPause();
     }
 

@@ -2,7 +2,6 @@ package tw.cchi.handicare.ui.preferences;
 
 import android.bluetooth.BluetoothDevice;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
 
 import javax.inject.Inject;
 
@@ -71,18 +70,27 @@ public class PreferencesPresenter<V extends PreferencesMvpView> extends BasePres
             if (!blunoLibOnResumeCalled)
                 blunoLibraryService.onResumeProcess(activity);
 
+            // Check bluetooth enabled
             if (!blunoLibraryService.checkAskEnableBluetooth(activity)) {
-                Toast.makeText(activity, activity.getString(R.string.error_bluetooth_not_enabled), Toast.LENGTH_SHORT).show();
+                getMvpView().showToast(R.string.error_bluetooth_not_enabled);
                 return;
             }
 
-            switch (blunoLibraryService.getConnectionState()) {
-                case isNull:
-                case isToScan:
-                    getMvpView().showScanDeviceDialog(mLeDeviceListAdapter);
-                    break;
-            }
-            blunoLibraryService.onScanningDialogOpen(mLeDeviceListAdapter);
+            // Check location enabled
+            blunoLibraryService.checkAskEnableLocation(activity).subscribe(result -> {
+                if (!result) {
+                    getMvpView().showToast(R.string.error_location_not_enabled);
+                    return;
+                }
+
+                switch (blunoLibraryService.getConnectionState()) {
+                    case isNull:
+                    case isToScan:
+                        getMvpView().showScanDeviceDialog(mLeDeviceListAdapter);
+                        break;
+                }
+                blunoLibraryService.onScanningDialogOpen(mLeDeviceListAdapter);
+            });
         });
     }
 

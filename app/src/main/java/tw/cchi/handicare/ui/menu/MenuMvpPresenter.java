@@ -6,6 +6,8 @@ public interface MenuMvpPresenter<V extends MenuMvpView> extends MvpPresenter<V>
 
     void startServices();
 
+    void handleBlunoActivityResult(int requestCode, int resultCode);
+
     void launchVibrationMode();
 
     void launchShockMode();

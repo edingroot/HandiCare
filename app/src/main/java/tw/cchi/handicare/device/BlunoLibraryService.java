@@ -18,20 +18,17 @@ import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -50,16 +47,21 @@ import io.reactivex.schedulers.Schedulers;
 import tw.cchi.handicare.MvpApp;
 import tw.cchi.handicare.R;
 import tw.cchi.handicare.di.ApplicationContext;
+import tw.cchi.handicare.di.MainLooper;
 import tw.cchi.handicare.di.component.DaggerServiceComponent;
 import tw.cchi.handicare.di.component.ServiceComponent;
+import tw.cchi.handicare.di.module.ServiceModule;
 import tw.cchi.handicare.service.ble.BLEService;
 import tw.cchi.handicare.ui.preferences.adapter.LeDeviceListAdapter;
+
+import static android.app.Activity.RESULT_OK;
 
 public class BlunoLibraryService extends Service {
     private final static String TAG = BlunoLibraryService.class.getSimpleName();
 
     public enum DeviceConnectionState {isNull, isScanning, isToScan, isConnecting, isConnected, isDisconnecting}
     public static final int REQUEST_ENABLE_BT = 1;
+    public static final int REQUEST_ENABLE_LOCATION = 2;
 
     private static final String SerialPortUUID = "0000dfb1-0000-1000-8000-00805f9b34fb";
     private static final String CommandUUID = "0000dfb2-0000-1000-8000-00805f9b34fb";
@@ -70,6 +72,7 @@ public class BlunoLibraryService extends Service {
     private ArrayList<ArrayList<BluetoothGattCharacteristic>> mGattCharacteristics = new ArrayList<>();
 
     @Inject @ApplicationContext Context mainContext;
+    @Inject @MainLooper Handler mainHandler;
     private IBinder mBinder;
     private BLEService mBLEService;
     private boolean connected = false;
@@ -119,6 +122,7 @@ public class BlunoLibraryService extends Service {
     public void onCreate() {
         super.onCreate();
         ServiceComponent component = DaggerServiceComponent.builder()
+            .serviceModule(new ServiceModule(this))
             .applicationComponent(((MvpApp) getApplication()).getComponent())
             .build();
         component.inject(this);
@@ -142,32 +146,6 @@ public class BlunoLibraryService extends Service {
         this.eventListener = serviceEventListener;
     }
 
-    public static IntentFilter makeGattUpdateIntentFilter() {
-        final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(BLEService.ACTION_GATT_CONNECTED);
-        intentFilter.addAction(BLEService.ACTION_GATT_DISCONNECTED);
-        intentFilter.addAction(BLEService.ACTION_GATT_SERVICES_DISCOVERED);
-        intentFilter.addAction(BLEService.ACTION_DATA_AVAILABLE);
-        return intentFilter;
-    }
-
-    public void serialSend(String theString) {
-        if (mDeviceConnectionState == DeviceConnectionState.isConnected) {
-            mSCharacteristic.setValue(theString);
-            mBLEService.writeCharacteristic(mSCharacteristic);
-        }
-    }
-
-    private void serialBegin(int baud) {
-        mBaudrate = baud;
-        mBaudrateBuffer = "AT+CURRUART=" + mBaudrate + "\r\n";
-    }
-
-    private void startBluetoothService() {
-        Intent gattServiceIntent = new Intent(mainContext, BLEService.class);
-        mainContext.bindService(gattServiceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
-    }
-
     public boolean initiate() {
         // Use this check to determine whether BLE is supported on the device.
         // Then you can selectively disable BLE-related features.
@@ -188,8 +166,122 @@ public class BlunoLibraryService extends Service {
 
         serialBegin(115200);
         startBluetoothService();
+        mainContext.registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
 
         return true;
+    }
+
+    public Observable<Boolean> checkAskEnableCapabilities(Activity activity) {
+        return Observable.<Boolean>create(emitter -> {
+            if (!checkAskEnableBluetooth(activity)) {
+                showToastMessage(R.string.error_bluetooth_not_enabled);
+                emitter.onNext(false);
+            }
+
+            checkAskEnableLocation(activity).subscribe(locationEnabled -> {
+                if (!locationEnabled) {
+                    showToastMessage(R.string.error_location_not_enabled);
+                    emitter.onNext(false);
+                } else {
+                    emitter.onNext(true);
+                }
+            });
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    /**
+     * @return is all capabilities enabled or not
+     */
+    public boolean handleCapabilitiesActivityResult(int requestCode, int resultCode) {
+        // final LocationSettingsStates states = LocationSettingsStates.fromIntent(data);
+        switch (requestCode) {
+            case REQUEST_ENABLE_BT:
+            case REQUEST_ENABLE_LOCATION:
+                return resultCode == RESULT_OK && isBluetoothEnabled() && isLocationEnabled();
+        }
+
+        return false;
+    }
+
+    /**
+     * Ensures Bluetooth is enabled on the device.
+     * If Bluetooth is not currently enabled, fire an intent to display a dialog
+     * asking the user to grant permission to enable it.
+     */
+    private boolean checkAskEnableBluetooth(Activity activity) {
+        // Ensures Bluetooth is enabled on the device.
+        // If Bluetooth is not currently enabled, fire an intent to display a dialog
+        // asking the user to grant permission to enable it.
+        if (!isBluetoothEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            activity.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private Observable<Boolean> checkAskEnableLocation(Activity activity) {
+        return Observable.<Boolean>create(emitter -> {
+
+            if (isLocationEnabled()) {
+                emitter.onNext(true);
+                return;
+            }
+
+            GoogleApiClient googleApiClient = new GoogleApiClient.Builder(activity)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                    @Override
+                    public void onConnected(@Nullable Bundle bundle) {
+                    }
+
+                    @Override
+                    public void onConnectionSuspended(int i) {
+                    }
+                })
+                .addOnConnectionFailedListener(connectionResult -> emitter.onNext(false))
+                .build();
+            googleApiClient.connect();
+
+            LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(LocationRequest.create()
+                    .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                    .setInterval(5 * 1000)
+                    .setFastestInterval(2 * 1000)
+                )
+                .setAlwaysShow(true); // this is the key ingredient
+
+            PendingResult<LocationSettingsResult> pendingResult =
+                LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build());
+            pendingResult.setResultCallback(result -> {
+                final Status status = result.getStatus();
+                // final LocationSettingsStates state = result.getLocationSettingsStates();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        emitter.onNext(true);
+                        break;
+
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        // Location settings are not satisfied,
+                        // but could be fixed by showing the user a dialog.
+                        try {
+                            // Show the dialog by calling startResolutionForResult(),
+                            // and check the result in onActivityResult()
+                            status.startResolutionForResult(activity, REQUEST_ENABLE_LOCATION);
+                        } catch (IntentSender.SendIntentException e) {
+                            e.printStackTrace();
+                        }
+                        emitter.onNext(false);
+                        break;
+
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        emitter.onNext(false);
+                        break;
+                }
+            });
+
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
     public boolean connect(BluetoothDevice device) {
@@ -197,7 +289,7 @@ public class BlunoLibraryService extends Service {
     }
 
     public boolean connect(String deviceName, String deviceAddress) {
-        stopScanningLeDevice();
+        stopScanningLeDevice(false);
 
         if (deviceName == null || deviceAddress == null) {
             mDeviceConnectionState = BlunoLibraryService.DeviceConnectionState.isToScan;
@@ -224,98 +316,16 @@ public class BlunoLibraryService extends Service {
         }
     }
 
+    public void serialSend(String theString) {
+        if (mDeviceConnectionState == DeviceConnectionState.isConnected) {
+            mSCharacteristic.setValue(theString);
+            mBLEService.writeCharacteristic(mSCharacteristic);
+        }
+    }
+
     public void disconnect() {
         if (mBLEService != null)
             mBLEService.disconnect();
-    }
-
-    public boolean isConnected() {
-        return connected;
-    }
-
-    public boolean isBluetoothEnabled() {
-        return mBluetoothAdapter.isEnabled();
-    }
-
-    public Observable<Boolean> checkAskEnableLocation(Activity activity) {
-        return Observable.<Boolean>create(emitter -> {
-
-            GoogleApiClient googleApiClient = new GoogleApiClient.Builder(activity)
-                .addApi(LocationServices.API)
-                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
-                    @Override
-                    public void onConnected(@Nullable Bundle bundle) {
-                    }
-
-                    @Override
-                    public void onConnectionSuspended(int i) {
-                    }
-                })
-                .addOnConnectionFailedListener(connectionResult -> emitter.onNext(false))
-                .build();
-            googleApiClient.connect();
-
-            LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                .addLocationRequest(
-                    LocationRequest.create()
-                        .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                        .setInterval(5 * 1000)
-                        .setFastestInterval(2 * 1000)
-                );
-            builder.setAlwaysShow(true); // this is the key ingredient
-
-            PendingResult<LocationSettingsResult> pendingResult =
-                LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build());
-            pendingResult.setResultCallback(result -> {
-                final Status status = result.getStatus();
-                // final LocationSettingsStates state = result.getLocationSettingsStates();
-                switch (status.getStatusCode()) {
-                    case LocationSettingsStatusCodes.SUCCESS:
-                        emitter.onNext(true);
-                        break;
-
-                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                        // Location settings are not satisfied,
-                        // but could be fixed by showing the user a dialog.
-                        try {
-                            // Show the dialog by calling startResolutionForResult(),
-                            // and check the result in onActivityResult()
-                            status.startResolutionForResult(activity, 1000);
-                        } catch (IntentSender.SendIntentException e) {
-                            e.printStackTrace();
-                        }
-                        emitter.onNext(false);
-                        break;
-
-                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                        emitter.onNext(false);
-                        break;
-                }
-            });
-
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
-    }
-
-    public DeviceConnectionState getConnectionState() {
-        return mDeviceConnectionState;
-    }
-
-    /**
-     * Ensures Bluetooth is enabled on the device.
-     * If Bluetooth is not currently enabled, fire an intent to display a dialog
-     * asking the user to grant permission to enable it.
-     */
-    public boolean checkAskEnableBluetooth(Activity activity) {
-        // Ensures Bluetooth is enabled on the device.
-        // If Bluetooth is not currently enabled, fire an intent to display a dialog
-        // asking the user to grant permission to enable it.
-        if (!isBluetoothEnabled()) {
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            activity.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-            return false;
-        } else {
-            return true;
-        }
     }
 
     public void scanLeDevice(LeDeviceListAdapter mLeDeviceListAdapter) {
@@ -325,7 +335,7 @@ public class BlunoLibraryService extends Service {
             public void onScanResult(int callbackType, ScanResult result) {
                 super.onScanResult(callbackType, result);
                 // System.out.println("mLeScanCallback onLeScan run ");
-                new Handler(Looper.getMainLooper()).post(() -> {
+                mainHandler.post(() -> {
                     mLeDeviceListAdapter.addDevice(result.getDevice());
                     mLeDeviceListAdapter.notifyDataSetChanged();
                 });
@@ -357,11 +367,47 @@ public class BlunoLibraryService extends Service {
         }
     }
 
-    public void stopScanningLeDevice() {
+    public void stopScanningLeDevice(boolean changeState) {
         if (mScanning) {
             mScanning = false;
             mBluetoothAdapter.getBluetoothLeScanner().stopScan(mLeScanCallback);
+
+            if (changeState) {
+                mDeviceConnectionState = DeviceConnectionState.isToScan;
+                eventListener.onConnectionStateChange(mDeviceConnectionState);
+            }
         }
+    }
+
+    public boolean isConnected() {
+        return connected;
+    }
+
+    public boolean isBluetoothEnabled() {
+        return mBluetoothAdapter.isEnabled();
+    }
+
+    public boolean isLocationEnabled() {
+        LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        try {
+            return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        } catch (NullPointerException e){
+            return false;
+        }
+    }
+
+    public DeviceConnectionState getConnectionState() {
+        return mDeviceConnectionState;
+    }
+
+
+    private static IntentFilter makeGattUpdateIntentFilter() {
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(BLEService.ACTION_GATT_CONNECTED);
+        intentFilter.addAction(BLEService.ACTION_GATT_DISCONNECTED);
+        intentFilter.addAction(BLEService.ACTION_GATT_SERVICES_DISCOVERED);
+        intentFilter.addAction(BLEService.ACTION_DATA_AVAILABLE);
+        return intentFilter;
     }
 
     private void getGattServices(List<BluetoothGattService> gattServices) {
@@ -411,21 +457,25 @@ public class BlunoLibraryService extends Service {
         }
     }
 
+    private void serialBegin(int baud) {
+        mBaudrate = baud;
+        mBaudrateBuffer = "AT+CURRUART=" + mBaudrate + "\r\n";
+    }
+
+    private void startBluetoothService() {
+        Intent gattServiceIntent = new Intent(mainContext, BLEService.class);
+        mainContext.bindService(gattServiceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
+    }
+
     private void showToastMessage(int stringRes) {
-        showToastMessage(mainContext.getString(stringRes));
+        mainHandler.post(() -> showToastMessage(mainContext.getString(stringRes)));
     }
 
     private void showToastMessage(String string) {
         Toast.makeText(mainContext, string, Toast.LENGTH_SHORT).show();
     }
 
-    // -------------------- For Device Scanning Dialog --------------------
-
-    public void onScanningDialogCancel() {
-        mDeviceConnectionState = BlunoLibraryService.DeviceConnectionState.isToScan;
-        eventListener.onConnectionStateChange(mDeviceConnectionState);
-        stopScanningLeDevice();
-    }
+    // -------------------- For Device Scanning Dialog -------------------- //
 
     public void onScanningDialogOpen(LeDeviceListAdapter mLeDeviceListAdapter) {
         switch (getConnectionState()) {
@@ -451,61 +501,36 @@ public class BlunoLibraryService extends Service {
         }
     }
 
-    // -------------------- Activity Events --------------------
-
-    public void onResumeProcess(Activity activity) {
-        System.out.println("BlUNOActivity onResume");
-        if (!checkAskEnableBluetooth(activity)) {
-            showToastMessage(R.string.error_bluetooth_not_enabled);
-        }
-        mainContext.registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
+    public void onScanningDialogCancel() {
+        mDeviceConnectionState = BlunoLibraryService.DeviceConnectionState.isToScan;
+        eventListener.onConnectionStateChange(mDeviceConnectionState);
+        stopScanningLeDevice(false);
     }
 
-    public void onPauseProcess() {
-        System.out.println("BLUNOActivity onPause");
+    // -------------------- /For Device Scanning Dialog -------------------- //
 
-        stopScanningLeDevice();
+    @Override
+    public void onDestroy() {
+        stopScanningLeDevice(true);
 
         mainContext.unregisterReceiver(mGattUpdateReceiver);
-        mDeviceConnectionState = DeviceConnectionState.isToScan;
-        eventListener.onConnectionStateChange(mDeviceConnectionState);
 
         if (mBLEService != null) {
             mBLEService.disconnect();
             mHandler.postDelayed(mDisonnectingOverTimeRunnable, 10000);
-//			mBLEService.close();
-        }
-        mSCharacteristic = null;
-    }
-
-    public void onStopProcess() {
-        System.out.println("MiUnoActivity onStop");
-        if (mBLEService != null) {
-//			mBLEService.disconnect();
-//          mHandler.postDelayed(mDisonnectingOverTimeRunnable, 10000);
             mHandler.removeCallbacks(mDisonnectingOverTimeRunnable);
             mBLEService.close();
         }
-        mSCharacteristic = null;
-    }
 
-    public void onDestroyProcess() {
+        mSCharacteristic = null;
         mainContext.unbindService(mServiceConnection);
         mBLEService = null;
-    }
 
-    // ------------------------------------------------------------
-
-    @Override
-    public void onDestroy() {
-        stopScanningLeDevice();
-        onStopProcess();
-        onDestroyProcess();
-        disconnect();
         super.onDestroy();
     }
 
-    // -------------------- Code to manage Service lifecycle --------------------
+    // -------------------- Service lifecycle Management -------------------- //
+
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder service) {

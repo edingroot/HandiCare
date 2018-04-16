@@ -10,7 +10,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import tw.cchi.handicare.MvpApp;
-import tw.cchi.handicare.R;
 import tw.cchi.handicare.device.BlunoLibraryService;
 import tw.cchi.handicare.helper.pref.PreferencesHelper;
 import tw.cchi.handicare.ui.VibrationActivity;
@@ -26,7 +25,6 @@ public class MenuPresenter<V extends MenuMvpView> extends BasePresenter<V> imple
     @Inject PreferencesHelper preferencesHelper;
 
     private BlunoLibraryService blunoLibraryService;
-    private boolean blunoLibOnResumeCalled = false;
 
     @Inject
     public MenuPresenter(CompositeDisposable compositeDisposable) {
@@ -38,28 +36,21 @@ public class MenuPresenter<V extends MenuMvpView> extends BasePresenter<V> imple
         activity.startService(new Intent(activity, BlunoLibraryService.class));
 
         // Check if bluetooth & location enabled and auto connect device if available
-        String savedDeviceAddress = preferencesHelper.getBTDeviceAddress();
         connectBlunoLibraryService().subscribe(blunoLibraryService -> {
-            if (!blunoLibOnResumeCalled)
-                blunoLibraryService.onResumeProcess(activity);
-
-            // Check if location enabled
-            blunoLibraryService.checkAskEnableLocation(activity).subscribe(result -> {
-                if (!result) {
-                    getMvpView().showToast(R.string.error_location_not_enabled);
-                    return;
-                }
-
-                if (savedDeviceAddress != null) {
-                    switch (blunoLibraryService.getConnectionState()) {
-                        case isNull:
-                        case isToScan:
-                            blunoLibraryService.connect("-", savedDeviceAddress);
-                            break;
-                    }
-                }
+            blunoLibraryService.checkAskEnableCapabilities(activity).subscribe(result -> {
+                if (result)
+                    autoConnectBluno();
             });
         });
+    }
+
+    @Override
+    public void handleBlunoActivityResult(int requestCode, int resultCode) {
+        if (blunoLibraryService != null) {
+            if (blunoLibraryService.handleCapabilitiesActivityResult(requestCode, resultCode)) {
+                autoConnectBluno();
+            }
+        }
     }
 
     @Override
@@ -97,6 +88,21 @@ public class MenuPresenter<V extends MenuMvpView> extends BasePresenter<V> imple
         }
 
         return observable.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    private boolean autoConnectBluno() {
+        String savedDeviceAddress = preferencesHelper.getBTDeviceAddress();
+        if (savedDeviceAddress == null)
+            return false;
+
+        switch (blunoLibraryService.getConnectionState()) {
+            case isNull:
+            case isToScan:
+                blunoLibraryService.connect("-", savedDeviceAddress);
+                break;
+        }
+
+        return true;
     }
 
 }

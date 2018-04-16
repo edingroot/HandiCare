@@ -1,6 +1,7 @@
 package tw.cchi.handicare.ui.menu;
 
 import android.Manifest;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
@@ -31,12 +32,24 @@ public class MenuActivity extends BaseActivity implements MenuMvpView {
         MenuActivityPermissionsDispatcher.callStartServicesWithPermissionCheck(this);
     }
 
+    @NeedsPermission({Manifest.permission.ACCESS_COARSE_LOCATION})
+    void callStartServices() {
+        presenter.startServices();
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         // NOTE: delegate the permission handling to generated method
         MenuActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        presenter.handleBlunoActivityResult(requestCode, resultCode);
+    }
+
 
     @OnClick(R.id.btnVibrationMode)
     public void onVibrationModeClick(View v) {
@@ -58,10 +71,6 @@ public class MenuActivity extends BaseActivity implements MenuMvpView {
         presenter.launchPreferences();
     }
 
-    @NeedsPermission({Manifest.permission.ACCESS_COARSE_LOCATION})
-    void callStartServices() {
-        presenter.startServices();
-    }
 
     @Override
     protected void onDestroy() {

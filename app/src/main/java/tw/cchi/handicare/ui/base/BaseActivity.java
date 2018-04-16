@@ -28,8 +28,6 @@ import tw.cchi.handicare.utils.CommonUtils;
 
 public abstract class BaseActivity extends AppCompatActivity implements MvpView {
 
-    @Inject public MvpApp application;
-
     private ActivityComponent mActivityComponent;
     private Unbinder mUnBinder;
 

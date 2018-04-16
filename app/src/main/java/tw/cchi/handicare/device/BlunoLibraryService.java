@@ -75,6 +75,7 @@ public class BlunoLibraryService extends Service {
     @Inject @MainLooper Handler mainHandler;
     private IBinder mBinder;
     private BLEService mBLEService;
+    private boolean initialized = false;
     private boolean connected = false;
 
     private BleEventListener eventListener;
@@ -127,9 +128,7 @@ public class BlunoLibraryService extends Service {
             .build();
         component.inject(this);
 
-        if (!initiate()) {
-            showToastMessage(R.string.error_bluetooth_not_supported);
-        }
+        initiate();
     }
 
     @Nullable
@@ -147,6 +146,9 @@ public class BlunoLibraryService extends Service {
     }
 
     public boolean initiate() {
+        if (initialized)
+            return true;
+
         // Use this check to determine whether BLE is supported on the device.
         // Then you can selectively disable BLE-related features.
         if (!mainContext.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
@@ -168,6 +170,7 @@ public class BlunoLibraryService extends Service {
         startBluetoothService();
         mainContext.registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
 
+        initialized = true;
         return true;
     }
 

@@ -10,10 +10,10 @@ import android.os.IBinder;
 import javax.inject.Inject;
 
 import tw.cchi.handicare.device.BlunoLibraryService;
+import tw.cchi.handicare.device.eshock.DeviceAcup;
 import tw.cchi.handicare.di.component.ApplicationComponent;
 import tw.cchi.handicare.di.component.DaggerApplicationComponent;
 import tw.cchi.handicare.di.module.ApplicationModule;
-import tw.cchi.handicare.device.eshock.DeviceAcup;
 
 public class MvpApp extends Application {
 
@@ -62,8 +62,7 @@ public class MvpApp extends Application {
             };
 
             blunoLibraryServiceConnected = bindService(
-                new Intent(
-                    this, BlunoLibraryService.class),
+                new Intent(this, BlunoLibraryService.class),
                     blunoLibraryServiceConnection, BIND_AUTO_CREATE
             );
         }

@@ -8,6 +8,7 @@ import javax.inject.Singleton;
 
 import dagger.Component;
 import tw.cchi.handicare.MvpApp;
+import tw.cchi.handicare.device.eshock.DeviceAcup;
 import tw.cchi.handicare.di.ApplicationContext;
 import tw.cchi.handicare.di.PresenterHolder;
 import tw.cchi.handicare.di.module.ApplicationModule;

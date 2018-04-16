@@ -27,4 +27,9 @@ public class DetectionPresenter<V extends DetectionMvpView> extends BasePresente
         super.onDetach();
     }
 
+    @Override
+    public boolean enableDetection() {
+        // TODO
+        return false;
+    }
 }

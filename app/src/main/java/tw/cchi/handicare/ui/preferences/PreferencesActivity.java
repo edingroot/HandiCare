@@ -37,12 +37,6 @@ public class PreferencesActivity extends BaseActivity
     }
 
     @Override
-    protected void onPostResume() {
-        presenter.onResumeProcess();
-        super.onPostResume();
-    }
-
-    @Override
     protected void onPause() {
         presenter.onPauseProcess();
         if (mScanDeviceDialog != null)

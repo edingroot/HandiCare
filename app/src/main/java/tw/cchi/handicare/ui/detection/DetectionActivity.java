@@ -8,13 +8,14 @@ import javax.inject.Inject;
 import at.grabner.circleprogress.CircleProgressView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import tw.cchi.handicare.R;
 import tw.cchi.handicare.component.MultiChartView;
 import tw.cchi.handicare.ui.base.BaseActivity;
 
 public class DetectionActivity extends BaseActivity implements DetectionMvpView {
 
-    @Inject DetectionMvpPresenter<DetectionMvpView> mPresenter;
+    @Inject DetectionMvpPresenter<DetectionMvpView> presenter;
 
     @BindView(R.id.togglePower) ToggleButton togglePower;
     @BindView(R.id.circleProgressView) CircleProgressView circleProgressView;
@@ -27,12 +28,19 @@ public class DetectionActivity extends BaseActivity implements DetectionMvpView 
 
         getActivityComponent().inject(this);
         setUnBinder(ButterKnife.bind(this));
-        mPresenter.onAttach(this);
+        presenter.onAttach(this);
+    }
+
+    @OnClick(R.id.toggleEnable)
+    void toggleEnableClick(ToggleButton toggleButton) {
+        if (!presenter.enableDetection()) {
+            toggleButton.setChecked(false);
+        }
     }
 
     @Override
     protected void onDestroy() {
-        mPresenter.onDetach();
+        presenter.onDetach();
         super.onDestroy();
     }
 

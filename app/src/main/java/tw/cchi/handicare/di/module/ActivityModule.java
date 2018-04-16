@@ -1,14 +1,16 @@
 package tw.cchi.handicare.di.module;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 
 import dagger.Module;
 import dagger.Provides;
 import io.reactivex.disposables.CompositeDisposable;
-import tw.cchi.handicare.di.ActivityContext;
+import tw.cchi.handicare.MvpApp;
 import tw.cchi.handicare.device.eshock.DeviceAcup;
+import tw.cchi.handicare.di.ActivityContext;
 import tw.cchi.handicare.ui.base.BaseActivity;
 import tw.cchi.handicare.ui.detection.DetectionMvpPresenter;
 import tw.cchi.handicare.ui.detection.DetectionMvpView;
@@ -54,8 +56,8 @@ public class ActivityModule {
     }
 
     @Provides
-    DeviceAcup provideDeviceAcup() {
-        return mActivity.application.mDevAcup;
+    DeviceAcup provideDeviceAcup(MvpApp mvpApp) {
+        return mvpApp.mDevAcup;
     }
 
     @Provides

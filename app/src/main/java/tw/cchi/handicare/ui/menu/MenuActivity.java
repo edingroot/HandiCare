@@ -32,16 +32,16 @@ public class MenuActivity extends BaseActivity implements MenuMvpView {
         MenuActivityPermissionsDispatcher.callStartServicesWithPermissionCheck(this);
     }
 
-    @NeedsPermission({Manifest.permission.ACCESS_COARSE_LOCATION})
-    void callStartServices() {
-        presenter.startServices();
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         // NOTE: delegate the permission handling to generated method
         MenuActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+    }
+
+    @NeedsPermission({Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.ACCESS_COARSE_LOCATION})
+    void callStartServices() {
+        presenter.startServices();
     }
 
     @Override

@@ -5,13 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
 import tw.cchi.handicare.MvpApp;
-import tw.cchi.handicare.device.BlunoLibraryService;
-import tw.cchi.handicare.helper.pref.PreferencesHelper;
 import tw.cchi.handicare.ui.VibrationActivity;
 import tw.cchi.handicare.ui.base.BasePresenter;
 import tw.cchi.handicare.ui.detection.DetectionActivity;
@@ -22,9 +17,6 @@ public class MenuPresenter<V extends MenuMvpView> extends BasePresenter<V> imple
 
     @Inject MvpApp mvpApp;
     @Inject AppCompatActivity activity;
-    @Inject PreferencesHelper preferencesHelper;
-
-    private BlunoLibraryService blunoLibraryService;
 
     @Inject
     public MenuPresenter(CompositeDisposable compositeDisposable) {
@@ -33,10 +25,12 @@ public class MenuPresenter<V extends MenuMvpView> extends BasePresenter<V> imple
 
     @Override
     public void startServices() {
-        activity.startService(new Intent(activity, BlunoLibraryService.class));
+        // BlunoLibraryService will be started by BIND_AUTO_CREATE flag while calling connectBlunoLibraryService()
+        // activity.startService(new Intent(activity, BlunoLibraryService.class));
 
         // Check if bluetooth & location enabled and auto connect device if available
         connectBlunoLibraryService().subscribe(blunoLibraryService -> {
+            blunoLibraryService.initiate();
             blunoLibraryService.checkAskEnableCapabilities(activity).subscribe(result -> {
                 if (result)
                     autoConnectBluno();
@@ -71,38 +65,6 @@ public class MenuPresenter<V extends MenuMvpView> extends BasePresenter<V> imple
     @Override
     public void launchPreferences() {
         activity.startActivity(new Intent(activity, PreferencesActivity.class));
-    }
-
-    private Observable<BlunoLibraryService> connectBlunoLibraryService() {
-        Observable<BlunoLibraryService> observable;
-
-        if (blunoLibraryService == null) {
-            observable = Observable.create(emitter -> {
-                mvpApp.getBlunoLibraryService(service -> {
-                    blunoLibraryService = (BlunoLibraryService) service;
-                    emitter.onNext(blunoLibraryService);
-                });
-            });
-        } else {
-            observable = Observable.just(blunoLibraryService);
-        }
-
-        return observable.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
-    }
-
-    private boolean autoConnectBluno() {
-        String savedDeviceAddress = preferencesHelper.getBTDeviceAddress();
-        if (savedDeviceAddress == null)
-            return false;
-
-        switch (blunoLibraryService.getConnectionState()) {
-            case isNull:
-            case isToScan:
-                blunoLibraryService.connect("-", savedDeviceAddress);
-                break;
-        }
-
-        return true;
     }
 
 }

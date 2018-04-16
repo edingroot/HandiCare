@@ -4,7 +4,16 @@ package tw.cchi.handicare.ui.base;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
+import tw.cchi.handicare.MvpApp;
+import tw.cchi.handicare.device.BlunoLibraryService;
+import tw.cchi.handicare.helper.pref.PreferencesHelper;
+
+import static tw.cchi.handicare.device.BlunoLibraryService.DeviceConnectionState.isNull;
+import static tw.cchi.handicare.device.BlunoLibraryService.DeviceConnectionState.isToScan;
 
 /**
  * Base class that implements the Presenter interface and provides a base implementation for
@@ -15,6 +24,10 @@ public class BasePresenter<V extends MvpView> implements MvpPresenter<V> {
 
     private final CompositeDisposable mCompositeDisposable;
     private V mMvpView;
+
+    @Inject public PreferencesHelper preferencesHelper;
+    @Inject MvpApp application;
+    public BlunoLibraryService blunoLibraryService;
 
     @Inject
     public BasePresenter(CompositeDisposable compositeDisposable) {
@@ -54,5 +67,39 @@ public class BasePresenter<V extends MvpView> implements MvpPresenter<V> {
             super("Please call Presenter.onAttach(MvpView) before" +
                     " requesting data to the Presenter");
         }
+    }
+
+    // ------------------------------------------------------------------------------------- //
+
+    protected Observable<BlunoLibraryService> connectBlunoLibraryService() {
+        Observable<BlunoLibraryService> observable;
+
+        if (blunoLibraryService == null) {
+            observable = Observable.create(emitter -> {
+                application.getBlunoLibraryService(service -> {
+                    blunoLibraryService = (BlunoLibraryService) service;
+                    emitter.onNext(blunoLibraryService);
+                });
+            });
+        } else {
+            observable = Observable.just(blunoLibraryService);
+        }
+
+        return observable.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    protected boolean autoConnectBluno() {
+        String savedDeviceAddress = preferencesHelper.getBTDeviceAddress();
+        if (savedDeviceAddress == null)
+            return false;
+
+        switch (blunoLibraryService.getConnectionState()) {
+            case isNull:
+            case isToScan:
+                blunoLibraryService.connect("-", savedDeviceAddress);
+                break;
+        }
+
+        return true;
     }
 }

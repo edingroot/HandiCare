@@ -5,10 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.schedulers.Schedulers;
 import tw.cchi.handicare.MvpApp;
 import tw.cchi.handicare.R;
 import tw.cchi.handicare.device.BlunoLibraryService;
@@ -21,10 +18,7 @@ public class PreferencesPresenter<V extends PreferencesMvpView> extends BasePres
 
     @Inject MvpApp mvpApp;
     @Inject AppCompatActivity activity;
-    @Inject PreferencesHelper preferencesHelper;
     @Inject LeDeviceListAdapter mLeDeviceListAdapter;
-
-    private BlunoLibraryService blunoLibraryService;
 
     @Inject
     public PreferencesPresenter(CompositeDisposable compositeDisposable) {
@@ -34,13 +28,6 @@ public class PreferencesPresenter<V extends PreferencesMvpView> extends BasePres
     @Override
     public void onAttach(V mvpView) {
         super.onAttach(mvpView);
-    }
-
-    @Override
-    public void onResumeProcess() {
-        if (blunoLibraryService != null) {
-            blunoLibraryService.checkAskEnableCapabilities(activity).subscribe();
-        }
     }
 
     @Override
@@ -105,23 +92,6 @@ public class PreferencesPresenter<V extends PreferencesMvpView> extends BasePres
         connectBlunoLibraryService().subscribe(BlunoLibraryService::onScanningDialogCancel);
     }
 
-    private Observable<BlunoLibraryService> connectBlunoLibraryService() {
-        Observable<BlunoLibraryService> observable;
-
-        if (blunoLibraryService == null) {
-            observable = Observable.create(emitter -> {
-                mvpApp.getBlunoLibraryService(service -> {
-                    blunoLibraryService = (BlunoLibraryService) service;
-                    emitter.onNext(blunoLibraryService);
-                });
-            });
-        } else {
-            observable = Observable.just(blunoLibraryService);
-        }
-
-        return observable.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
-    }
-
     // ----------- BlunoLibraryService.BleEventListener Implementation ----------- //
     @Override
     public void onConnectionStateChange(BlunoLibraryService.DeviceConnectionState deviceConnectionState) {
@@ -151,7 +121,6 @@ public class PreferencesPresenter<V extends PreferencesMvpView> extends BasePres
     }
 
     // --------------------------------------------------------------------------- //
-
 
     @Override
     public void onDetach() {

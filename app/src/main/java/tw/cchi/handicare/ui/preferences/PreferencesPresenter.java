@@ -25,7 +25,6 @@ public class PreferencesPresenter<V extends PreferencesMvpView> extends BasePres
     @Inject LeDeviceListAdapter mLeDeviceListAdapter;
 
     private BlunoLibraryService blunoLibraryService;
-    private boolean blunoLibOnResumeCalled = false;
 
     @Inject
     public PreferencesPresenter(CompositeDisposable compositeDisposable) {
@@ -40,17 +39,14 @@ public class PreferencesPresenter<V extends PreferencesMvpView> extends BasePres
     @Override
     public void onResumeProcess() {
         if (blunoLibraryService != null) {
-            blunoLibraryService.onResumeProcess(activity);
-            blunoLibOnResumeCalled = true;
-        } else {
-            blunoLibOnResumeCalled = false;
+            blunoLibraryService.checkAskEnableCapabilities(activity).subscribe();
         }
     }
 
     @Override
     public void onPauseProcess() {
         if (blunoLibraryService != null)
-            blunoLibraryService.onPauseProcess();
+            blunoLibraryService.stopScanningLeDevice(true);
         mLeDeviceListAdapter.clear();
     }
 
@@ -60,23 +56,30 @@ public class PreferencesPresenter<V extends PreferencesMvpView> extends BasePres
         if (btDeviceAddr != null) {
             getMvpView().setBluetoothAddr(btDeviceAddr);
         }
+
+        // Display current connection state
+        connectBlunoLibraryService().subscribe(blunoLibraryService ->
+            onConnectionStateChange(blunoLibraryService.getConnectionState())
+        );
     }
 
     @Override
     public void launchScanDeviceDialog() {
         connectBlunoLibraryService().subscribe(blunoLibraryService -> {
-            blunoLibraryService.attachEventListener(this);
+            blunoLibraryService.checkAskEnableCapabilities(activity).subscribe(result -> {
+                if (!result)
+                    return;
 
-            if (!blunoLibOnResumeCalled)
-                blunoLibraryService.onResumeProcess(activity);
+                blunoLibraryService.attachEventListener(this);
 
-            switch (blunoLibraryService.getConnectionState()) {
-                case isNull:
-                case isToScan:
-                    getMvpView().showScanDeviceDialog(mLeDeviceListAdapter);
-                    break;
-            }
-            blunoLibraryService.onScanningDialogOpen(mLeDeviceListAdapter);
+                switch (blunoLibraryService.getConnectionState()) {
+                    case isNull:
+                    case isToScan:
+                        getMvpView().showScanDeviceDialog(mLeDeviceListAdapter);
+                        break;
+                }
+                blunoLibraryService.onScanningDialogOpen(mLeDeviceListAdapter);
+            });
         });
     }
 

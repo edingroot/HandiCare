@@ -98,7 +98,14 @@ public class PreferencesPresenter<V extends PreferencesMvpView> extends BasePres
     public void onBtDeviceDialogSelect(BluetoothDevice device) {
         if (device != null) {
             getBlunoLibraryServiceObservable().subscribe(blunoLibraryService -> {
-                blunoLibraryService.connect(device);
+                if (blunoLibraryService.connect(device)) {
+                    String deviceAddress = device.getAddress();
+                    preferencesHelper.setBTDeviceAddress(deviceAddress);
+                    getMvpView().setBluetoothAddr(deviceAddress);
+                    getMvpView().showSnackBar(R.string.bluno_connected);
+                } else {
+                    getMvpView().showSnackBar(R.string.error_connect_bluno);
+                }
             });
         }
     }

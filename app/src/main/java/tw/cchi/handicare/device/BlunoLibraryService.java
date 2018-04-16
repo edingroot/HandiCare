@@ -178,29 +178,32 @@ public class BlunoLibraryService extends Service {
         return true;
     }
 
-    public void connect(BluetoothDevice device) {
+    public boolean connect(BluetoothDevice device) {
         stopScanningLeDevice();
 
         if (device.getName() == null || device.getAddress() == null) {
             mDeviceConnectionState = BlunoLibraryService.DeviceConnectionState.isToScan;
             eventListener.onConnectionStateChange(mDeviceConnectionState);
+            return false;
+        }
+
+        System.out.println("onListItemClick " + device.getName());
+        System.out.println("Device Name:" + device.getName() + "   " + "Device Name:" + device.getAddress());
+
+        mDeviceName = device.getName();
+        mDeviceAddress = device.getAddress();
+
+        if (mBLEService.connect(mDeviceAddress)) {
+            Log.d(TAG, "Connect request success");
+            mDeviceConnectionState = BlunoLibraryService.DeviceConnectionState.isConnecting;
+            eventListener.onConnectionStateChange(mDeviceConnectionState);
+            mHandler.postDelayed(mConnectingOverTimeRunnable, 10000);
+            return true;
         } else {
-            System.out.println("onListItemClick " + device.getName());
-            System.out.println("Device Name:" + device.getName() + "   " + "Device Name:" + device.getAddress());
-
-            mDeviceName = device.getName();
-            mDeviceAddress = device.getAddress();
-
-            if (mBLEService.connect(mDeviceAddress)) {
-                Log.d(TAG, "Connect request success");
-                mDeviceConnectionState = BlunoLibraryService.DeviceConnectionState.isConnecting;
-                eventListener.onConnectionStateChange(mDeviceConnectionState);
-                mHandler.postDelayed(mConnectingOverTimeRunnable, 10000);
-            } else {
-                Log.d(TAG, "Connect request fail");
-                mDeviceConnectionState = BlunoLibraryService.DeviceConnectionState.isToScan;
-                eventListener.onConnectionStateChange(mDeviceConnectionState);
-            }
+            Log.d(TAG, "Connect request fail");
+            mDeviceConnectionState = BlunoLibraryService.DeviceConnectionState.isToScan;
+            eventListener.onConnectionStateChange(mDeviceConnectionState);
+            return false;
         }
     }
 

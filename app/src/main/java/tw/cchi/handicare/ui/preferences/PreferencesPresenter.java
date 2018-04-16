@@ -8,8 +8,7 @@ import javax.inject.Inject;
 import io.reactivex.disposables.CompositeDisposable;
 import tw.cchi.handicare.MvpApp;
 import tw.cchi.handicare.R;
-import tw.cchi.handicare.device.BlunoLibraryService;
-import tw.cchi.handicare.helper.pref.PreferencesHelper;
+import tw.cchi.handicare.service.bluno.BlunoLibraryService;
 import tw.cchi.handicare.ui.base.BasePresenter;
 import tw.cchi.handicare.ui.preferences.adapter.LeDeviceListAdapter;
 

@@ -2,7 +2,7 @@ package tw.cchi.handicare.di.component;
 
 
 import dagger.Component;
-import tw.cchi.handicare.device.BlunoLibraryService;
+import tw.cchi.handicare.service.bluno.BlunoLibraryService;
 import tw.cchi.handicare.di.PerService;
 import tw.cchi.handicare.di.module.ServiceModule;
 

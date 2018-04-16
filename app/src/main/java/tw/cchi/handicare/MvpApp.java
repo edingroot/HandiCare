@@ -9,7 +9,7 @@ import android.os.IBinder;
 
 import javax.inject.Inject;
 
-import tw.cchi.handicare.device.BlunoLibraryService;
+import tw.cchi.handicare.service.bluno.BlunoLibraryService;
 import tw.cchi.handicare.device.eshock.DeviceAcup;
 import tw.cchi.handicare.di.component.ApplicationComponent;
 import tw.cchi.handicare.di.component.DaggerApplicationComponent;

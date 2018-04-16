@@ -1,7 +1,6 @@
 package tw.cchi.handicare.di.module;
 
 import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 

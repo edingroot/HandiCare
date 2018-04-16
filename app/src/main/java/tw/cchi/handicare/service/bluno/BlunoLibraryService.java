@@ -1,4 +1,4 @@
-package tw.cchi.handicare.device;
+package tw.cchi.handicare.service.bluno;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;

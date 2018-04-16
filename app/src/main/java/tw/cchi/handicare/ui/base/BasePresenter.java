@@ -9,11 +9,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import tw.cchi.handicare.MvpApp;
-import tw.cchi.handicare.device.BlunoLibraryService;
+import tw.cchi.handicare.service.bluno.BlunoLibraryService;
 import tw.cchi.handicare.helper.pref.PreferencesHelper;
-
-import static tw.cchi.handicare.device.BlunoLibraryService.DeviceConnectionState.isNull;
-import static tw.cchi.handicare.device.BlunoLibraryService.DeviceConnectionState.isToScan;
 
 /**
  * Base class that implements the Presenter interface and provides a base implementation for

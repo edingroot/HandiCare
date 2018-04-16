@@ -64,40 +64,26 @@ public class PreferencesPresenter<V extends PreferencesMvpView> extends BasePres
 
     @Override
     public void launchScanDeviceDialog() {
-        getBlunoLibraryServiceObservable().subscribe(blunoLibraryService -> {
+        connectBlunoLibraryService().subscribe(blunoLibraryService -> {
             blunoLibraryService.attachEventListener(this);
 
             if (!blunoLibOnResumeCalled)
                 blunoLibraryService.onResumeProcess(activity);
 
-            // Check bluetooth enabled
-            if (!blunoLibraryService.checkAskEnableBluetooth(activity)) {
-                getMvpView().showToast(R.string.error_bluetooth_not_enabled);
-                return;
+            switch (blunoLibraryService.getConnectionState()) {
+                case isNull:
+                case isToScan:
+                    getMvpView().showScanDeviceDialog(mLeDeviceListAdapter);
+                    break;
             }
-
-            // Check location enabled
-            blunoLibraryService.checkAskEnableLocation(activity).subscribe(result -> {
-                if (!result) {
-                    getMvpView().showToast(R.string.error_location_not_enabled);
-                    return;
-                }
-
-                switch (blunoLibraryService.getConnectionState()) {
-                    case isNull:
-                    case isToScan:
-                        getMvpView().showScanDeviceDialog(mLeDeviceListAdapter);
-                        break;
-                }
-                blunoLibraryService.onScanningDialogOpen(mLeDeviceListAdapter);
-            });
+            blunoLibraryService.onScanningDialogOpen(mLeDeviceListAdapter);
         });
     }
 
     @Override
     public void onBtDeviceDialogSelect(BluetoothDevice device) {
         if (device != null) {
-            getBlunoLibraryServiceObservable().subscribe(blunoLibraryService -> {
+            connectBlunoLibraryService().subscribe(blunoLibraryService -> {
                 if (blunoLibraryService.connect(device)) {
                     String deviceAddress = device.getAddress();
                     preferencesHelper.setBTDeviceAddress(deviceAddress);
@@ -113,10 +99,10 @@ public class PreferencesPresenter<V extends PreferencesMvpView> extends BasePres
     @Override
     public void onBtDeviceDialogCancel() {
         System.out.println("mBluetoothAdapter.stopLeScan");
-        getBlunoLibraryServiceObservable().subscribe(BlunoLibraryService::onScanningDialogCancel);
+        connectBlunoLibraryService().subscribe(BlunoLibraryService::onScanningDialogCancel);
     }
 
-    private Observable<BlunoLibraryService> getBlunoLibraryServiceObservable() {
+    private Observable<BlunoLibraryService> connectBlunoLibraryService() {
         Observable<BlunoLibraryService> observable;
 
         if (blunoLibraryService == null) {

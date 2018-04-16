@@ -94,6 +94,18 @@ public class BlunoLibraryService extends Service {
             @Override
             public void onConnectionStateChange(DeviceConnectionState deviceConnectionState) {
                 Log.i(TAG, "[Service] onConnectionStateChange: " + deviceConnectionState);
+
+                switch (deviceConnectionState) {
+                    case isConnected:
+                        showToastMessage(R.string.bluno_connected);
+                        break;
+                    case isConnecting:
+                        showToastMessage(R.string.connecting_bluno);
+                        break;
+                    case isDisconnecting:
+                        showToastMessage(R.string.disconnecting_bluno);
+                        break;
+                }
             }
 
             @Override
@@ -112,7 +124,7 @@ public class BlunoLibraryService extends Service {
         component.inject(this);
 
         if (!initiate()) {
-            Toast.makeText(this, R.string.error_bluetooth_not_supported, Toast.LENGTH_SHORT).show();
+            showToastMessage(R.string.error_bluetooth_not_supported);
         }
     }
 
@@ -169,8 +181,10 @@ public class BlunoLibraryService extends Service {
         mBluetoothAdapter = bluetoothManager.getAdapter();
 
         // Checks if Bluetooth is supported on the device.
-        if (mBluetoothAdapter == null)
+        if (mBluetoothAdapter == null) {
+            showToastMessage(R.string.error_bluetooth_not_supported);
             return false;
+        }
 
         serialBegin(115200);
         startBluetoothService();
@@ -179,19 +193,22 @@ public class BlunoLibraryService extends Service {
     }
 
     public boolean connect(BluetoothDevice device) {
+        return connect(device.getName(), device.getAddress());
+    }
+
+    public boolean connect(String deviceName, String deviceAddress) {
         stopScanningLeDevice();
 
-        if (device.getName() == null || device.getAddress() == null) {
+        if (deviceName == null || deviceAddress == null) {
             mDeviceConnectionState = BlunoLibraryService.DeviceConnectionState.isToScan;
             eventListener.onConnectionStateChange(mDeviceConnectionState);
             return false;
         }
 
-        System.out.println("onListItemClick " + device.getName());
-        System.out.println("Device Name:" + device.getName() + "   " + "Device Name:" + device.getAddress());
+        mDeviceName = deviceName;
+        mDeviceAddress = deviceAddress;
 
-        mDeviceName = device.getName();
-        mDeviceAddress = device.getAddress();
+        System.out.println("Device Name:" + deviceName + "   " + "Device Name:" + deviceAddress);
 
         if (mBLEService.connect(mDeviceAddress)) {
             Log.d(TAG, "Connect request success");
@@ -384,7 +401,7 @@ public class BlunoLibraryService extends Service {
         }
 
         if (mModelNumberCharacteristic == null || mSerialPortCharacteristic == null || mCommandCharacteristic == null) {
-            Toast.makeText(mainContext, "Please select DFRobot devices", Toast.LENGTH_SHORT).show();
+            showToastMessage("Please select DFRobot devices");
             mDeviceConnectionState = DeviceConnectionState.isToScan;
             eventListener.onConnectionStateChange(mDeviceConnectionState);
         } else {
@@ -394,6 +411,13 @@ public class BlunoLibraryService extends Service {
         }
     }
 
+    private void showToastMessage(int stringRes) {
+        showToastMessage(mainContext.getString(stringRes));
+    }
+
+    private void showToastMessage(String string) {
+        Toast.makeText(mainContext, string, Toast.LENGTH_SHORT).show();
+    }
 
     // -------------------- For Device Scanning Dialog --------------------
 
@@ -431,7 +455,9 @@ public class BlunoLibraryService extends Service {
 
     public void onResumeProcess(Activity activity) {
         System.out.println("BlUNOActivity onResume");
-        checkAskEnableBluetooth(activity);
+        if (!checkAskEnableBluetooth(activity)) {
+            showToastMessage(R.string.error_bluetooth_not_enabled);
+        }
         mainContext.registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
     }
 
@@ -487,7 +513,7 @@ public class BlunoLibraryService extends Service {
             mBLEService = ((BLEService.LocalBinder) service).getService();
             if (!mBLEService.initialize()) {
                 Log.e(TAG, getString(R.string.error_bluetooth_unable_init));
-                Toast.makeText(mainContext, getString(R.string.error_bluetooth_unable_init), Toast.LENGTH_SHORT).show();
+                showToastMessage(R.string.error_bluetooth_unable_init);
             }
         }
 
@@ -564,7 +590,7 @@ public class BlunoLibraryService extends Service {
                         mDeviceConnectionState = DeviceConnectionState.isConnected;
                         eventListener.onConnectionStateChange(mDeviceConnectionState);
                     } else {
-                        Toast.makeText(mainContext, "Please select DFRobot devices", Toast.LENGTH_SHORT).show();
+                        showToastMessage("Please select DFRobot devices");
                         mDeviceConnectionState = DeviceConnectionState.isToScan;
                         eventListener.onConnectionStateChange(mDeviceConnectionState);
                     }

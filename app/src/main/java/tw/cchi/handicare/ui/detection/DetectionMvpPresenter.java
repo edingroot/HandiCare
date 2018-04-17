@@ -6,4 +6,6 @@ public interface DetectionMvpPresenter<V extends DetectionMvpView> extends MvpPr
 
     boolean enableDetection();
 
+    boolean disableDetection();
+
 }

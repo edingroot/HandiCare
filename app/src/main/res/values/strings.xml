@@ -13,5 +13,6 @@
     <string name="connecting_bluno">Connecting Bluno device</string>
     <string name="disconnecting_bluno">Disconnecting Bluno device</string>
     <string name="bluno_connected">Bluetooth Bluno device connected.</string>
+    <string name="bluno_not_connected">Bluetooth Bluno device wasn\'t connected.</string>
 
 </resources>

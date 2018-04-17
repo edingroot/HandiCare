@@ -77,7 +77,7 @@ public class PreferencesPresenter<V extends PreferencesMvpView> extends BasePres
                     String deviceAddress = device.getAddress();
                     preferencesHelper.setBTDeviceAddress(deviceAddress);
                     getMvpView().setBluetoothAddr(deviceAddress);
-                    getMvpView().showSnackBar(R.string.bluno_connected);
+                    getMvpView().showToast(R.string.bluno_connected);
                 } else {
                     getMvpView().showSnackBar(R.string.error_connect_bluno);
                 }
@@ -116,7 +116,7 @@ public class PreferencesPresenter<V extends PreferencesMvpView> extends BasePres
     }
 
     @Override
-    public void onSerialReceived(String theString) {
+    public void onSerialReceived(String message) {
     }
 
     // --------------------------------------------------------------------------- //

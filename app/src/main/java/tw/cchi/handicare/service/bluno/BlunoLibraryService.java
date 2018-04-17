@@ -113,8 +113,8 @@ public class BlunoLibraryService extends Service {
             }
 
             @Override
-            public void onSerialReceived(String theString) {
-                Log.i(TAG, "[Service] onSerialReceived: " + theString);
+            public void onSerialReceived(String message) {
+                Log.i(TAG, "[Service] onSerialReceived: " + message);
             }
         };
     }
@@ -638,7 +638,7 @@ public class BlunoLibraryService extends Service {
     public interface BleEventListener {
         void onConnectionStateChange(DeviceConnectionState deviceConnectionState);
         
-        void onSerialReceived(String theString);
+        void onSerialReceived(String message);
     }
 
     public class ServiceBinder extends Binder {

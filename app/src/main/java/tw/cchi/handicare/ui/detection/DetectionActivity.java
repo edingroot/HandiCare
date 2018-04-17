@@ -33,8 +33,12 @@ public class DetectionActivity extends BaseActivity implements DetectionMvpView 
 
     @OnClick(R.id.toggleEnable)
     void toggleEnableClick(ToggleButton toggleButton) {
-        if (!presenter.enableDetection()) {
-            toggleButton.setChecked(false);
+        if (toggleButton.isChecked()) {
+            if (!presenter.enableDetection()) {
+                toggleButton.setChecked(false);
+            }
+        } else {
+            presenter.disableDetection();
         }
     }
 

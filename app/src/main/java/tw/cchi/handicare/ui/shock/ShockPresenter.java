@@ -56,15 +56,6 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
     }
 
     @Override
-    public void onModeSelectionChanged(int selectedIndex) {
-        if (mDevAcup.isConnected()) {
-            mDevAcup.setStrength(Constants.SHOCK_MODE_STRENGTHS[selectedIndex]);
-            mDevAcup.setFrequency(Constants.SHOCK_MODE_FREQS[selectedIndex]);
-            updateViewDeviceControls();
-        }
-    }
-
-    @Override
     public void powerOn() {
         if (!mDevAcup.connect())
             getMvpView().showSnackBar(R.string.usb_not_found);
@@ -74,8 +65,6 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
         if (duration == 0) return;
 
         startPowerTimer(duration);
-        if (getMvpView().getModeSelection() == -1)
-            getMvpView().setModeSelection(0);
         mDevAcup.powerOn();
 
         updateViewDeviceControls();

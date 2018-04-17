@@ -4,8 +4,6 @@ import tw.cchi.handicare.ui.base.MvpPresenter;
 
 public interface ShockMvpPresenter<V extends ShockMvpView> extends MvpPresenter<V> {
 
-    void onModeSelectionChanged(int selectedIndex);
-
     void powerOn();
 
     void powerOff();

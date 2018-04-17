@@ -14,16 +14,13 @@ import javax.inject.Inject;
 import at.grabner.circleprogress.CircleProgressView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.functions.Consumer;
 import tw.cchi.handicare.R;
-import tw.cchi.handicare.component.ModeSelectionView;
 import tw.cchi.handicare.ui.base.BaseActivity;
 
 public class ShockActivity extends BaseActivity implements ShockMvpView {
 
     @Inject ShockMvpPresenter<ShockMvpView> mPresenter;
 
-    @BindView(R.id.modeSelectionView) ModeSelectionView modeSelectionView;
     @BindView(R.id.minutesPicker) NumberPicker minutesPicker;
     @BindView(R.id.secondsPicker) NumberPicker secondsPicker;
 
@@ -54,11 +51,6 @@ public class ShockActivity extends BaseActivity implements ShockMvpView {
         secondsPicker.setMaxValue(59);
         updateDeviceControls(false, 0, 0);
 
-        modeSelectionView.setOnSelectionChangeListener(selectedIndex -> {
-            if (selectedIndex != -1)
-                mPresenter.onModeSelectionChanged(selectedIndex);
-        });
-
         RxCompoundButton.checkedChanges(togglePower).subscribe(isChecked -> {
             if (isChecked)
                 mPresenter.powerOn();
@@ -79,7 +71,6 @@ public class ShockActivity extends BaseActivity implements ShockMvpView {
             togglePower.setChecked(false);
             strength = 0;
             frequency = 0;
-            setModeSelection(-1);
         }
         seekStrength.setProgress(strength);
         seekFreq.setProgress(frequency);
@@ -96,16 +87,6 @@ public class ShockActivity extends BaseActivity implements ShockMvpView {
     @Override
     public int getDurationSetting() {
         return minutesPicker.getValue() * 60 + secondsPicker.getValue();
-    }
-
-    @Override
-    public int getModeSelection() {
-        return modeSelectionView.getSelectedIndex();
-    }
-
-    @Override
-    public void setModeSelection(int index) {
-        modeSelectionView.setSelectedIndex(index);
     }
 
     @Override

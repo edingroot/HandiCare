@@ -13,8 +13,4 @@ public interface ShockMvpView extends MvpView {
      */
     int getDurationSetting();
 
-    int getModeSelection();
-
-    void setModeSelection(int index);
-
 }

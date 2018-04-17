@@ -1,12 +1,12 @@
 #include <stdarg.h>
  
-#define PIN_VIB_LED 4
-#define PIN_VIB_MOTOR 5
-
-#define LOOP_DELAY 10 // ms
-#define INPUT_PARAM_BUF 6
-#define MAX_INPUT_PARAMS 6
-#define SPLITTER ","
+ #define PIN_VIB_LED 4
+ #define PIN_VIB_MOTOR 5
+ 
+ #define LOOP_DELAY 10 // ms
+ #define INPUT_PARAM_BUF 6
+ #define MAX_INPUT_PARAMS 6
+ #define SPLITTER ","
 
 // --------------- Constants --------------- //
 
@@ -19,7 +19,7 @@ OpMode currentMode = STANDBY;
 bool shockEnabled = false;
 bool detectionEnabled = false;
 bool vibMotorOn = false;
-byte vibMotorStrength = 60; // 0-100
+byte vibMotorStrength = 60; // 0-255
 
 // ----------------- Function Declarations ---------------- //
 
@@ -31,8 +31,6 @@ void vibMotorPwm(bool on, byte strength);
 void modePrint(OpMode currentMode);
 void modePrint(OpMode currentMode, int n_args, ...);
 bool checkCounter(int *counter, int execMod);
-
-// ------------------------------------------------------- //
 
 
 void setup() {
@@ -132,17 +130,9 @@ void reportStatus() {
 }
 
 void vibMotorPwm(bool on, byte strength) {
-  static int counter = 0;
-  const int execMod = 1000 / LOOP_DELAY; // 1 sec. interval
-
-  if (!checkCounter(&counter, execMod))
-    return;
-  if (!on)
-    return;
-
-  // TODO
-  
+  analogWrite(PIN_VIB_MOTOR, on & strength);
 }
+
 
 // ----------------- Utility Functions ---------------- //
 

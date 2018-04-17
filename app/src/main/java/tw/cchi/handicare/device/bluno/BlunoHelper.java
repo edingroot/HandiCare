@@ -14,6 +14,7 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
 
     // Device states
     private OpMode currentMode = OpMode.STANDBY;
+    private boolean shockEnabled = false;
     private boolean detectionEnabled = false;
 
     public BlunoHelper(BlunoLibraryService blunoLibraryService) {
@@ -23,6 +24,10 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
 
     public OpMode getMode() {
         return currentMode;
+    }
+
+    public boolean isShockEnabled() {
+        return shockEnabled;
     }
 
     public boolean isDetectionEnabled() {
@@ -72,7 +77,7 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
         return true;
     }
 
-    private boolean readBlunoLine(String line) {
+    private boolean readBlunoOutput(String line) {
         String[] tokens = line.split(SPLITTER);
         int[] iTokens = new int[tokens.length];
 
@@ -95,7 +100,11 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
 
         switch (currentMode) {
             case SHOCK:
-                // TODO
+                if (iTokens.length != 2) {
+                    shockEnabled = iTokens[1] == 1;
+                } else {
+                    return false;
+                }
                 break;
 
             case DETECTION:
@@ -118,7 +127,7 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
 
     @Override
     public void onSerialReceived(String message) {
-        readBlunoLine(message);
+        readBlunoOutput(message);
     }
 
     @Override

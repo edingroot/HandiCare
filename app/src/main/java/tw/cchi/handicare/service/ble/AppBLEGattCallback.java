@@ -16,7 +16,7 @@ import static tw.cchi.handicare.service.ble.BLEService.ACTION_GATT_SERVICES_DISC
 import static tw.cchi.handicare.service.ble.BLEService.EXTRA_DATA;
 
 public class AppBLEGattCallback extends android.bluetooth.BluetoothGattCallback {
-    private final static String TAG = BLEService.class.getSimpleName();
+    private final static String TAG = AppBLEGattCallback.class.getSimpleName();
 
     // To tell the onCharacteristicWrite call back function that this is a new characteristic,
     // not the Write Characteristic to the device successfully.

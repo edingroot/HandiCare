@@ -627,7 +627,7 @@ public class BlunoLibraryService extends Service {
                     eventListener.onSerialReceived(intent.getStringExtra(BLEService.EXTRA_DATA));
                 }
 
-                System.out.println("displayData " + intent.getStringExtra(BLEService.EXTRA_DATA));
+                Log.i(TAG, "data: " + intent.getStringExtra(BLEService.EXTRA_DATA));
 //            	mPlainProtocol.mReceivedframe.append(intent.getStringExtra(BLEService.EXTRA_DATA)) ;
 //            	System.out.print("mPlainProtocol.mReceivedframe:");
 //            	System.out.println(mPlainProtocol.mReceivedframe.toString());

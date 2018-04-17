@@ -10,12 +10,11 @@ import io.reactivex.disposables.CompositeDisposable;
 import tw.cchi.handicare.R;
 import tw.cchi.handicare.device.bluno.BlunoHelper;
 import tw.cchi.handicare.di.ActivityContext;
-import tw.cchi.handicare.service.bluno.BlunoLibraryService;
 import tw.cchi.handicare.ui.base.BasePresenter;
 
 public class DetectionPresenter<V extends DetectionMvpView> extends BasePresenter<V>
     implements DetectionMvpPresenter<V>, BlunoHelper.OnDetectionDataReceiveListener {
-    private final static String TAG = BlunoLibraryService.class.getSimpleName();
+    private static final String TAG = DetectionPresenter.class.getSimpleName();
 
     @Inject @ActivityContext Context context;
     @Inject AppCompatActivity activity;

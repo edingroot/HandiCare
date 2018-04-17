@@ -17,7 +17,7 @@ public class DetectionActivity extends BaseActivity implements DetectionMvpView 
 
     @Inject DetectionMvpPresenter<DetectionMvpView> presenter;
 
-    @BindView(R.id.togglePower) ToggleButton togglePower;
+    @BindView(R.id.toggleEnable) ToggleButton toggleEnable;
     @BindView(R.id.circleProgressView) CircleProgressView circleProgressView;
     @BindView(R.id.emgChartView) MultiChartView emgChartView;
 

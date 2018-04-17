@@ -382,7 +382,7 @@ public class BlunoLibraryService extends Service {
         }
     }
 
-    public boolean isConnected() {
+    public boolean isDeviceConnected() {
         return connected;
     }
 

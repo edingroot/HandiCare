@@ -22,12 +22,27 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
         this.blunoLibraryService.attachEventListener(this);
     }
 
+    public boolean isDeviceConnected() {
+        return blunoLibraryService != null && blunoLibraryService.isDeviceConnected();
+    }
+
     public OpMode getMode() {
         return currentMode;
     }
 
+    public boolean changeMode(OpMode opMode) {
+        return sendCommand(OpCode.CHANGE_MODE, opMode.ordinal());
+    }
+
     public boolean isShockEnabled() {
         return shockEnabled;
+    }
+
+    public boolean setShockEnabled(boolean enabled) {
+        if (currentMode != OpMode.SHOCK && !changeMode(OpMode.SHOCK))
+            return false;
+
+        return sendCommand(OpCode.SET_PARAMS, OpMode.SHOCK, enabled ? 1 : 0);
     }
 
     public boolean isDetectionEnabled() {
@@ -35,40 +50,41 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
     }
 
     public boolean setDetectionEnabled(boolean enabled) {
-        if (currentMode != OpMode.DETECTION && !setMode(OpMode.DETECTION))
+        if (currentMode != OpMode.DETECTION && !changeMode(OpMode.DETECTION))
             return false;
 
-        return sendCommand(OpCode.SET_PARAMS, 1, enabled ? 1 : 0);
+        return sendCommand(OpCode.SET_PARAMS, OpMode.DETECTION, enabled ? 1 : 0);
     }
 
     public void setOnDetectionDataReceiveListener(OnDetectionDataReceiveListener onDetectionDataReceiveListener) {
         this.onDetectionDataReceiveListener = onDetectionDataReceiveListener;
     }
 
-    private boolean setMode(OpMode opMode) {
-        if (blunoLibraryService == null || !blunoLibraryService.isConnected())
-            return false;
-
-        if (sendCommand(OpCode.CHANGE_MODE, opMode.ordinal())) {
-            // Reset states
-            detectionEnabled = false;
-            return true;
-        } else {
-            return false;
-        }
-    }
 
     private boolean sendCommand(OpCode opCode, Object... args) {
-        if (blunoLibraryService == null || !blunoLibraryService.isConnected())
+        if (!isDeviceConnected())
             return false;
 
         StringBuilder cmdBuilder = new StringBuilder();
         cmdBuilder.append(opCode.ordinal());
 
         switch (opCode) {
-            case CHANGE_MODE:
+            case CHANGE_MODE: {
+                if (args.length != 1)
+                    return false;
+
                 cmdBuilder.append(SPLITTER).append(args[0]);
                 break;
+            }
+            case SET_PARAMS: {
+                if (args.length < 2)
+                    return false;
+
+                for (int i = 0; i < args.length; i++) {
+                    cmdBuilder.append(SPLITTER).append(args[i]);
+                }
+                break;
+            }
         }
         cmdBuilder.append("\n");
 

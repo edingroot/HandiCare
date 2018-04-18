@@ -36,6 +36,7 @@ public class DetectionPresenter<V extends DetectionMvpView> extends BasePresente
                activity.finish();
            } else {
                blunoHelper = new BlunoHelper(blunoLibraryService);
+               blunoHelper.setMode(BlunoHelper.OpMode.DETECTION);
            }
         });
     }

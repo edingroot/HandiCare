@@ -47,9 +47,6 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
     }
 
     public boolean setVibrationEnabled(boolean enabled) {
-        if (currentMode != OpMode.VIBRATION && !setMode(OpMode.VIBRATION))
-            return false;
-
         return sendCommand(OpCode.SET_PARAMS, OpMode.VIBRATION, enabled ? 1 : 0);
     }
 
@@ -58,9 +55,6 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
     }
 
     public boolean setShockEnabled(boolean enabled) {
-        if (currentMode != OpMode.SHOCK && !setMode(OpMode.SHOCK))
-            return false;
-
         return sendCommand(OpCode.SET_PARAMS, OpMode.SHOCK, enabled ? 1 : 0);
     }
 
@@ -69,9 +63,6 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
     }
 
     public boolean setDetectionEnabled(boolean enabled) {
-        if (currentMode != OpMode.DETECTION && !setMode(OpMode.DETECTION))
-            return false;
-
         return sendCommand(OpCode.SET_PARAMS, OpMode.DETECTION, enabled ? 1 : 0);
     }
 

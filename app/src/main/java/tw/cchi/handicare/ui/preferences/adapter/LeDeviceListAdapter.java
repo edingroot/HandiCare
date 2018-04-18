@@ -63,7 +63,6 @@ public class LeDeviceListAdapter extends BaseAdapter {
             viewHolder = new ViewHolder();
             viewHolder.deviceAddress = view.findViewById(R.id.device_address);
             viewHolder.deviceName = view.findViewById(R.id.device_name);
-            System.out.println("mInflator.inflate  getView");
             view.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) view.getTag();

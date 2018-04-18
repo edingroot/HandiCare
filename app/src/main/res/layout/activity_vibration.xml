@@ -88,7 +88,8 @@
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:textOff=""
-            android:textOn=""/>
+            android:textOn=""
+            android:checked="false"/>
 
         <ImageView
             android:id="@+id/imageView2"

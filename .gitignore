@@ -10,6 +10,7 @@ app/release
 
 # Local configuration file (sdk path, etc)
 /local.properties
+signing.properties
 
 *~
 .DS_Store

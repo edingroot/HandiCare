@@ -1,4 +1,4 @@
-package tw.cchi.handicare.ui.shock;
+package tw.cchi.handicare.ui.vibration;
 
 import android.os.Bundle;
 import android.widget.NumberPicker;
@@ -17,9 +17,9 @@ import butterknife.OnClick;
 import tw.cchi.handicare.R;
 import tw.cchi.handicare.ui.base.BaseActivity;
 
-public class ShockActivity extends BaseActivity implements ShockMvpView {
+public class VibrationActivity extends BaseActivity implements VibrationMvpView {
 
-    @Inject ShockMvpPresenter<ShockMvpView> presenter;
+    @Inject VibrationMvpPresenter<VibrationMvpView> presenter;
 
     @BindView(R.id.minutesPicker) NumberPicker minutesPicker;
     @BindView(R.id.secondsPicker) NumberPicker secondsPicker;
@@ -29,13 +29,11 @@ public class ShockActivity extends BaseActivity implements ShockMvpView {
 
     @BindView(R.id.seekStrength) SeekBar seekStrength;
     @BindView(R.id.txtStrengthVal) TextView txtStrengthVal;
-    @BindView(R.id.seekFreq) SeekBar seekFreq;
-    @BindView(R.id.txtFreqVal) TextView txtFreqVal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_shock);
+        setContentView(R.layout.activity_vibration);
 
         getActivityComponent().inject(this);
         setUnBinder(ButterKnife.bind(this));
@@ -49,11 +47,9 @@ public class ShockActivity extends BaseActivity implements ShockMvpView {
         minutesPicker.setMaxValue(10);
         secondsPicker.setMinValue(0);
         secondsPicker.setMaxValue(59);
-        updateDeviceControls(false, 0, 0);
+        updateDeviceControls(false, 0);
 
         RxSeekBar.userChanges(seekStrength).subscribe(presenter::onCustomStrengthChanged);
-
-        RxSeekBar.userChanges(seekFreq).subscribe(presenter::onCustomFrequencyChanged);
     }
 
     @OnClick(R.id.togglePower)
@@ -68,7 +64,7 @@ public class ShockActivity extends BaseActivity implements ShockMvpView {
     }
 
     @Override
-    public void updateDeviceControls(boolean isPowerOn, int strength, int frequency) {
+    public void updateDeviceControls(boolean isPowerOn, int strength) {
         if (isPowerOn) {
             if (!togglePower.isChecked())
                 togglePower.setChecked(true);
@@ -76,12 +72,9 @@ public class ShockActivity extends BaseActivity implements ShockMvpView {
             if (togglePower.isChecked())
                 togglePower.setChecked(false);
             strength = 0;
-            frequency = 0;
         }
         seekStrength.setProgress(strength);
-        seekFreq.setProgress(frequency);
         txtStrengthVal.setText(String.valueOf(strength));
-        txtFreqVal.setText(String.valueOf(frequency));
     }
 
     @Override

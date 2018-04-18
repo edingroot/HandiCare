@@ -8,7 +8,7 @@ import tw.cchi.handicare.ui.menu.MenuActivity;
 import tw.cchi.handicare.ui.preferences.PreferencesActivity;
 import tw.cchi.handicare.ui.shock.ShockActivity;
 import tw.cchi.handicare.ui.SplashActivity;
-import tw.cchi.handicare.ui.VibrationActivity;
+import tw.cchi.handicare.ui.vibration.VibrationActivity;
 
 @PerActivity
 @Component(dependencies = ApplicationComponent.class, modules = ActivityModule.class)

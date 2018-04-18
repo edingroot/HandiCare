@@ -9,7 +9,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import tw.cchi.handicare.MvpApp;
 import tw.cchi.handicare.device.bluno.BlunoHelper;
 import tw.cchi.handicare.service.bluno.BlunoLibraryService;
-import tw.cchi.handicare.ui.VibrationActivity;
+import tw.cchi.handicare.ui.vibration.VibrationActivity;
 import tw.cchi.handicare.ui.base.BasePresenter;
 import tw.cchi.handicare.ui.detection.DetectionActivity;
 import tw.cchi.handicare.ui.preferences.PreferencesActivity;

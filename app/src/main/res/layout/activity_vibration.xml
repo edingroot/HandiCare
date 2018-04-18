@@ -14,7 +14,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        >
 
         <View
             android:layout_width="wrap_content"
@@ -28,55 +28,63 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
             android:src="@drawable/text_vibration_mode"/>
 
     </RelativeLayout>
 
-    <tw.cchi.handicare.component.ModeSelectionView
-        android:id="@+id/modeSelectionView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/relativeLayout"/>
-
-    <cn.iwgang.countdownview.CountdownView
-        android:id="@+id/countdownShockPower"
+    <RelativeLayout
+        android:id="@+id/relativeLayout3"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        app:isHideTimeBackground="true"
-        app:isShowDay="false"
-        app:isShowHour="false"
-        app:isShowMillisecond="false"
-        app:isShowMinute="true"
-        app:isShowSecond="true"
-        app:isTimeTextBold="true"
+        android:layout_height="71dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/relativeLayout4"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/modeSelectionView"
-        app:suffixGravity="bottom"
-        app:suffixHour="時"
-        app:suffixMillisecond="毫秒"
-        app:suffixMinute="分"
-        app:suffixSecond="秒"
-        app:suffixTextColor="#000000"
-        app:suffixTextSize="14sp"
-        app:timeTextColor="#000000"
-        app:timeTextSize="30sp"/>
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout">
+
+        <NumberPicker
+            android:id="@+id/minutesPicker"
+            android:layout_width="30sp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:descendantFocusability="blocksDescendants"
+            android:theme="@style/TimerNumberPicker"/>
+
+        <TextView
+            android:id="@+id/text1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="12dp"
+            android:layout_marginStart="12dp"
+            android:layout_toEndOf="@id/minutesPicker"
+            android:text=":"
+            android:textSize="22sp"/>
+
+        <NumberPicker
+            android:id="@+id/secondsPicker"
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/text1"
+            android:descendantFocusability="blocksDescendants"
+            android:theme="@style/TimerNumberPicker"/>
+
+    </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/relativeLayout4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toTopOf="@+id/tableLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/countdownShockPower">
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout3">
 
         <ToggleButton
             android:id="@+id/togglePower"
@@ -85,11 +93,11 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:background="@drawable/bg_toggle_power"
+            android:checked="false"
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:textOff=""
-            android:textOn=""
-            android:checked="false"/>
+            android:textOn=""/>
 
         <ImageView
             android:id="@+id/imageView2"
@@ -99,6 +107,26 @@
             android:layout_marginStart="8dp"
             android:scaleType="fitCenter"
             app:srcCompat="@drawable/btn_vibstart_bg"/>
+
+        <at.grabner.circleprogress.CircleProgressView
+            android:id="@+id/circleProgressView"
+            android:layout_width="210dp"
+            android:layout_height="210dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            app:cpv_autoTextSize="true"
+            app:cpv_barColor="@color/colorPrimary"
+            app:cpv_barWidth="6dp"
+            app:cpv_innerContourSize="0dp"
+            app:cpv_maxValue="100"
+            app:cpv_outerContourSize="0dp"
+            app:cpv_rimColor="@color/colorPrimaryLight"
+            app:cpv_rimWidth="6dp"
+            app:cpv_seekMode="false"
+            app:cpv_showUnit="false"
+            app:cpv_text=""
+            app:cpv_textMode="Text"
+            app:cpv_value="0"/>
 
     </RelativeLayout>
 
@@ -138,34 +166,6 @@
                 android:layout_gravity="center_vertical"
                 android:text="00"
                 android:textSize="18sp"/>
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp">
-
-            <SeekBar
-                android:id="@+id/seekFreq"
-                style="@style/Widget.AppCompat.SeekBar.Discrete"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginEnd="3dp"
-                android:layout_marginStart="3dp"
-                android:layout_weight="1"
-                android:max="15"
-                android:min="1"
-                android:progress="0"/>
-
-            <TextView
-                android:id="@+id/txtFreqVal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="00"
-                android:textSize="18sp"/>
-
         </TableRow>
 
     </TableLayout>

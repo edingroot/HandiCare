@@ -155,14 +155,16 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
                     onPowerTimeEnd();
                 }
 
-                getMvpView().setProgress(initialSeconds - remainingSeconds, initialSeconds);
+                if (getMvpView() != null)
+                    getMvpView().setProgress(initialSeconds - remainingSeconds, initialSeconds);
             });
     }
 
     private void stopPowerTimer() {
         initialSeconds = 0;
         remainingSeconds = 0;
-        getMvpView().setProgress(0, initialSeconds);
+        if (getMvpView() != null)
+            getMvpView().setProgress(0, initialSeconds);
 
         // Stop timer
         if (powerTimer != null)

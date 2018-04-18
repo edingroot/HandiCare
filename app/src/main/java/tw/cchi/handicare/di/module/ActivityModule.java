@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 import io.reactivex.disposables.CompositeDisposable;
@@ -23,6 +25,9 @@ import tw.cchi.handicare.ui.preferences.PreferencesPresenter;
 import tw.cchi.handicare.ui.shock.ShockMvpPresenter;
 import tw.cchi.handicare.ui.shock.ShockMvpView;
 import tw.cchi.handicare.ui.shock.ShockPresenter;
+import tw.cchi.handicare.ui.vibration.VibrationMvpPresenter;
+import tw.cchi.handicare.ui.vibration.VibrationMvpView;
+import tw.cchi.handicare.ui.vibration.VibrationPresenter;
 
 @Module
 public class ActivityModule {
@@ -76,6 +81,11 @@ public class ActivityModule {
 
     @Provides
     DetectionMvpPresenter<DetectionMvpView> provideDetectionPresenter(DetectionPresenter<DetectionMvpView> presenter) {
+        return presenter;
+    }
+
+    @Provides
+    VibrationMvpPresenter<VibrationMvpView> providVibrationPresenter(VibrationPresenter<VibrationMvpView> presenter) {
         return presenter;
     }
 }

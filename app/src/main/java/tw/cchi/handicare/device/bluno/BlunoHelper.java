@@ -1,6 +1,7 @@
 package tw.cchi.handicare.device.bluno;
 
 import io.reactivex.disposables.Disposable;
+import tw.cchi.handicare.Config;
 import tw.cchi.handicare.service.bluno.BlunoLibraryService;
 
 public class BlunoHelper implements BlunoLibraryService.BleEventListener, Disposable {
@@ -9,8 +10,9 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
     private static final String SPLITTER = ",";
 
     private BlunoLibraryService blunoLibraryService;
-    private boolean disposed = false;
     private OnDetectionDataReceiveListener onDetectionDataReceiveListener;
+    private static final Object btWriteLock = new Object();
+    private boolean disposed = false;
 
     // Device states
     private OpMode currentMode = OpMode.STANDBY;
@@ -47,8 +49,8 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
     }
 
     public boolean setVibrationEnabled(boolean enabled) {
-        if (currentMode != OpMode.VIBRATION && !setMode(OpMode.VIBRATION))
-            return false;
+        /* if (currentMode != OpMode.VIBRATION && !setMode(OpMode.VIBRATION))
+            return false; */
 
         return sendCommand(OpCode.SET_PARAMS, OpMode.VIBRATION.ordinal(), enabled ? 1 : 0);
     }
@@ -58,8 +60,8 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
     }
 
     public boolean setShockEnabled(boolean enabled) {
-        if (currentMode != OpMode.SHOCK && !setMode(OpMode.SHOCK))
-            return false;
+        /* if (currentMode != OpMode.SHOCK && !setMode(OpMode.SHOCK))
+            return false; */
 
         return sendCommand(OpCode.SET_PARAMS, OpMode.SHOCK.ordinal(), enabled ? 1 : 0);
     }
@@ -69,8 +71,8 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
     }
 
     public boolean setDetectionEnabled(boolean enabled) {
-        if (currentMode != OpMode.DETECTION && !setMode(OpMode.DETECTION))
-            return false;
+        /* if (currentMode != OpMode.DETECTION && !setMode(OpMode.DETECTION))
+            return false; */
 
         return sendCommand(OpCode.SET_PARAMS, OpMode.DETECTION.ordinal(), enabled ? 1 : 0);
     }
@@ -107,7 +109,15 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
         }
         cmdBuilder.append("\n");
 
-        blunoLibraryService.serialSend(cmdBuilder.toString());
+        new Thread(() -> {
+            synchronized (btWriteLock) {
+                blunoLibraryService.serialSend(cmdBuilder.toString());
+
+                try {
+                    Thread.sleep(Config.BLUNO_CMD_TRANSMIT_INTERVAL);
+                } catch (InterruptedException e) { }
+            }
+        }).start();
 
         return true;
     }
@@ -176,7 +186,7 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
     @Override
     public void dispose() {
         if (blunoLibraryService != null)
-            blunoLibraryService.detachEventListener();
+            blunoLibraryService.detachEventListener(this);
 
         disposed = true;
     }

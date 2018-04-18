@@ -39,7 +39,7 @@ public class VibrationPresenter<V extends VibrationMvpView> extends BasePresente
 
         connectBlunoLibraryService().subscribe(blunoLibraryService -> {
             if (!blunoLibraryService.isDeviceConnected()) {
-                getMvpView().showSnackBar(R.string.bluno_not_connected);
+                getMvpView().showToast(R.string.bluno_not_connected);
                 activity.finish();
             } else {
                 blunoHelper = new BlunoHelper(blunoLibraryService);
@@ -143,12 +143,13 @@ public class VibrationPresenter<V extends VibrationMvpView> extends BasePresente
     public void onDetach() {
         super.onDetach();
 
+        stopPowerTimer();
+
         if (powered) {
             powered = false;
 
             if (checkDeviceConnected()) {
                 blunoHelper.setVibrationEnabled(false);
-                blunoHelper.setMode(BlunoHelper.OpMode.STANDBY);
             }
         }
     }

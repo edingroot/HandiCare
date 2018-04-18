@@ -97,7 +97,7 @@ public class BasePresenter<V extends MvpView> implements MvpPresenter<V> {
             public void onConnectionStateChange(BlunoLibraryService.DeviceConnectionState deviceConnectionState) {
                 if (deviceConnectionState == BlunoLibraryService.DeviceConnectionState.isConnected) {
                     new BlunoHelper(blunoLibraryService).resetDeviceState();
-                    blunoLibraryService.detachEventListener();
+                    blunoLibraryService.detachEventListener(this);
                 }
             }
 

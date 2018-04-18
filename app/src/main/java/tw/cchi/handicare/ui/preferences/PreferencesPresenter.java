@@ -124,8 +124,7 @@ public class PreferencesPresenter<V extends PreferencesMvpView> extends BasePres
     @Override
     public void onDetach() {
         if (blunoLibraryService != null) {
-            blunoLibraryService.detachEventListener();
-            
+            blunoLibraryService.detachEventListener(this);
         }
         super.onDetach();
     }

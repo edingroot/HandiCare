@@ -32,7 +32,7 @@ public class DetectionPresenter<V extends DetectionMvpView> extends BasePresente
 
         connectBlunoLibraryService().subscribe(blunoLibraryService -> {
            if (!blunoLibraryService.isDeviceConnected()) {
-               getMvpView().showSnackBar(R.string.bluno_not_connected);
+               getMvpView().showToast(R.string.bluno_not_connected);
                activity.finish();
            } else {
                blunoHelper = new BlunoHelper(blunoLibraryService);

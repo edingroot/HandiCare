@@ -61,7 +61,7 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
         } else {
             connectBlunoLibraryService().subscribe(blunoLibraryService -> {
                 if (!blunoLibraryService.isDeviceConnected()) {
-                    getMvpView().showSnackBar(R.string.bluno_not_connected);
+                    getMvpView().showToast(R.string.bluno_not_connected);
                     activity.finish();
                 } else {
                     blunoHelper = new BlunoHelper(blunoLibraryService);
@@ -188,6 +188,8 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
     public void onDetach() {
         super.onDetach();
 
+        stopPowerTimer();
+
         if (globalVar.bPower) {
             globalVar.bPower = false;
 
@@ -196,7 +198,6 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
                     mDevAcup.commWithUsbDevice();
                 } else {
                     blunoHelper.setShockEnabled(false);
-                    blunoHelper.setMode(BlunoHelper.OpMode.STANDBY);
                 }
             }
         }

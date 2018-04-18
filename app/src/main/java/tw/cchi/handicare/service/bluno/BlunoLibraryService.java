@@ -78,7 +78,7 @@ public class BlunoLibraryService extends Service {
     private boolean initialized = false;
     private boolean connected = false;
 
-    private BleEventListener eventListener;
+    private BleEventListeners eventListeners = new BleEventListeners();
     private BleEventListener serviceEventListener;
 
     private int mBaudrate = 115200;
@@ -94,7 +94,7 @@ public class BlunoLibraryService extends Service {
 
     public BlunoLibraryService() {
         this.mBinder = new ServiceBinder();
-        this.eventListener = serviceEventListener = new BleEventListener() {
+        this.serviceEventListener = new BleEventListener() {
             @Override
             public void onConnectionStateChange(DeviceConnectionState deviceConnectionState) {
                 Log.i(TAG, "[Service] onConnectionStateChange: " + deviceConnectionState);
@@ -117,6 +117,8 @@ public class BlunoLibraryService extends Service {
                 Log.i(TAG, "[Service] onSerialReceived: " + message);
             }
         };
+
+        this.eventListeners.listeners.add(serviceEventListener);
     }
 
     @Override
@@ -137,12 +139,18 @@ public class BlunoLibraryService extends Service {
         return mBinder;
     }
 
-    public void attachEventListener(BleEventListener eventListener) {
-        this.eventListener = eventListener;
+    public synchronized void attachEventListener(BleEventListener eventListener) {
+//        if (eventListeners.size() == 1)
+//            eventListeners.remove(serviceEventListener);
+
+        eventListeners.add(eventListener);
     }
 
-    public void detachEventListener() {
-        this.eventListener = serviceEventListener;
+    public synchronized void detachEventListener(BleEventListener eventListener) {
+        eventListeners.remove(eventListener);
+
+//        if (eventListeners.size() == 0)
+//            eventListeners.add(serviceEventListener);
     }
 
     public boolean initiate() {
@@ -296,7 +304,7 @@ public class BlunoLibraryService extends Service {
 
         if (deviceName == null || deviceAddress == null) {
             mDeviceConnectionState = BlunoLibraryService.DeviceConnectionState.isToScan;
-            eventListener.onConnectionStateChange(mDeviceConnectionState);
+            eventListeners.onConnectionStateChange(mDeviceConnectionState);
             return false;
         }
 
@@ -308,13 +316,13 @@ public class BlunoLibraryService extends Service {
         if (mBLEService.connect(mDeviceAddress)) {
             Log.d(TAG, "Connect request success");
             mDeviceConnectionState = BlunoLibraryService.DeviceConnectionState.isConnecting;
-            eventListener.onConnectionStateChange(mDeviceConnectionState);
+            eventListeners.onConnectionStateChange(mDeviceConnectionState);
             mHandler.postDelayed(mConnectingOverTimeRunnable, 10000);
             return true;
         } else {
             Log.d(TAG, "Connect request fail");
             mDeviceConnectionState = BlunoLibraryService.DeviceConnectionState.isToScan;
-            eventListener.onConnectionStateChange(mDeviceConnectionState);
+            eventListeners.onConnectionStateChange(mDeviceConnectionState);
             return false;
         }
     }
@@ -377,7 +385,7 @@ public class BlunoLibraryService extends Service {
 
             if (changeState) {
                 mDeviceConnectionState = DeviceConnectionState.isToScan;
-                eventListener.onConnectionStateChange(mDeviceConnectionState);
+                eventListeners.onConnectionStateChange(mDeviceConnectionState);
             }
         }
     }
@@ -452,7 +460,7 @@ public class BlunoLibraryService extends Service {
         if (mModelNumberCharacteristic == null || mSerialPortCharacteristic == null || mCommandCharacteristic == null) {
             showToastMessage("Please select DFRobot devices");
             mDeviceConnectionState = DeviceConnectionState.isToScan;
-            eventListener.onConnectionStateChange(mDeviceConnectionState);
+            eventListeners.onConnectionStateChange(mDeviceConnectionState);
         } else {
             mSCharacteristic = mModelNumberCharacteristic;
             mBLEService.setCharacteristicNotification(mSCharacteristic, true);
@@ -484,13 +492,13 @@ public class BlunoLibraryService extends Service {
         switch (getConnectionState()) {
             case isNull:
                 mDeviceConnectionState = BlunoLibraryService.DeviceConnectionState.isScanning;
-                eventListener.onConnectionStateChange(mDeviceConnectionState);
+                eventListeners.onConnectionStateChange(mDeviceConnectionState);
                 scanLeDevice(mLeDeviceListAdapter);
                 break;
 
             case isToScan:
                 mDeviceConnectionState = BlunoLibraryService.DeviceConnectionState.isScanning;
-                eventListener.onConnectionStateChange(mDeviceConnectionState);
+                eventListeners.onConnectionStateChange(mDeviceConnectionState);
                 scanLeDevice(mLeDeviceListAdapter);
                 break;
 
@@ -499,14 +507,14 @@ public class BlunoLibraryService extends Service {
                 mHandler.postDelayed(mDisonnectingOverTimeRunnable, 10000);
                 // mBLEService.close();
                 mDeviceConnectionState = BlunoLibraryService.DeviceConnectionState.isDisconnecting;
-                eventListener.onConnectionStateChange(mDeviceConnectionState);
+                eventListeners.onConnectionStateChange(mDeviceConnectionState);
                 break;
         }
     }
 
     public void onScanningDialogCancel() {
         mDeviceConnectionState = BlunoLibraryService.DeviceConnectionState.isToScan;
-        eventListener.onConnectionStateChange(mDeviceConnectionState);
+        eventListeners.onConnectionStateChange(mDeviceConnectionState);
         stopScanningLeDevice(false);
     }
 
@@ -557,7 +565,7 @@ public class BlunoLibraryService extends Service {
         public void run() {
             if (mDeviceConnectionState == DeviceConnectionState.isConnecting)
                 mDeviceConnectionState = DeviceConnectionState.isToScan;
-            eventListener.onConnectionStateChange(mDeviceConnectionState);
+            eventListeners.onConnectionStateChange(mDeviceConnectionState);
             mBLEService.close();
         }
     };
@@ -567,7 +575,7 @@ public class BlunoLibraryService extends Service {
         public void run() {
             if (mDeviceConnectionState == DeviceConnectionState.isDisconnecting)
                 mDeviceConnectionState = DeviceConnectionState.isToScan;
-            eventListener.onConnectionStateChange(mDeviceConnectionState);
+            eventListeners.onConnectionStateChange(mDeviceConnectionState);
             mBLEService.close();
         }
     };
@@ -592,7 +600,7 @@ public class BlunoLibraryService extends Service {
             } else if (BLEService.ACTION_GATT_DISCONNECTED.equals(action)) {
                 connected = false;
                 mDeviceConnectionState = DeviceConnectionState.isToScan;
-                eventListener.onConnectionStateChange(mDeviceConnectionState);
+                eventListeners.onConnectionStateChange(mDeviceConnectionState);
                 mHandler.removeCallbacks(mDisonnectingOverTimeRunnable);
                 mBLEService.close();
 
@@ -616,15 +624,15 @@ public class BlunoLibraryService extends Service {
                         mSCharacteristic = mSerialPortCharacteristic;
                         mBLEService.setCharacteristicNotification(mSCharacteristic, true);
                         mDeviceConnectionState = DeviceConnectionState.isConnected;
-                        eventListener.onConnectionStateChange(mDeviceConnectionState);
+                        eventListeners.onConnectionStateChange(mDeviceConnectionState);
                     } else {
                         showToastMessage("Please select DFRobot devices");
                         mDeviceConnectionState = DeviceConnectionState.isToScan;
-                        eventListener.onConnectionStateChange(mDeviceConnectionState);
+                        eventListeners.onConnectionStateChange(mDeviceConnectionState);
                     }
 
                 } else if (mSCharacteristic == mSerialPortCharacteristic) {
-                    eventListener.onSerialReceived(intent.getStringExtra(BLEService.EXTRA_DATA));
+                    eventListeners.onSerialReceived(intent.getStringExtra(BLEService.EXTRA_DATA));
                 }
 
                 Log.i(TAG, "data: " + intent.getStringExtra(BLEService.EXTRA_DATA));
@@ -634,6 +642,32 @@ public class BlunoLibraryService extends Service {
             }
         }
     };
+
+    private class BleEventListeners implements BleEventListener {
+        private ArrayList<BleEventListener> listeners = new ArrayList<>();
+
+        public void add(BleEventListener listener) {
+            listeners.add(listener);
+        }
+
+        public void remove(BleEventListener listener) {
+            listeners.remove(listener);
+        }
+
+        public int size() {
+            return listeners.size();
+        }
+
+        public void onConnectionStateChange(DeviceConnectionState deviceConnectionState) {
+            for (BleEventListener listener : listeners)
+                listener.onConnectionStateChange(deviceConnectionState);
+        }
+
+        public void onSerialReceived(String message) {
+            for (BleEventListener listener : listeners)
+                listener.onSerialReceived(message);
+        }
+    }
     
     public interface BleEventListener {
         void onConnectionStateChange(DeviceConnectionState deviceConnectionState);

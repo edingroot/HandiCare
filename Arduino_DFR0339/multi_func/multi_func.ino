@@ -1,16 +1,17 @@
 #include <stdarg.h>
+
+#define PIN_VIB_LED 4
+#define PIN_VIB_MOTOR 5
+#define PIN_SHOCK_LED 4
  
- #define PIN_VIB_LED 4
- #define PIN_VIB_MOTOR 5
- 
- #define LOOP_DELAY 10 // ms
- #define INPUT_PARAM_BUF 6
- #define MAX_INPUT_PARAMS 6
- #define SPLITTER ","
+#define LOOP_DELAY 10 // ms
+#define INPUT_PARAM_BUF 6
+#define MAX_INPUT_PARAMS 6
+#define SPLITTER ","
 
 // --------------- Constants --------------- //
 
-enum OpMode {STANDBY, SHOCK, DETECTION, OpModeElemsCount};
+enum OpMode {STANDBY, VIBRATION, SHOCK, DETECTION, OpModeElemsCount};
 enum OpCode {CHANGE_MODE, SET_PARAMS, OpCodeElemsCount};
 
 // ----------------- States ---------------- //
@@ -18,8 +19,8 @@ enum OpCode {CHANGE_MODE, SET_PARAMS, OpCodeElemsCount};
 OpMode currentMode = STANDBY;
 bool shockEnabled = false;
 bool detectionEnabled = false;
-bool vibMotorOn = false;
-byte vibMotorStrength = 60; // 0-255
+bool vibrationEnabled = true;
+byte vibMotorStrength = 100; // 0-255
 
 // ----------------- Function Declarations ---------------- //
 
@@ -42,7 +43,7 @@ void setup() {
 void loop() {  
   readInput();
   reportStatus();
-  vibMotorPwm(vibMotorOn, vibMotorStrength);
+  vibMotorPwm(vibrationEnabled, vibMotorStrength);
 
   delay(LOOP_DELAY);
 }
@@ -86,15 +87,23 @@ void setModeParams(OpMode targetMode, int paramCount, int params[]) {
   switch (targetMode) {
     case STANDBY: // 0
       break;
+
+    case VIBRATION: // 1
+      // params: <enable>
+      if (paramCount == 1) {
+        vibrationEnabled = (params[0] == 1);
+      }
+      break;
       
-    case SHOCK: // 1
+    case SHOCK: // 2
       // params: <enable>
       if (paramCount == 1) {
         shockEnabled = (params[0] == 1);
+        digitalWrite(PIN_SHOCK_LED, shockEnabled);
       }
       break;
  
-    case DETECTION: // 2
+    case DETECTION: // 3
       // params: <enable>
       if (paramCount == 1) {
         detectionEnabled = (params[0] == 1);
@@ -105,7 +114,7 @@ void setModeParams(OpMode targetMode, int paramCount, int params[]) {
 
 void reportStatus() {
   static int counter = 0;
-  const int execMod = 1000 / LOOP_DELAY; // 1 sec. interval
+  const int execMod = 500 / LOOP_DELAY; // 1 sec. interval
   
   if (!checkCounter(&counter, execMod))
     return;
@@ -116,21 +125,29 @@ void reportStatus() {
       modePrint(STANDBY);
       break;
 
-    case SHOCK: // 1
+    case VIBRATION: // 1
       // output: 1,<enabled>
+      modePrint(VIBRATION, 2, vibrationEnabled);
+      break;
+
+    case SHOCK: // 2
+      // output: 2,<enabled>
       modePrint(SHOCK, 2, shockEnabled);
       break;
  
-    case DETECTION: // 2
-      // output: 2,<enabled>,<emg_raw_value: 0-255>
-      // ex: 2,1,100
+    case DETECTION: // 3
+      // output: 3,<enabled>,<emg_raw_value: 0-255>
+      // ex: 3,1,100
       modePrint(DETECTION, 3, detectionEnabled, analogRead(0));
       break;
   }
 }
 
 void vibMotorPwm(bool on, byte strength) {
-  analogWrite(PIN_VIB_MOTOR, on & strength);
+  if (on) {
+    digitalWrite(PIN_VIB_LED, on);
+    analogWrite(PIN_VIB_MOTOR, strength);
+  }
 }
 
 

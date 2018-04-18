@@ -65,7 +65,7 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
                     activity.finish();
                 } else {
                     blunoHelper = new BlunoHelper(blunoLibraryService);
-                    blunoHelper.changeMode(BlunoHelper.OpMode.SHOCK);
+                    blunoHelper.setMode(BlunoHelper.OpMode.SHOCK);
                 }
             });
         }
@@ -187,7 +187,7 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
                     mDevAcup.commWithUsbDevice();
                 } else {
                     blunoHelper.setShockEnabled(false);
-                    blunoHelper.changeMode(BlunoHelper.OpMode.STANDBY);
+                    blunoHelper.setMode(BlunoHelper.OpMode.STANDBY);
                 }
             }
         }

@@ -4,7 +4,7 @@ import io.reactivex.disposables.Disposable;
 import tw.cchi.handicare.service.bluno.BlunoLibraryService;
 
 public class BlunoHelper implements BlunoLibraryService.BleEventListener, Disposable {
-    public enum OpMode {STANDBY, SHOCK, DETECTION}
+    public enum OpMode {STANDBY, VIBRATION, SHOCK, DETECTION}
     private enum OpCode {CHANGE_MODE, SET_PARAMS}
     private static final String SPLITTER = ",";
 
@@ -14,6 +14,7 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
 
     // Device states
     private OpMode currentMode = OpMode.STANDBY;
+    private boolean vibrationEnabled = false;
     private boolean shockEnabled = false;
     private boolean detectionEnabled = false;
 
@@ -30,8 +31,19 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
         return currentMode;
     }
 
-    public boolean changeMode(OpMode opMode) {
+    public boolean setMode(OpMode opMode) {
         return sendCommand(OpCode.CHANGE_MODE, opMode.ordinal());
+    }
+
+    public boolean isVibrationEnabled() {
+        return vibrationEnabled;
+    }
+
+    public boolean setVibrationEnabled(boolean enabled) {
+        if (currentMode != OpMode.VIBRATION && !setMode(OpMode.VIBRATION))
+            return false;
+
+        return sendCommand(OpCode.SET_PARAMS, OpMode.VIBRATION, enabled ? 1 : 0);
     }
 
     public boolean isShockEnabled() {
@@ -39,7 +51,7 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
     }
 
     public boolean setShockEnabled(boolean enabled) {
-        if (currentMode != OpMode.SHOCK && !changeMode(OpMode.SHOCK))
+        if (currentMode != OpMode.SHOCK && !setMode(OpMode.SHOCK))
             return false;
 
         return sendCommand(OpCode.SET_PARAMS, OpMode.SHOCK, enabled ? 1 : 0);
@@ -50,7 +62,7 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
     }
 
     public boolean setDetectionEnabled(boolean enabled) {
-        if (currentMode != OpMode.DETECTION && !changeMode(OpMode.DETECTION))
+        if (currentMode != OpMode.DETECTION && !setMode(OpMode.DETECTION))
             return false;
 
         return sendCommand(OpCode.SET_PARAMS, OpMode.DETECTION, enabled ? 1 : 0);
@@ -115,6 +127,14 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
             currentMode = OpMode.values()[iTokens[0]];
 
         switch (currentMode) {
+            case VIBRATION:
+                if (iTokens.length != 2) {
+                    vibrationEnabled = iTokens[1] == 1;
+                } else {
+                    return false;
+                }
+                break;
+
             case SHOCK:
                 if (iTokens.length != 2) {
                     shockEnabled = iTokens[1] == 1;

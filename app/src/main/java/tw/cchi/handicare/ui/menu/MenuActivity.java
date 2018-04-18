@@ -33,6 +33,12 @@ public class MenuActivity extends BaseActivity implements MenuMvpView {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        presenter.tryResetBlunoState();
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         // NOTE: delegate the permission handling to generated method

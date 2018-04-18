@@ -29,9 +29,9 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
 
     public boolean resetDeviceState() {
         return setMode(OpMode.STANDBY) &&
-            setVibrationEnabled(false) &&
-            setShockEnabled(false) &&
-            setDetectionEnabled(false);
+            (!vibrationEnabled || setVibrationEnabled(false)) &&
+            (!shockEnabled || setShockEnabled(false)) &&
+            (!detectionEnabled || setDetectionEnabled(false));
     }
 
     public OpMode getMode() {

@@ -7,6 +7,8 @@ import javax.inject.Inject;
 
 import io.reactivex.disposables.CompositeDisposable;
 import tw.cchi.handicare.MvpApp;
+import tw.cchi.handicare.device.bluno.BlunoHelper;
+import tw.cchi.handicare.service.bluno.BlunoLibraryService;
 import tw.cchi.handicare.ui.VibrationActivity;
 import tw.cchi.handicare.ui.base.BasePresenter;
 import tw.cchi.handicare.ui.detection.DetectionActivity;
@@ -17,6 +19,7 @@ public class MenuPresenter<V extends MenuMvpView> extends BasePresenter<V> imple
 
     @Inject MvpApp mvpApp;
     @Inject AppCompatActivity activity;
+    BlunoLibraryService blunoLibraryService;
 
     @Inject
     public MenuPresenter(CompositeDisposable compositeDisposable) {
@@ -37,6 +40,8 @@ public class MenuPresenter<V extends MenuMvpView> extends BasePresenter<V> imple
                 if (result)
                     autoConnectBluno();
             });
+
+            this.blunoLibraryService = blunoLibraryService;
         });
     }
 
@@ -46,6 +51,15 @@ public class MenuPresenter<V extends MenuMvpView> extends BasePresenter<V> imple
             if (blunoLibraryService.handleCapabilitiesActivityResult(requestCode, resultCode)) {
                 autoConnectBluno();
             }
+        }
+    }
+
+    @Override
+    public boolean tryResetBlunoState() {
+        if (blunoLibraryService != null && blunoLibraryService.isDeviceConnected()) {
+            return new BlunoHelper(blunoLibraryService).resetDeviceState();
+        } else {
+            return false;
         }
     }
 

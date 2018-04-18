@@ -210,7 +210,7 @@ public class AppBLEGattCallback extends android.bluetooth.BluetoothGattCallback 
     @Override
     public void onCharacteristicChanged(BluetoothGatt gatt,
                                         BluetoothGattCharacteristic characteristic) {
-        System.out.println("onCharacteristicChanged  " + new String(characteristic.getValue()));
+        // System.out.println("onCharacteristicChanged  " + new String(characteristic.getValue()));
         broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
     }
 
@@ -221,7 +221,7 @@ public class AppBLEGattCallback extends android.bluetooth.BluetoothGattCallback 
 
     private void broadcastUpdate(final String action, final BluetoothGattCharacteristic characteristic) {
         final Intent intent = new Intent(action);
-        System.out.println("BLEService broadcastUpdate");
+        // System.out.println("BLEService broadcastUpdate");
 
         // For all other profiles, writes the data formatted in HEX.
         final byte[] data = characteristic.getValue();

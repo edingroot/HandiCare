@@ -72,13 +72,16 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
     }
 
     @Override
-    public void powerOn() {
+    public boolean powerOn() {
         if (!checkDeviceConnected())
-            return;
+            return false;
 
         // Turn on
         int duration = getMvpView().getDurationSetting();
-        if (duration == 0) return;
+        if (duration == 0){
+            getMvpView().showSnackBar("請設定時間長度");
+            return false;
+        }
 
         if (Config.SHOCK_USB_MODE) {
             mDevAcup.powerOn();
@@ -92,12 +95,14 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
 
         startPowerTimer(duration);
         updateViewDeviceControls();
+
+        return true;
     }
 
     @Override
-    public void powerOff() {
+    public boolean powerOff() {
         if (!checkDeviceConnected())
-            return;
+            return false;
 
         if (Config.SHOCK_USB_MODE) {
             mDevAcup.powerOff();
@@ -110,6 +115,8 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
 
         stopPowerTimer();
         updateViewDeviceControls();
+
+        return true;
     }
 
     @Override
@@ -192,7 +199,8 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
             }
         }
 
-        context.unregisterReceiver(this.mUsbReceiver);
+        if (Config.SHOCK_USB_MODE)
+            context.unregisterReceiver(this.mUsbReceiver);
     }
 
     private boolean checkDeviceConnected() {

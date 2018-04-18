@@ -14,6 +14,8 @@ import javax.inject.Inject;
 import at.grabner.circleprogress.CircleProgressView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnCheckedChanged;
+import butterknife.OnClick;
 import tw.cchi.handicare.R;
 import tw.cchi.handicare.ui.base.BaseActivity;
 
@@ -51,24 +53,30 @@ public class ShockActivity extends BaseActivity implements ShockMvpView {
         secondsPicker.setMaxValue(59);
         updateDeviceControls(false, 0, 0);
 
-        RxCompoundButton.checkedChanges(togglePower).subscribe(isChecked -> {
-            if (isChecked)
-                mPresenter.powerOn();
-            else
-                mPresenter.powerOff();
-        });
+        RxSeekBar.userChanges(seekStrength).subscribe(mPresenter::onCustomStrengthChanged);
 
-        RxSeekBar.userChanges(seekStrength).subscribe(value -> mPresenter.onCustomStrengthChanged(value));
+        RxSeekBar.userChanges(seekFreq).subscribe(mPresenter::onCustomFrequencyChanged);
+    }
 
-        RxSeekBar.userChanges(seekFreq).subscribe(value -> mPresenter.onCustomFrequencyChanged(value));
+    @OnClick(R.id.togglePower)
+    public void togglePower(ToggleButton toggleButton) {
+        if (toggleButton.isChecked()) {
+            if (!mPresenter.powerOn())
+                toggleButton.setChecked(false);
+        } else {
+            if (!mPresenter.powerOff())
+                toggleButton.setChecked(true);
+        }
     }
 
     @Override
     public void updateDeviceControls(boolean isPowerOn, int strength, int frequency) {
         if (isPowerOn) {
-            togglePower.setChecked(true);
+            if (!togglePower.isChecked())
+                togglePower.setChecked(true);
         } else {
-            togglePower.setChecked(false);
+            if (togglePower.isChecked())
+                togglePower.setChecked(false);
             strength = 0;
             frequency = 0;
         }

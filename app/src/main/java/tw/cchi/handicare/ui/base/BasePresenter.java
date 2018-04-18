@@ -9,6 +9,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import tw.cchi.handicare.MvpApp;
+import tw.cchi.handicare.device.bluno.BlunoHelper;
 import tw.cchi.handicare.service.bluno.BlunoLibraryService;
 import tw.cchi.handicare.helper.pref.PreferencesHelper;
 
@@ -89,6 +90,21 @@ public class BasePresenter<V extends MvpView> implements MvpPresenter<V> {
         String savedDeviceAddress = preferencesHelper.getBTDeviceAddress();
         if (savedDeviceAddress == null)
             return false;
+
+        // Reset device state when connected
+        blunoLibraryService.attachEventListener(new BlunoLibraryService.BleEventListener() {
+            @Override
+            public void onConnectionStateChange(BlunoLibraryService.DeviceConnectionState deviceConnectionState) {
+                if (deviceConnectionState == BlunoLibraryService.DeviceConnectionState.isConnected) {
+                    new BlunoHelper(blunoLibraryService).resetDeviceState();
+                    blunoLibraryService.detachEventListener();
+                }
+            }
+
+            @Override
+            public void onSerialReceived(String message) {
+            }
+        });
 
         switch (blunoLibraryService.getConnectionState()) {
             case isNull:

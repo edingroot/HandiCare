@@ -25,7 +25,9 @@ public class MenuPresenter<V extends MenuMvpView> extends BasePresenter<V> imple
 
     @Override
     public void startServices() {
-        // BlunoLibraryService will be started by BIND_AUTO_CREATE flag while calling connectBlunoLibraryService()
+        // BlunoLibraryService will be started by BIND_AUTO_CREATE flag
+        //  while calling MvpApp.getBlunoLibraryService() in connectBlunoLibraryService(),
+        //  so we don't need to start the servie here.
         // activity.startService(new Intent(activity, BlunoLibraryService.class));
 
         // Check if bluetooth & location enabled and auto connect device if available

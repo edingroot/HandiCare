@@ -17,9 +17,9 @@ enum OpCode {CHANGE_MODE, SET_PARAMS, OpCodeElemsCount};
 // ----------------- States ---------------- //
 
 OpMode currentMode = STANDBY;
+bool vibrationEnabled = false;
 bool shockEnabled = false;
 bool detectionEnabled = false;
-bool vibrationEnabled = true;
 byte vibMotorStrength = 100; // 0-255
 
 // ----------------- Function Declarations ---------------- //

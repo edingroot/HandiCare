@@ -38,6 +38,8 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.inject.Inject;
 
@@ -80,6 +82,7 @@ public class BlunoLibraryService extends Service {
 
     private BleEventListeners eventListeners = new BleEventListeners();
     private BleEventListener serviceEventListener;
+    private static final ReentrantReadWriteLock listenerListLock = new ReentrantReadWriteLock();
 
     private int mBaudrate = 115200;
     private String mPassword = "AT+PASSWOR=DFRobot\r\n";
@@ -139,18 +142,30 @@ public class BlunoLibraryService extends Service {
         return mBinder;
     }
 
-    public synchronized void attachEventListener(BleEventListener eventListener) {
-//        if (eventListeners.size() == 1)
-//            eventListeners.remove(serviceEventListener);
+    public void attachEventListener(BleEventListener eventListener) {
+        System.out.println("1 [attachEventListener] isWriteLocked()=" + listenerListLock.isWriteLocked());
+        listenerListLock.writeLock().lock();
+        System.out.println("2 [attachEventListener] isWriteLocked()=" + listenerListLock.isWriteLocked());
 
+        // if (eventListeners.size() == 1)
+        //     eventListeners.remove(serviceEventListener);
         eventListeners.add(eventListener);
+
+        listenerListLock.writeLock().unlock();
+        System.out.println("3 [attachEventListener] isWriteLocked()=" + listenerListLock.isWriteLocked());
     }
 
-    public synchronized void detachEventListener(BleEventListener eventListener) {
-        eventListeners.remove(eventListener);
+    public void detachEventListener(BleEventListener eventListener) {
+        System.out.println("1 [detachEventListener] isWriteLocked()=" + listenerListLock.isWriteLocked());
+        listenerListLock.writeLock().lock();
+        System.out.println("2 [detachEventListener] isWriteLocked()=" + listenerListLock.isWriteLocked());
 
-//        if (eventListeners.size() == 0)
-//            eventListeners.add(serviceEventListener);
+        eventListeners.remove(eventListener);
+        // if (eventListeners.size() == 0)
+        //     eventListeners.add(serviceEventListener);
+
+        listenerListLock.writeLock().unlock();
+        System.out.println("3 [detachEventListener] isWriteLocked()=" + listenerListLock.isWriteLocked());
     }
 
     public boolean initiate() {
@@ -659,13 +674,25 @@ public class BlunoLibraryService extends Service {
         }
 
         public void onConnectionStateChange(DeviceConnectionState deviceConnectionState) {
-            for (BleEventListener listener : listeners)
+            for (BleEventListener listener : getListeners())
                 listener.onConnectionStateChange(deviceConnectionState);
         }
 
         public void onSerialReceived(String message) {
-            for (BleEventListener listener : listeners)
+            for (BleEventListener listener : getListeners())
                 listener.onSerialReceived(message);
+        }
+
+        /**
+         * Shallow copy listener list before invoking listener methods
+         * to avoid triggering a dead lock.
+         */
+        private ArrayList<BleEventListener> getListeners() {
+            listenerListLock.readLock().lock();
+            ArrayList<BleEventListener> currentListeners = new ArrayList<>(this.listeners);
+            listenerListLock.readLock().unlock();
+
+            return currentListeners;
         }
     }
     

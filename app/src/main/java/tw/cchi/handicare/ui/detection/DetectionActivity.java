@@ -11,6 +11,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import tw.cchi.handicare.R;
 import tw.cchi.handicare.component.MultiChartView;
+import tw.cchi.handicare.model.ChartParameter;
 import tw.cchi.handicare.ui.base.BaseActivity;
 
 public class DetectionActivity extends BaseActivity implements DetectionMvpView {
@@ -48,4 +49,8 @@ public class DetectionActivity extends BaseActivity implements DetectionMvpView 
         super.onDestroy();
     }
 
+    @Override
+    public void updateChart(ChartParameter chartParameter) {
+        emgChartView.updateChart(chartParameter);
+    }
 }

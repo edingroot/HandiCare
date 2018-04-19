@@ -112,7 +112,7 @@ public class VibrationPresenter<V extends VibrationMvpView> extends BasePresente
                     onPowerTimeEnd();
                 }
 
-                if (getMvpView() != null)
+                if (!isViewAttached())
                     getMvpView().setProgress(initialSeconds - remainingSeconds, initialSeconds);
             });
     }
@@ -120,7 +120,7 @@ public class VibrationPresenter<V extends VibrationMvpView> extends BasePresente
     private void stopPowerTimer() {
         initialSeconds = 0;
         remainingSeconds = 0;
-        if (getMvpView() != null)
+        if (!isViewAttached())
             getMvpView().setProgress(0, initialSeconds);
 
         // Stop timer
@@ -132,11 +132,20 @@ public class VibrationPresenter<V extends VibrationMvpView> extends BasePresente
         powerOff();
     }
 
-    public void updateViewDeviceControls() {
+    private void updateViewDeviceControls() {
         if (!powered)
             stopPowerTimer();
 
         getMvpView().updateDeviceControls(powered, strength);
+    }
+
+    private boolean checkDeviceConnected() {
+        if (blunoHelper == null || !blunoHelper.isDeviceConnected()) {
+            getMvpView().showSnackBar(R.string.bluno_not_connected);
+            return false;
+        } else {
+            return true;
+        }
     }
 
     @Override
@@ -152,15 +161,6 @@ public class VibrationPresenter<V extends VibrationMvpView> extends BasePresente
                 blunoHelper.setVibrationEnabled(false);
             }
         }
-    }
-
-    private boolean checkDeviceConnected() {
-        if (blunoHelper == null || !blunoHelper.isDeviceConnected()) {
-            getMvpView().showSnackBar(R.string.bluno_not_connected);
-            return false;
-        }
-
-        return true;
     }
 
 }

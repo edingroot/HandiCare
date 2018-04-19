@@ -7,5 +7,6 @@ public final class Config {
     public static int SHOCK_POWER_COUNTDOWN_SECONDS = 5 * 60;
 
     public static final int BLUNO_CMD_TRANSMIT_INTERVAL = 1500;
+    public static final int DETECTION_CHART_POINTS = 100;
 
 }

@@ -10,7 +10,7 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
     private static final String SPLITTER = ",";
 
     private BlunoLibraryService blunoLibraryService;
-    private OnDetectionDataReceiveListener onDetectionDataReceiveListener;
+    private DetectionDataListener detectionDataListener;
     private static final Object btWriteLock = new Object();
     private boolean disposed = false;
 
@@ -77,10 +77,13 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
         return sendCommand(OpCode.SET_PARAMS, OpMode.DETECTION.ordinal(), enabled ? 1 : 0);
     }
 
-    public void setOnDetectionDataReceiveListener(OnDetectionDataReceiveListener onDetectionDataReceiveListener) {
-        this.onDetectionDataReceiveListener = onDetectionDataReceiveListener;
+    public void setDetectionDataListener(DetectionDataListener detectionDataListener) {
+        this.detectionDataListener = detectionDataListener;
     }
 
+    public void removeDetectionDataListener() {
+        this.detectionDataListener = null;
+    }
 
     private boolean sendCommand(OpCode opCode, Object... args) {
         if (!isDeviceConnected())
@@ -131,8 +134,9 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
         } else {
             try {
                 for (int i = 0; i < tokens.length; i++)
-                    iTokens[i] = Integer.parseInt(tokens[i]);
+                    iTokens[i] = Integer.parseInt(tokens[i].trim());
             } catch (NumberFormatException e) {
+                e.printStackTrace();
                 return false;
             }
         }
@@ -145,7 +149,7 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
 
         switch (currentMode) {
             case VIBRATION:
-                if (iTokens.length != 2) {
+                if (iTokens.length == 2) {
                     vibrationEnabled = iTokens[1] == 1;
                 } else {
                     return false;
@@ -153,7 +157,7 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
                 break;
 
             case SHOCK:
-                if (iTokens.length != 2) {
+                if (iTokens.length == 2) {
                     shockEnabled = iTokens[1] == 1;
                 } else {
                     return false;
@@ -161,10 +165,10 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
                 break;
 
             case DETECTION:
-                if (iTokens.length != 3) {
+                if (iTokens.length == 3) {
                     detectionEnabled = iTokens[1] == 1;
-                    if (detectionEnabled && onDetectionDataReceiveListener != null)
-                        onDetectionDataReceiveListener.onDataReceive(iTokens[2]);
+                    if (detectionEnabled && detectionDataListener != null)
+                        detectionDataListener.onDataReceive(iTokens[2]);
                 } else {
                     return false;
                 }
@@ -196,7 +200,7 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
         return disposed;
     }
 
-    public interface OnDetectionDataReceiveListener {
+    public interface DetectionDataListener {
         /**
          * Only triggered while detection is enabled.
          */

@@ -1,6 +1,9 @@
 package tw.cchi.handicare.ui.vibration;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -8,12 +11,16 @@ import android.widget.ToggleButton;
 
 import com.jakewharton.rxbinding2.widget.RxSeekBar;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import javax.inject.Inject;
 
 import at.grabner.circleprogress.CircleProgressView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import tw.cchi.handicare.Config;
 import tw.cchi.handicare.R;
 import tw.cchi.handicare.ui.base.BaseActivity;
 
@@ -25,10 +32,14 @@ public class VibrationActivity extends BaseActivity implements VibrationMvpView 
     @BindView(R.id.secondsPicker) NumberPicker secondsPicker;
 
     @BindView(R.id.togglePower) ToggleButton togglePower;
+    @BindView(R.id.imgPowerAnimation) ImageView imgPowerAnimation;
     @BindView(R.id.circleProgressView) CircleProgressView circleProgressView;
 
     @BindView(R.id.seekStrength) SeekBar seekStrength;
     @BindView(R.id.txtStrengthVal) TextView txtStrengthVal;
+
+    private Timer powerAnimationTimer;
+    private Handler mainHandler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +75,30 @@ public class VibrationActivity extends BaseActivity implements VibrationMvpView 
     }
 
     @Override
+    public void setPowerAnimationEnabled(boolean enable) {
+        // Animate imgPowerAnimation
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                mainHandler.post(() ->
+                    imgPowerAnimation.animate().setDuration(Config.POWER_ANIMATION_DELAY).alpha(0.3f).withEndAction(() -> {
+                        if (imgPowerAnimation == null) return;
+                        imgPowerAnimation.animate().setDuration(Config.POWER_ANIMATION_DELAY).alpha(1);
+                    })
+                );
+            }
+        };
+
+        if (enable) {
+            powerAnimationTimer = new Timer();
+            powerAnimationTimer.schedule(timerTask, 0, 2 * Config.POWER_ANIMATION_DELAY);
+        } else {
+            if (powerAnimationTimer != null)
+                powerAnimationTimer.cancel();
+        }
+    }
+
+    @Override
     public void updateDeviceControls(boolean isPowerOn, int strength) {
         if (isPowerOn) {
             if (!togglePower.isChecked())
@@ -90,6 +125,8 @@ public class VibrationActivity extends BaseActivity implements VibrationMvpView 
 
     @Override
     protected void onDestroy() {
+        if (powerAnimationTimer != null)
+            powerAnimationTimer.cancel();
         presenter.onDetach();
         super.onDestroy();
     }

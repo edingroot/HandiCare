@@ -33,7 +33,7 @@ public class MultiChartView extends RelativeLayout {
 
     public MultiChartView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        rootView = inflate(context, R.layout.view_multi_thermalcharts, this);
+        rootView = inflate(context, R.layout.view_multi_chart, this);
 
         unbinder = ButterKnife.bind(this, rootView);
 
@@ -85,7 +85,7 @@ public class MultiChartView extends RelativeLayout {
     }
 
     private void initLineChart() {
-        lineChart.setBackgroundColor(Color.rgb(104, 241, 175));
+        lineChart.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
 
         // no description text
         lineChart.getDescription().setEnabled(false);

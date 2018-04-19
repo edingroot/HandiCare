@@ -58,15 +58,16 @@
             android:checked="false"/>
 
         <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="190dp"
-            android:layout_height="190dp"
+            android:id="@+id/imgPowerAnimation"
+            android:layout_width="265dp"
+            android:layout_height="265dp"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
+            android:adjustViewBounds="true"
+            android:paddingEnd="22dp"
+            android:paddingTop="20dp"
             android:scaleType="fitCenter"
-            app:srcCompat="@drawable/btn_shockstart_bg"/>
+            app:srcCompat="@drawable/btn_detstart_bg"/>
 
         <at.grabner.circleprogress.CircleProgressView
             android:id="@+id/circleProgressView"

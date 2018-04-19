@@ -65,6 +65,7 @@ public class VibrationPresenter<V extends VibrationMvpView> extends BasePresente
         strength = 1;
 
         startPowerTimer(duration);
+        getMvpView().setPowerAnimationEnabled(true);
         updateViewDeviceControls();
 
         return true;
@@ -81,6 +82,7 @@ public class VibrationPresenter<V extends VibrationMvpView> extends BasePresente
         strength = 0;
 
         stopPowerTimer();
+        getMvpView().setPowerAnimationEnabled(false);
         updateViewDeviceControls();
 
         return true;
@@ -112,7 +114,7 @@ public class VibrationPresenter<V extends VibrationMvpView> extends BasePresente
                     onPowerTimeEnd();
                 }
 
-                if (!isViewAttached())
+                if (isViewAttached())
                     getMvpView().setProgress(initialSeconds - remainingSeconds, initialSeconds);
             });
     }
@@ -120,7 +122,7 @@ public class VibrationPresenter<V extends VibrationMvpView> extends BasePresente
     private void stopPowerTimer() {
         initialSeconds = 0;
         remainingSeconds = 0;
-        if (!isViewAttached())
+        if (isViewAttached())
             getMvpView().setProgress(0, initialSeconds);
 
         // Stop timer

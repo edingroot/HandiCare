@@ -7,6 +7,8 @@ public interface DetectionMvpView extends MvpView {
 
     void setToggleEnabled(boolean enabled);
 
+    void setPowerAnimationEnabled(boolean enable);
+
     void updateChart(ChartParameter<? extends Number> chartParameter);
 
 }

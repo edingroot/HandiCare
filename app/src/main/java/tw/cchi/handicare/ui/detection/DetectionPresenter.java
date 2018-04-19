@@ -72,9 +72,11 @@ public class DetectionPresenter<V extends DetectionMvpView> extends BasePresente
             blunoHelper.setDetectionDataListener(this);
             emgGrabCount = 0;
             detectionEnabled = true;
+            getMvpView().setPowerAnimationEnabled(true);
             return true;
         } else {
             detectionEnabled = false;
+            getMvpView().setPowerAnimationEnabled(false);
             return false;
         }
     }
@@ -85,6 +87,7 @@ public class DetectionPresenter<V extends DetectionMvpView> extends BasePresente
 
         if (checkDeviceConnected() && blunoHelper.setDetectionEnabled(false)) {
             blunoHelper.removeDetectionDataListener();
+            getMvpView().setPowerAnimationEnabled(false);
             return true;
         } else {
             return false;

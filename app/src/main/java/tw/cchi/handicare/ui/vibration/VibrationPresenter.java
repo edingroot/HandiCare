@@ -97,6 +97,12 @@ public class VibrationPresenter<V extends VibrationMvpView> extends BasePresente
         }
         strength = progressValue;
 
+        // TODO
+//        if (checkDeviceConnected() && powered) {
+//            int scaledStrength = (int) (strength * 255.0 / 15);
+//            blunoHelper.setVibrationEnabled(true, scaledStrength);
+//        }
+
         updateViewDeviceControls();
     }
 

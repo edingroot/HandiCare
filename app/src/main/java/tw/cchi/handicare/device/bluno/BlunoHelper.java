@@ -19,6 +19,7 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
     private boolean vibrationEnabled = false;
     private boolean shockEnabled = false;
     private boolean detectionEnabled = false;
+    private int vibrationStrength = 150; // 0-255
 
     public BlunoHelper(BlunoLibraryService blunoLibraryService) {
         this.blunoLibraryService = blunoLibraryService;
@@ -31,7 +32,7 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
 
     public boolean resetDeviceState() {
         return setMode(OpMode.STANDBY) &&
-            (!vibrationEnabled || setVibrationEnabled(false)) &&
+            (!vibrationEnabled || setVibrationEnabled(false, vibrationStrength)) &&
             (!shockEnabled || setShockEnabled(false)) &&
             (!detectionEnabled || setDetectionEnabled(false));
     }
@@ -49,9 +50,13 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
     }
 
     public boolean setVibrationEnabled(boolean enabled) {
+        return setVibrationEnabled(enabled, vibrationStrength);
+    }
+
+    public boolean setVibrationEnabled(boolean enabled, int strength) {
         /* if (currentMode != OpMode.VIBRATION && !setMode(OpMode.VIBRATION))
             return false; */
-        return sendCommand(OpCode.SET_PARAMS, OpMode.VIBRATION.ordinal(), enabled ? 1 : 0);
+        return sendCommand(OpCode.SET_PARAMS, OpMode.VIBRATION.ordinal(), enabled ? 1 : 0, strength);
     }
 
     public boolean isShockEnabled() {

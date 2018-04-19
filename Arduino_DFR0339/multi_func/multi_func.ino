@@ -1,8 +1,7 @@
 #include <stdarg.h>
 
 #define PIN_VIB_LED 4
-#define PIN_VIB_MOTOR 5
-#define PIN_SHOCK_LED 4
+#define PIN_SHOCK_LED_VIBMOTOR 5
  
 #define LOOP_DELAY 10 // ms
 #define INPUT_PARAM_BUF 6
@@ -37,13 +36,23 @@ bool checkCounter(int *counter, int execMod);
 void setup() {
   Serial.begin(115200);
   pinMode(PIN_VIB_LED, OUTPUT);
-  pinMode(PIN_VIB_MOTOR, OUTPUT);
+  pinMode(PIN_SHOCK_LED_VIBMOTOR, OUTPUT);
 }
 
 void loop() {  
   readInput();
   reportStatus();
-  vibMotorPwm(vibrationEnabled, vibMotorStrength);
+  
+  if (shockEnabled) {
+    digitalWrite(PIN_VIB_LED, 0);
+    digitalWrite(PIN_SHOCK_LED_VIBMOTOR, 1);
+  } else if (vibrationEnabled) {
+    digitalWrite(PIN_VIB_LED, 1);
+    analogWrite(PIN_SHOCK_LED_VIBMOTOR, vibMotorStrength);
+  } else {
+    digitalWrite(PIN_VIB_LED, 0);
+    analogWrite(PIN_SHOCK_LED_VIBMOTOR, 0);
+  }
 
   delay(LOOP_DELAY);
 }
@@ -71,6 +80,7 @@ void readInput() {
       // input: 1,<mode_ordinal>
       if (tokenCount == 2 && tokens[1] < OpModeElemsCount) {
         currentMode = (OpMode) tokens[1];
+        vibrationEnabled = shockEnabled = detectionEnabled = 0;
       }
       break;
       
@@ -89,9 +99,12 @@ void setModeParams(OpMode targetMode, int paramCount, int params[]) {
       break;
 
     case VIBRATION: // 1
-      // params: <enable>
-      if (paramCount == 1) {
+      // params: <enable>,<strength: 0-255>
+      if (paramCount == 2) {
         vibrationEnabled = (params[0] == 1);
+        vibMotorStrength = params[1];
+        if (vibMotorStrength > 255) vibMotorStrength = 255;
+        if (vibMotorStrength < 0) vibMotorStrength = 0;
       }
       break;
       
@@ -99,7 +112,6 @@ void setModeParams(OpMode targetMode, int paramCount, int params[]) {
       // params: <enable>
       if (paramCount == 1) {
         shockEnabled = (params[0] == 1);
-        digitalWrite(PIN_SHOCK_LED, shockEnabled);
       }
       break;
  
@@ -140,13 +152,6 @@ void reportStatus() {
       // ex: 3,1,100
       modePrint(DETECTION, 3, detectionEnabled, analogRead(0));
       break;
-  }
-}
-
-void vibMotorPwm(bool on, byte strength) {
-  if (on) {
-    digitalWrite(PIN_VIB_LED, on);
-    analogWrite(PIN_VIB_MOTOR, strength);
   }
 }
 

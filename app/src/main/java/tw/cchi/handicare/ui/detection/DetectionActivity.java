@@ -66,7 +66,7 @@ public class DetectionActivity extends BaseActivity implements DetectionMvpView 
             @Override
             public void run() {
                 mainHandler.post(() ->
-                    imgPowerAnimation.animate().setDuration(Config.POWER_ANIMATION_DELAY).alpha(0.3f).withEndAction(() -> {
+                    imgPowerAnimation.animate().setDuration(Config.POWER_ANIMATION_DELAY).alpha(0.0f).withEndAction(() -> {
                         if (imgPowerAnimation == null) return;
                         imgPowerAnimation.animate().setDuration(Config.POWER_ANIMATION_DELAY).alpha(1);
                     })

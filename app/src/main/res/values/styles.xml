@@ -16,6 +16,7 @@
 
     <style name="TimerNumberPicker">
         <item name="android:textSize">18sp</item>
+        <item name="colorControlNormal">@android:color/transparent</item>
     </style>
 
     <style name="MyAlertDialog" parent="Theme.AppCompat.Dialog.Alert">

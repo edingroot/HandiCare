@@ -9,6 +9,6 @@ public final class Config {
 
     public static final int EMG_CHART_POINTS = 100;
     public static final int EMG_GRAB_THRESHOLD = 800;
-    public static final int DETECTION_NOTIFY_THRESHOLD = 10;
+    public static final int DETECTION_NOTIFY_THRESHOLD = 20;
 
 }

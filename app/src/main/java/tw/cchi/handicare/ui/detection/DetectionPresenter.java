@@ -106,8 +106,7 @@ public class DetectionPresenter<V extends DetectionMvpView> extends BasePresente
 
             if (rawValue > Config.EMG_GRAB_THRESHOLD &&
                 ++emgGrabCount > Config.DETECTION_NOTIFY_THRESHOLD) {
-                getMvpView().showToast("該放鬆手部肌肉囉");
-                // TODO: notify via dialog
+                getMvpView().showMessageAlertDialog("提醒", "該放鬆手部肌肉囉");
 
                 disableDetection();
                 getMvpView().setToggleEnabled(false);

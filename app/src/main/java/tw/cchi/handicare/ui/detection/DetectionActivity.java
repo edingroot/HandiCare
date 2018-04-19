@@ -49,7 +49,7 @@ public class DetectionActivity extends BaseActivity implements DetectionMvpView 
     }
 
     @Override
-    public void updateChart(ChartParameter chartParameter) {
+    public void updateChart(ChartParameter<? extends Number> chartParameter) {
         emgChartView.updateChart(chartParameter);
     }
 

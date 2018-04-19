@@ -1,6 +1,8 @@
 package tw.cchi.handicare.ui.base;
 
+import android.content.DialogInterface;
 import android.support.annotation.StringRes;
+import android.support.v7.app.AlertDialog;
 
 /**
  * Base interface that any class that wants to act as a View in the MVP (Model View Presenter)
@@ -13,13 +15,23 @@ public interface MvpView {
 
     void hideLoading();
 
+    AlertDialog showMessageAlertDialog(String title, String message);
+
+    AlertDialog showAlertDialog(String title, String message,
+                                DialogInterface.OnClickListener onYesClicked,
+                                DialogInterface.OnClickListener onNoClicked);
+
     void showSnackBar(String message);
 
     void showSnackBar(@StringRes int resId);
 
+    void showSnackBar(@StringRes int resId, Object... formatArgs);
+
     void showToast(String message);
 
     void showToast(@StringRes int resId);
+
+    void showToast(@StringRes int resId, Object... formatArgs);
 
     void hideKeyboard();
 

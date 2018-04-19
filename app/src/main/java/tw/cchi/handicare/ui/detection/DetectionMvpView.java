@@ -7,6 +7,6 @@ public interface DetectionMvpView extends MvpView {
 
     void setToggleEnabled(boolean enabled);
 
-    void updateChart(ChartParameter chartParameter);
+    void updateChart(ChartParameter<? extends Number> chartParameter);
 
 }

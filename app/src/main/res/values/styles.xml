@@ -18,4 +18,8 @@
         <item name="android:textSize">18sp</item>
     </style>
 
+    <style name="MyAlertDialog" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:popupBackground">@color/colorPrimaryDark</item>
+    </style>
+
 </resources>

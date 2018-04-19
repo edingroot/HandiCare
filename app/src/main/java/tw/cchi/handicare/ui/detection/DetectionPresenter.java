@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -23,20 +22,23 @@ public class DetectionPresenter<V extends DetectionMvpView> extends BasePresente
     implements DetectionMvpPresenter<V>, BlunoHelper.DetectionDataListener {
     private static final String TAG = DetectionPresenter.class.getSimpleName();
 
+    private final List<Float> zeros;
+
     @Inject @ActivityContext Context context;
     @Inject AppCompatActivity activity;
 
     private BlunoHelper blunoHelper;
     private ChartParameter<Float> chartParameter;
-    private CircularFifoQueue<Float> dataPoints = new CircularFifoQueue<>(Config.DETECTION_CHART_POINTS);
-    private final List<Float> zeros;
+    private CircularFifoQueue<Float> dataPoints = new CircularFifoQueue<>(Config.EMG_CHART_POINTS);
+    private boolean detectionEnabled = false;
+    private int emgGrabCount = 0;
 
     @Inject
     public DetectionPresenter(CompositeDisposable compositeDisposable) {
         super(compositeDisposable);
 
-        zeros = new ArrayList<>(Config.DETECTION_CHART_POINTS);
-        for (int i = 0; i < Config.DETECTION_CHART_POINTS; i++) {
+        zeros = new ArrayList<>(Config.EMG_CHART_POINTS);
+        for (int i = 0; i < Config.EMG_CHART_POINTS; i++) {
             zeros.add(0f);
         }
     }
@@ -68,14 +70,19 @@ public class DetectionPresenter<V extends DetectionMvpView> extends BasePresente
 
         if (checkDeviceConnected() && blunoHelper.setDetectionEnabled(true)) {
             blunoHelper.setDetectionDataListener(this);
+            emgGrabCount = 0;
+            detectionEnabled = true;
             return true;
         } else {
+            detectionEnabled = false;
             return false;
         }
     }
 
     @Override
     public boolean disableDetection() {
+        detectionEnabled = false;
+
         if (checkDeviceConnected() && blunoHelper.setDetectionEnabled(false)) {
             blunoHelper.removeDetectionDataListener();
             return true;
@@ -92,9 +99,20 @@ public class DetectionPresenter<V extends DetectionMvpView> extends BasePresente
         if (!isViewAttached())
             return;
 
-        dataPoints.add((float) rawValue);
-        chartParameter.updateNumbersArray(0, dataPoints.toArray(new Float[dataPoints.size()]));
-        getMvpView().updateChart(chartParameter);
+        if (detectionEnabled) {
+            dataPoints.add((float) rawValue);
+            chartParameter.updateNumbersArray(0, dataPoints.toArray(new Float[dataPoints.size()]));
+            getMvpView().updateChart(chartParameter);
+
+            if (rawValue > Config.EMG_GRAB_THRESHOLD &&
+                ++emgGrabCount > Config.DETECTION_NOTIFY_THRESHOLD) {
+                getMvpView().showToast("該放鬆手部肌肉囉");
+                // TODO: notify via dialog
+
+                disableDetection();
+                getMvpView().setToggleEnabled(false);
+            }
+        }
     }
 
     private boolean checkDeviceConnected() {

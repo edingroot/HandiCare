@@ -107,7 +107,7 @@ public class BlunoLibraryService extends Service {
                         showToastMessage(R.string.bluno_connected);
                         break;
                     case isConnecting:
-                        showToastMessage(R.string.connecting_bluno);
+                        // showToastMessage(R.string.connecting_bluno);
                         break;
                     case isDisconnecting:
                         showToastMessage(R.string.disconnecting_bluno);

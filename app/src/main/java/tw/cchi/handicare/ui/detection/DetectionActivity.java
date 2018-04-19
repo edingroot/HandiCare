@@ -44,13 +44,18 @@ public class DetectionActivity extends BaseActivity implements DetectionMvpView 
     }
 
     @Override
-    protected void onDestroy() {
-        presenter.onDetach();
-        super.onDestroy();
+    public void setToggleEnabled(boolean enabled) {
+        toggleEnable.setChecked(enabled);
     }
 
     @Override
     public void updateChart(ChartParameter chartParameter) {
         emgChartView.updateChart(chartParameter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        presenter.onDetach();
+        super.onDestroy();
     }
 }

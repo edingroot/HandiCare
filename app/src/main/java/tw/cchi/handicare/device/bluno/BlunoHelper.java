@@ -1,5 +1,7 @@
 package tw.cchi.handicare.device.bluno;
 
+import android.widget.Toast;
+
 import io.reactivex.disposables.Disposable;
 import tw.cchi.handicare.Config;
 import tw.cchi.handicare.service.bluno.BlunoLibraryService;
@@ -143,6 +145,8 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
                     iTokens[i] = Integer.parseInt(tokens[i].trim());
             } catch (NumberFormatException e) {
                 e.printStackTrace();
+                Toast.makeText(blunoLibraryService.getApplicationContext(), "請重開裝置電源！", Toast.LENGTH_LONG).show();
+                blunoLibraryService.disconnect();
                 return false;
             }
         }

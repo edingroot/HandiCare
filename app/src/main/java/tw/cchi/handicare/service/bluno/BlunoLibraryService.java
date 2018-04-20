@@ -399,6 +399,7 @@ public class BlunoLibraryService extends Service {
             mBluetoothAdapter.getBluetoothLeScanner().stopScan(mLeScanCallback);
 
             if (changeState) {
+                connected = false;
                 mDeviceConnectionState = DeviceConnectionState.isToScan;
                 eventListeners.onConnectionStateChange(mDeviceConnectionState);
             }
@@ -474,6 +475,7 @@ public class BlunoLibraryService extends Service {
 
         if (mModelNumberCharacteristic == null || mSerialPortCharacteristic == null || mCommandCharacteristic == null) {
             showToastMessage("Please select DFRobot devices");
+            connected = false;
             mDeviceConnectionState = DeviceConnectionState.isToScan;
             eventListeners.onConnectionStateChange(mDeviceConnectionState);
         } else {
@@ -578,8 +580,10 @@ public class BlunoLibraryService extends Service {
     private Runnable mConnectingOverTimeRunnable = new Runnable() {
         @Override
         public void run() {
-            if (mDeviceConnectionState == DeviceConnectionState.isConnecting)
+            if (mDeviceConnectionState == DeviceConnectionState.isConnecting) {
+                connected = false;
                 mDeviceConnectionState = DeviceConnectionState.isToScan;
+            }
             eventListeners.onConnectionStateChange(mDeviceConnectionState);
             mBLEService.close();
         }
@@ -588,8 +592,10 @@ public class BlunoLibraryService extends Service {
     private Runnable mDisonnectingOverTimeRunnable = new Runnable() {
         @Override
         public void run() {
-            if (mDeviceConnectionState == DeviceConnectionState.isDisconnecting)
+            if (mDeviceConnectionState == DeviceConnectionState.isDisconnecting) {
+                connected = false;
                 mDeviceConnectionState = DeviceConnectionState.isToScan;
+            }
             eventListeners.onConnectionStateChange(mDeviceConnectionState);
             mBLEService.close();
         }
@@ -642,6 +648,7 @@ public class BlunoLibraryService extends Service {
                         eventListeners.onConnectionStateChange(mDeviceConnectionState);
                     } else {
                         showToastMessage("Please select DFRobot devices");
+                        connected = false;
                         mDeviceConnectionState = DeviceConnectionState.isToScan;
                         eventListeners.onConnectionStateChange(mDeviceConnectionState);
                     }

@@ -4,6 +4,7 @@ public final class Config {
 
     public static boolean SHOCK_USB_MODE = false;
     public static final int BLUNO_CMD_TRANSMIT_INTERVAL = 1500;
+    public static final int BLUNO_READ_ERROR_DISCONN_THRESHOLD = 5;
 
     public static int SHOCK_POWER_COUNTDOWN_SECONDS = 5 * 60;
     public static int POWER_ANIMATION_DELAY = 1400;

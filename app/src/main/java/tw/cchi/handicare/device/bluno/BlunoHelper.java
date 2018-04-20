@@ -22,6 +22,7 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
     private boolean shockEnabled = false;
     private boolean detectionEnabled = false;
     private int vibrationStrength = 150; // 0-255
+    private int readErrorCount = 0;
 
     public BlunoHelper(BlunoLibraryService blunoLibraryService) {
         this.blunoLibraryService = blunoLibraryService;
@@ -145,8 +146,11 @@ public class BlunoHelper implements BlunoLibraryService.BleEventListener, Dispos
                     iTokens[i] = Integer.parseInt(tokens[i].trim());
             } catch (NumberFormatException e) {
                 e.printStackTrace();
-                Toast.makeText(blunoLibraryService.getApplicationContext(), "請重開裝置電源！", Toast.LENGTH_LONG).show();
-                blunoLibraryService.disconnect();
+                if (++readErrorCount > Config.BLUNO_READ_ERROR_DISCONN_THRESHOLD) {
+                    Toast.makeText(blunoLibraryService.getApplicationContext(), "請重開裝置電源！", Toast.LENGTH_LONG).show();
+                    blunoLibraryService.disconnect();
+                    readErrorCount = 0;
+                }
                 return false;
             }
         }

@@ -10,7 +10,7 @@
     <!--</item>-->
     <item
         android:width="140dp"
-        android:height="170dp"
+        android:height="155dp"
         android:drawable="@drawable/logo_with_text"
         android:gravity="center" />
 

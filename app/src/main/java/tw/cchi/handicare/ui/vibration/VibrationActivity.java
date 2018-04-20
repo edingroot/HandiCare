@@ -23,6 +23,7 @@ import butterknife.OnClick;
 import tw.cchi.handicare.Config;
 import tw.cchi.handicare.R;
 import tw.cchi.handicare.ui.base.BaseActivity;
+import tw.cchi.handicare.utils.CommonUtils;
 
 public class VibrationActivity extends BaseActivity implements VibrationMvpView {
 
@@ -113,7 +114,7 @@ public class VibrationActivity extends BaseActivity implements VibrationMvpView 
             strength = 0;
         }
         seekStrength.setProgress(strength);
-        txtStrengthVal.setText(String.valueOf(strength));
+        txtStrengthVal.setText(CommonUtils.padLeft(String.valueOf(strength), '0', 2));
     }
 
     @Override

@@ -23,6 +23,7 @@ import butterknife.OnClick;
 import tw.cchi.handicare.Config;
 import tw.cchi.handicare.R;
 import tw.cchi.handicare.ui.base.BaseActivity;
+import tw.cchi.handicare.utils.CommonUtils;
 
 public class ShockActivity extends BaseActivity implements ShockMvpView {
 
@@ -118,8 +119,8 @@ public class ShockActivity extends BaseActivity implements ShockMvpView {
         }
         seekStrength.setProgress(strength);
         seekFreq.setProgress(frequency);
-        txtStrengthVal.setText(String.valueOf(strength));
-        txtFreqVal.setText(String.valueOf(frequency));
+        txtStrengthVal.setText(CommonUtils.padLeft(String.valueOf(strength), '0', 2));
+        txtFreqVal.setText(CommonUtils.padLeft(String.valueOf(frequency), '0', 2));
     }
 
     @Override

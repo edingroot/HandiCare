@@ -171,7 +171,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="0"
+                android:text="00"
                 android:textSize="18sp"/>
         </TableRow>
 
@@ -206,7 +206,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:text="0"
+                android:text="00"
                 android:textSize="18sp"/>
 
         </TableRow>

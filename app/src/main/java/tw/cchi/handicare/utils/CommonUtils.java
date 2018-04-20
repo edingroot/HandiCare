@@ -41,4 +41,10 @@ public final class CommonUtils {
         return value;
     }
 
+    public static String padLeft(String input, char padChar, int length) {
+        for (int i = input.length(); i < length; i++)
+            input = padChar + input;
+        return input;
+    }
+
 }

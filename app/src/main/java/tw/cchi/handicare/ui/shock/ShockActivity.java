@@ -62,9 +62,12 @@ public class ShockActivity extends BaseActivity implements ShockMvpView {
         secondsPicker.setMaxValue(59);
         updateDeviceControls(false, 0, 0);
 
-        RxSeekBar.userChanges(seekStrength).subscribe(presenter::onCustomStrengthChanged);
-
-        RxSeekBar.userChanges(seekFreq).subscribe(presenter::onCustomFrequencyChanged);
+        // Avoid event triggered while rendering view
+        new Handler(getMainLooper()).postDelayed(() -> {
+                RxSeekBar.userChanges(seekStrength).subscribe(presenter::onCustomStrengthChanged);
+                RxSeekBar.userChanges(seekFreq).subscribe(presenter::onCustomFrequencyChanged);
+            }, 100
+        );
     }
 
     @OnClick(R.id.togglePower)

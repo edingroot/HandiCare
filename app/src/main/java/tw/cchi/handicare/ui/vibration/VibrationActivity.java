@@ -60,7 +60,11 @@ public class VibrationActivity extends BaseActivity implements VibrationMvpView 
         secondsPicker.setMaxValue(59);
         updateDeviceControls(false, 0);
 
-        RxSeekBar.userChanges(seekStrength).subscribe(presenter::onCustomStrengthChanged);
+        // Avoid event triggered while rendering view
+        new Handler(getMainLooper()).postDelayed(() ->
+            RxSeekBar.userChanges(seekStrength).subscribe(presenter::onCustomStrengthChanged),
+            100
+        );
     }
 
     @OnClick(R.id.togglePower)

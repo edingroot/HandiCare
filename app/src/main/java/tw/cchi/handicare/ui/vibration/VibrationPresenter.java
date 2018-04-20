@@ -1,6 +1,9 @@
 package tw.cchi.handicare.ui.vibration;
 
+import android.os.Handler;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import java.util.concurrent.TimeUnit;
 
@@ -11,11 +14,13 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import tw.cchi.handicare.Config;
 import tw.cchi.handicare.R;
 import tw.cchi.handicare.device.bluno.BlunoHelper;
 import tw.cchi.handicare.ui.base.BasePresenter;
 
 public class VibrationPresenter<V extends VibrationMvpView> extends BasePresenter<V> implements VibrationMvpPresenter<V> {
+    private static final String TAG = VibrationPresenter.class.getSimpleName();
     private static final long TIMER_TICK_INTERVAL = 20; // ms
 
     @Inject AppCompatActivity activity;
@@ -27,6 +32,9 @@ public class VibrationPresenter<V extends VibrationMvpView> extends BasePresente
     private int strength = 0;
     private int initialSeconds = 0;
     private float remainingSeconds = 0;
+    private Handler mHandler = new Handler();
+    private Runnable strengthSender;
+    private long lastStrengthSent = 0;
 
     @Inject
     public VibrationPresenter(CompositeDisposable compositeDisposable) {
@@ -76,7 +84,6 @@ public class VibrationPresenter<V extends VibrationMvpView> extends BasePresente
         if (!checkDeviceConnected())
             return false;
 
-
         blunoHelper.setVibrationEnabled(false);
         powered = false;
         strength = 0;
@@ -97,11 +104,27 @@ public class VibrationPresenter<V extends VibrationMvpView> extends BasePresente
         }
         strength = progressValue;
 
-        // TODO
-//        if (checkDeviceConnected() && powered) {
-//            int scaledStrength = (int) (strength * 255.0 / 15);
-//            blunoHelper.setVibrationEnabled(true, scaledStrength);
-//        }
+        int scaledStrength = (int) (strength * 255.0 / 15);
+        if (checkDeviceConnected() && powered && blunoHelper.getVibrationStrength() != scaledStrength) {
+            if (strengthSender != null) {
+                Log.i(TAG, "Removing strengthSender callback @ strength=" + scaledStrength);
+                mHandler.removeCallbacks(strengthSender);
+            }
+
+            strengthSender = () -> {
+                blunoHelper.setVibrationEnabled(true, scaledStrength);
+                strengthSender = null;
+            };
+
+            long minInterval = Config.BLUNO_CMD_TRANSMIT_INTERVAL + 100;
+            long currentTime = SystemClock.uptimeMillis();
+            if (currentTime - lastStrengthSent < minInterval) {
+                mHandler.postAtTime(strengthSender, lastStrengthSent + minInterval);
+            } else {
+                lastStrengthSent = currentTime;
+                strengthSender.run();
+            }
+        }
 
         updateViewDeviceControls();
     }

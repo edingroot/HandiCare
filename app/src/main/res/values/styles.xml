@@ -7,6 +7,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowBackground">@drawable/activity_background</item>
+        <item name="android:colorControlActivated">@color/colorControlActivated</item>
     </style>
 
     <!-- Splash Screen theme. -->
@@ -21,6 +22,11 @@
 
     <style name="MyAlertDialog" parent="Theme.AppCompat.Dialog.Alert">
         <item name="android:popupBackground">@color/colorPrimaryDark</item>
+    </style>
+
+    <style name="SeekBarWithoutSteps" parent="Base.Widget.AppCompat.SeekBar.Discrete">
+        <!--<item name="tickMark">@null</item>-->
+        <item name="tickMark">@color/colorControlActivated</item>
     </style>
 
 </resources>

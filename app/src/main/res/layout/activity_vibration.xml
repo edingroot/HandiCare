@@ -155,7 +155,7 @@
 
             <SeekBar
                 android:id="@+id/seekStrength"
-                style="@style/Widget.AppCompat.SeekBar.Discrete"
+                style="@style/SeekBarWithoutSteps"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -190,7 +190,7 @@
 
             <SeekBar
                 android:id="@+id/seekFreq"
-                style="@style/Widget.AppCompat.SeekBar.Discrete"
+                style="@style/SeekBarWithoutSteps"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"

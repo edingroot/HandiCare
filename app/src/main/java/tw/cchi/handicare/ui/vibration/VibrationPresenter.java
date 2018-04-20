@@ -172,7 +172,8 @@ public class VibrationPresenter<V extends VibrationMvpView> extends BasePresente
 
     private boolean checkDeviceConnected() {
         if (blunoHelper == null || !blunoHelper.isDeviceConnected()) {
-            getMvpView().showSnackBar(R.string.bluno_not_connected);
+            if (isViewAttached())
+                getMvpView().showSnackBar(R.string.bluno_not_connected);
             return false;
         } else {
             return true;

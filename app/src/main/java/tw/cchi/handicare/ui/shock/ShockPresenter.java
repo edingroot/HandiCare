@@ -211,7 +211,8 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
     private boolean checkDeviceConnected() {
         if (Config.SHOCK_USB_MODE) {
             if (!mDevAcup.connect()) {
-                getMvpView().showSnackBar(R.string.usb_not_found);
+                if (isViewAttached())
+                    getMvpView().showSnackBar(R.string.usb_not_found);
                 return false;
             }
         } else {

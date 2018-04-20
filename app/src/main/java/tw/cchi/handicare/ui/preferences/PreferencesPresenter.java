@@ -63,6 +63,9 @@ public class PreferencesPresenter<V extends PreferencesMvpView> extends BasePres
                     case isToScan:
                         getMvpView().showScanDeviceDialog(mLeDeviceListAdapter);
                         break;
+
+                    case isConnected:
+                        preferencesHelper.setBTDeviceAddress(null);
                 }
                 blunoLibraryService.onScanningDialogOpen(mLeDeviceListAdapter);
             });
@@ -94,6 +97,9 @@ public class PreferencesPresenter<V extends PreferencesMvpView> extends BasePres
     // ----------- BlunoLibraryService.BleEventListener Implementation ----------- //
     @Override
     public void onConnectionStateChange(BlunoLibraryService.DeviceConnectionState deviceConnectionState) {
+        if (!isViewAttached())
+            return;
+
         switch (deviceConnectionState) {
             case isConnected:
                 getMvpView().setScanButtonText("Connected");
@@ -108,7 +114,7 @@ public class PreferencesPresenter<V extends PreferencesMvpView> extends BasePres
                 getMvpView().setScanButtonText("Scanning");
                 break;
             case isDisconnecting:
-                getMvpView().setScanButtonText("isDisconnecting");
+                getMvpView().setScanButtonText("Disconnecting");
                 break;
             default:
                 break;

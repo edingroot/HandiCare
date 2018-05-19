@@ -45,8 +45,7 @@ public class PreferencesPresenter<V extends PreferencesMvpView> extends BasePres
 
         // Display current connection state
         connectBlunoLibraryService().subscribe(blunoLibraryService ->
-            onConnectionStateChange(blunoLibraryService.getConnectionState())
-        );
+                onConnectionStateChange(blunoLibraryService.getConnectionState()));
     }
 
     @Override

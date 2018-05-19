@@ -72,7 +72,7 @@ public class MenuActivity extends BaseActivity implements MenuMvpView {
         presenter.launchDetectionMode();
     }
 
-    @OnClick(R.id.btnPreferences)
+    @OnClick(R.id.btnImgPreferences)
     public void onPreferencesClick(View v) {
         presenter.launchPreferences();
     }

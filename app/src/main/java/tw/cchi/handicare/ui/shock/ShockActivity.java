@@ -20,6 +20,7 @@ import at.grabner.circleprogress.CircleProgressView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import tw.cchi.handicare.Config;
 import tw.cchi.handicare.R;
 import tw.cchi.handicare.ui.base.BaseActivity;
@@ -40,6 +41,7 @@ public class ShockActivity extends BaseActivity implements ShockMvpView {
     @BindView(R.id.txtStrengthVal) TextView txtStrengthVal;
     @BindView(R.id.seekFreq) SeekBar seekFreq;
     @BindView(R.id.txtFreqVal) TextView txtFreqVal;
+    @BindView(R.id.btnImgSwitchWireless) ImageView btnImgSwitchWireless;
 
     private Timer powerAnimationTimer;
     private Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -72,7 +74,7 @@ public class ShockActivity extends BaseActivity implements ShockMvpView {
     }
 
     @OnClick(R.id.togglePower)
-    public void togglePower(ToggleButton toggleButton) {
+    void togglePower(ToggleButton toggleButton) {
         if (toggleButton.isChecked()) {
             if (!presenter.powerOn())
                 toggleButton.setChecked(false);
@@ -80,6 +82,18 @@ public class ShockActivity extends BaseActivity implements ShockMvpView {
             if (!presenter.powerOff())
                 toggleButton.setChecked(true);
         }
+    }
+
+    @OnClick(R.id.btnImgSwitchWireless)
+    void switchWireless(ImageView imageView) {
+        presenter.switchUsbMode(!presenter.isUsbMode()).observeOn(AndroidSchedulers.mainThread())
+            .subscribe(success -> {
+                if (presenter.isUsbMode()) {
+                    imageView.setImageResource(android.R.drawable.ic_lock_idle_charging);
+                } else {
+                    imageView.setImageResource(android.R.drawable.stat_sys_data_bluetooth);
+                }
+            });
     }
 
     @Override

@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
+import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
@@ -35,6 +36,7 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
     @Inject AppCompatActivity activity;
     @Inject @ActivityContext Context context;
 
+    private boolean usbMode;
     private BlunoHelper blunoHelper;
     private Disposable powerTimer;
     private int initialSeconds = 0;
@@ -50,25 +52,15 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
     public void onAttach(V mvpView) {
         super.onAttach(mvpView);
 
-        if (Config.SHOCK_USB_MODE) {
-            // Register broadcast receiver events
-            IntentFilter filterAttachedDetached = new IntentFilter();
-            filterAttachedDetached.addAction(ACTION_USB_PERMISSION);
-            filterAttachedDetached.addAction("android.hardware.usb.action.USB_DEVICE_DETACHED");
-            filterAttachedDetached.addAction("android.hardware.usb.action.USB_DEVICE_ATTACHED");
-            filterAttachedDetached.addAction("android.intent.action.BATTERY_CHANGED");
-            context.registerReceiver(mUsbReceiver, filterAttachedDetached);
-        } else {
-            connectBlunoLibraryService().subscribe(blunoLibraryService -> {
-                if (!blunoLibraryService.isDeviceConnected()) {
-                    getMvpView().showToast(R.string.bluno_not_connected);
-                    activity.finish();
-                } else {
-                    blunoHelper = new BlunoHelper(blunoLibraryService);
-                    blunoHelper.setMode(BlunoHelper.OpMode.SHOCK);
-                }
-            });
-        }
+        connectBlunoLibraryService().subscribe(blunoLibraryService -> {
+            if (!blunoLibraryService.isDeviceConnected()) {
+                getMvpView().showToast(R.string.bluno_not_connected);
+                enableUsbMode();
+            } else {
+                blunoHelper = new BlunoHelper(blunoLibraryService);
+                blunoHelper.setMode(BlunoHelper.OpMode.SHOCK);
+            }
+        });
     }
 
     @Override
@@ -83,7 +75,7 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
             return false;
         }
 
-        if (Config.SHOCK_USB_MODE) {
+        if (usbMode) {
             mDevAcup.powerOn();
         } else {
             blunoHelper.setShockEnabled(true);
@@ -105,7 +97,7 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
         if (!checkDeviceConnected())
             return false;
 
-        if (Config.SHOCK_USB_MODE) {
+        if (usbMode) {
             mDevAcup.powerOff();
         } else {
             blunoHelper.setShockEnabled(false);
@@ -119,6 +111,32 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
         updateViewDeviceControls();
 
         return true;
+    }
+
+    @Override
+    public Observable<Boolean> switchUsbMode(boolean isUsbMode) {
+        if (isUsbMode == usbMode)
+            return Observable.just(true);
+
+        if (isUsbMode) {
+            enableUsbMode();
+            return Observable.just(true);
+        } else {
+            return Observable.<Boolean>create(emitter -> {
+                connectBlunoLibraryService().subscribe(blunoLibraryService -> {
+                    if (!blunoLibraryService.isDeviceConnected()) {
+                        getMvpView().showToast(R.string.bluno_not_connected);
+                        emitter.onNext(false);
+                    } else {
+                        blunoHelper = new BlunoHelper(blunoLibraryService);
+                        blunoHelper.setMode(BlunoHelper.OpMode.SHOCK);
+                        disableUsbMode();
+                        emitter.onNext(true);
+                    }
+                    emitter.onComplete();
+                });
+            }).subscribeOn(Schedulers.io());
+        }
     }
 
     @Override
@@ -187,6 +205,11 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
     }
 
     @Override
+    public boolean isUsbMode() {
+        return usbMode;
+    }
+
+    @Override
     public void onDetach() {
         super.onDetach();
 
@@ -196,7 +219,7 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
             globalVar.bPower = false;
 
             if (checkDeviceConnected()) {
-                if (Config.SHOCK_USB_MODE) {
+                if (usbMode) {
                     mDevAcup.commWithUsbDevice();
                 } else {
                     blunoHelper.setShockEnabled(false);
@@ -204,12 +227,28 @@ public class ShockPresenter<V extends ShockMvpView> extends BasePresenter<V> imp
             }
         }
 
-        if (Config.SHOCK_USB_MODE)
+        if (usbMode)
             context.unregisterReceiver(this.mUsbReceiver);
+    }
+    
+    private void enableUsbMode() {
+        // Register broadcast receiver events
+        IntentFilter filterAttachedDetached = new IntentFilter();
+        filterAttachedDetached.addAction(ACTION_USB_PERMISSION);
+        filterAttachedDetached.addAction("android.hardware.usb.action.USB_DEVICE_DETACHED");
+        filterAttachedDetached.addAction("android.hardware.usb.action.USB_DEVICE_ATTACHED");
+        filterAttachedDetached.addAction("android.intent.action.BATTERY_CHANGED");
+        context.registerReceiver(mUsbReceiver, filterAttachedDetached);
+        usbMode = true;
+    }
+    
+    private void disableUsbMode() {
+        context.unregisterReceiver(mUsbReceiver);
+        usbMode = false;
     }
 
     private boolean checkDeviceConnected() {
-        if (Config.SHOCK_USB_MODE) {
+        if (usbMode) {
             if (!mDevAcup.connect()) {
                 if (isViewAttached())
                     getMvpView().showSnackBar(R.string.usb_not_found);
